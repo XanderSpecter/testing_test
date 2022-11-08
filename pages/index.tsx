@@ -7,6 +7,7 @@ export default function Home() {
                 <title>Test Environtment</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+            <div>Здесь могла быть ваша реклама</div>
         </div>
     );
 }
