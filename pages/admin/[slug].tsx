@@ -5,17 +5,13 @@ import DBTestPage from '../../src/adminTools/DbTestPage';
 export default function Admin() {
     const router = useRouter();
 
-    if (typeof router.query.slug === 'string' && router.query.slug.toLowerCase() === 'dbtest') {
-        return (
-            <div>
-                <Head>
-                    <title>Test Environtment</title>
-                    <link rel="icon" href="/favicon.ico" />
-                </Head>
-                <DBTestPage />
-            </div>
-        );
-    }
+    const renderRoutes = () => {
+        if (typeof router.query.slug === 'string' && router.query.slug.toLowerCase() === 'dbtest') {
+            return <DBTestPage />;
+        }
+
+        return <div>Здесь могла быть реклама админа</div>;
+    };
 
     return (
         <div>
@@ -23,7 +19,7 @@ export default function Admin() {
                 <title>Test Environtment</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div>Здесь могла быть реклама админа</div>
+            {renderRoutes()}
         </div>
     );
 }
