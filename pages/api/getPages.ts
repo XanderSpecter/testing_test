@@ -1,6 +1,6 @@
 import { WithId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withMethodAndErrorChecking, withMiddleware } from '../../src/apiHelpers/helpers';
+import { withMethodAndErrorChecking, withMiddleware } from '../../src/helpers/backendApiHelpers';
 import { connect } from '../../src/db';
 
 type Response = WithId<Record<string, string>>[];

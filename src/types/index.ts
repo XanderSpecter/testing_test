@@ -9,3 +9,5 @@ interface CommonStyles {
 export interface WithCommonStyles {
     styles?: CommonStyles;
 }
+
+export type AllowedMethod = 'POST' | 'GET';

@@ -1,22 +1,11 @@
-const headers = {
-    'Content-Type': 'application/json',
-};
+import { handleRequest } from '../../helpers/frontendApiHelpers';
 
-export const savePage = async (pageName: string, pageData: Record<string, string>) => {
-    try {
-        const body = JSON.stringify({
+export const savePage = (pageName: string, pageData: Record<string, string>) =>
+    handleRequest({
+        url: 'savePage',
+        method: 'POST',
+        data: {
             pageName,
             pageData,
-        });
-
-        const res = await fetch('/api/savePage', {
-            method: 'POST',
-            headers,
-            body,
-        });
-
-        console.log(res);
-    } catch (e) {
-        console.log(e);
-    }
-};
+        },
+    });

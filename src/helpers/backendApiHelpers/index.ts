@@ -1,6 +1,5 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-
-type AllowedMethod = 'POST' | 'GET';
+import { AllowedMethod } from '../../types';
 
 export const withMethodAndErrorChecking =
     (allowedMethod: AllowedMethod) => async (req: NextApiRequest, res: NextApiResponse) => {
