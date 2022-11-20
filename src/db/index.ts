@@ -13,7 +13,7 @@ export async function connect() {
     await client.connect();
     console.log('Connected successfully to server');
     const db = client.db(dbName);
-    const collection = db.collection<Record<string, string>>('page');
+    const collection = db.collection('page');
 
     return collection;
 }

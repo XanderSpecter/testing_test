@@ -3,6 +3,9 @@ interface CommonStyles {
     height?: string;
 }
 
+/**
+ * Расширение компонента для поддержки редактируемых стилей в Styled
+ */
 export interface WithCommonStyles {
     styles?: CommonStyles;
 }
