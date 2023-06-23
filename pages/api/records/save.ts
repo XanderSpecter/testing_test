@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withMethodAndErrorChecking, withMiddleware } from '../../src/helpers/backendApiHelpers';
-import { connect } from '../../src/db';
+import { withMethodAndErrorChecking, withMiddleware } from '../../../src/helpers/backendApiHelpers';
+import { connect } from '../../../src/db';
 
 interface SavePageData {
     pageName: string;

@@ -7,7 +7,7 @@ interface CommonStyles {
  * Расширение компонента для поддержки редактируемых стилей в Styled
  */
 export interface WithCommonStyles {
-    styles?: CommonStyles;
+    customStyles?: CommonStyles;
 }
 
 export type AllowedMethod = 'POST' | 'GET';

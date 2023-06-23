@@ -1,11 +1,12 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+
 import Section from '../src/components/structure/Section';
+import useUrl from '../src/utils/useUrl';
 
 export default function Home() {
-    const router = useRouter();
+    const urlData = useUrl();
 
-    console.log(router);
+    console.log(urlData);
 
     return (
         <div>
@@ -14,7 +15,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Section
-                styles={{
+                customStyles={{
                     width: '100%',
                     height: '200px',
                 }}

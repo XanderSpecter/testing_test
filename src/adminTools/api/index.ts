@@ -1,11 +1,17 @@
 import { handleRequest } from '../../helpers/frontendApiHelpers';
 
-export const savePage = (pageName: string, pageData: Record<string, string>) =>
+export const saveRecord = (pageName: string, pageData: Record<string, string>) =>
     handleRequest({
-        url: 'savePage',
+        url: 'records/save',
         method: 'POST',
         data: {
             pageName,
             pageData,
         },
+    });
+
+export const getRecords = () =>
+    handleRequest({
+        url: 'records/list',
+        method: 'GET',
     });
