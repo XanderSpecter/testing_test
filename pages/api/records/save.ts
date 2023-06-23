@@ -1,19 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withMethodAndErrorChecking, withMiddleware } from '../../../src/helpers/backendApiHelpers';
+import { withMethodAndErrorChecking } from '../../../src/helpers/backendApiHelpers';
 import { connect } from '../../../src/db';
+import { RECORDS_COLLECTION } from '../constants/records';
 
 interface SavePageData {
-    pageName: string;
-    pageData: Record<string, string>;
+    name: string;
+    data: Record<string, string>;
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { pageName, pageData } = req.body as SavePageData;
-    const dbconnection = await connect();
+    const { name, data } = req.body as SavePageData;
+    const db = await connect();
+    const collection = db.collection(RECORDS_COLLECTION);
 
-    await dbconnection.insertOne({ [pageName]: pageData });
+    await collection.insertOne({ [name]: data });
 
     res.status(200).end();
 }
 
-export default withMiddleware(withMethodAndErrorChecking('POST'), handler);
+export default withMethodAndErrorChecking(handler, 'POST');
