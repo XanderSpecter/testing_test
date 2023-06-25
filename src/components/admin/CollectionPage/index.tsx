@@ -5,14 +5,18 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 import { Button } from 'antd';
 
-import { getElements } from '../../../src/api/collection';
-import { useElements } from '../../../src/hooks/api/useElements';
-import PageContainer from '../../../src/components/base/PageContainer';
-import FullScreenLoader from '../../../src/components/base/FullScreenLoader';
-import { getUrlParams } from '../../../src/helpers/serverRenderHelpers/getUrlParams';
-import useUrl from '../../../src/hooks/utils/useUrl';
+import { getElements } from '../../../api/collection';
+import { useElements } from '../../../hooks/api/useElements';
+import PageContainer from '../../../components/base/PageContainer';
+import FullScreenLoader from '../../base/FullScreenLoader';
+import { getUrlParams } from '../../../helpers/serverRenderHelpers/getUrlParams';
+import useUrl from '../../../hooks/utils/useUrl';
 
-const PageList: NextPage = () => {
+interface CollectionPageProps {
+    title: string;
+}
+
+const CollectionPage: NextPage<CollectionPageProps> = ({ title }) => {
     const { slug, query } = useUrl();
 
     const collectionElementName = slug[slug.length - 1];
@@ -25,7 +29,7 @@ const PageList: NextPage = () => {
     return (
         <div>
             <Head>
-                <title>Список записей БД</title>
+                <title>{`Коллекция ${collectionElementName} - ${title}`}</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <PageContainer>
@@ -65,4 +69,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 };
 
-export default PageList;
+export default CollectionPage;
