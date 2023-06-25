@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-import useUrl from '../../src/utils/useUrl';
+import useUrl from '../../src/hooks/utils/useUrl';
 
 export default function Admin() {
     const { path } = useUrl();

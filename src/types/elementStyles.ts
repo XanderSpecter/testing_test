@@ -1,6 +1,10 @@
 interface CommonStyles {
     width?: string;
     height?: string;
+    top?: string;
+    left?: string;
+    bottom?: string;
+    right?: string;
 }
 
 /**
@@ -9,5 +13,3 @@ interface CommonStyles {
 export interface WithCommonStyles {
     customStyles?: CommonStyles;
 }
-
-export type AllowedMethod = 'POST' | 'GET';

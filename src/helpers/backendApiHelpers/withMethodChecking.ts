@@ -1,7 +1,7 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { AllowedMethod } from '../../types';
+import { AllowedMethod } from '../../types/apiModels';
 
-export const withMethodAndErrorChecking =
+export const withMethodChecking =
     (handler: NextApiHandler, allowedMethod: AllowedMethod) => (req: NextApiRequest, res: NextApiResponse) => {
         try {
             if (!req.method) {
