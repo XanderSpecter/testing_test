@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { handleRequest } from '../helpers/frontendApiHelpers';
-import { BaseObject, CollectionElement, WithcollectionElementName } from '../types/apiModels';
+import { BaseObject, CollectionElement, WithcollectionElementName } from '../../types/apiModels';
+import { handleRequest } from '../utils/handleRequest';
 
 export interface CreateElementParams<T extends BaseObject = BaseObject> extends WithcollectionElementName {
     element?: Partial<CollectionElement<T>>;
@@ -22,7 +22,7 @@ export const putElement = <T extends BaseObject = BaseObject>({
     collectionElementName,
 }: CreateElementParams<T>) =>
     handleRequest({
-        url: 'collection/create',
+        url: 'collection',
         method: 'PUT',
         data: {
             element,
@@ -35,7 +35,7 @@ export const postElement = <T extends BaseObject = BaseObject>({
     collectionElementName,
 }: EditElementParams<T>) =>
     handleRequest({
-        url: 'collection/update',
+        url: 'collection',
         method: 'POST',
         data: {
             element,
@@ -45,7 +45,7 @@ export const postElement = <T extends BaseObject = BaseObject>({
 
 export const deleteElement = ({ _id, collectionElementName }: DeleteElementParams) =>
     handleRequest({
-        url: 'collection/delete',
+        url: 'collection',
         method: 'DELETE',
         params: {
             _id,
@@ -55,7 +55,7 @@ export const deleteElement = ({ _id, collectionElementName }: DeleteElementParam
 
 export const getElements = <T extends BaseObject = BaseObject>({ collectionElementName, query }: GetElementParams) =>
     handleRequest<CollectionElement<T>[]>({
-        url: 'collection/get',
+        url: 'collection',
         method: 'GET',
         params: {
             collectionElementName,
