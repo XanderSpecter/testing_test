@@ -6,10 +6,11 @@ import { ObjectId } from 'mongodb';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const { collectionName, _id, ...rest } = getBaseRequestParamsIfCorrect(req);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { collectionElementName, _id, data, ...rest } = getBaseRequestParamsIfCorrect(req);
 
         const db = await connect();
-        const collection = db.collection(collectionName);
+        const collection = db.collection(collectionElementName);
 
         if (_id) {
             const result = await collection.find({ _id: new ObjectId(_id) }).toArray();

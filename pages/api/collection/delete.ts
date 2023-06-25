@@ -6,14 +6,14 @@ import { ObjectId } from 'mongodb';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const { _id, collectionName } = getBaseRequestParamsIfCorrect(req);
+        const { _id, collectionElementName } = getBaseRequestParamsIfCorrect(req);
 
         if (!_id) {
             throw new Error(`Каво удалить то? Еблан блать. id кто указывать будет?`);
         }
 
         const db = await connect();
-        const collection = db.collection(collectionName);
+        const collection = db.collection(collectionElementName);
 
         await collection.deleteOne({
             _id: new ObjectId(_id),

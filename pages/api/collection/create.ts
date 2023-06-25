@@ -5,14 +5,12 @@ import { getBaseRequestParamsIfCorrect } from '../../../src/helpers/backendApiHe
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const { data, collectionName } = getBaseRequestParamsIfCorrect(req, true);
-
-        const { body } = data;
+        const { element, collectionElementName } = getBaseRequestParamsIfCorrect(req);
 
         const db = await connect();
-        const collection = db.collection(collectionName);
+        const collection = db.collection(collectionElementName);
 
-        await collection.insertOne({ ...body });
+        await collection.insertOne(element || {});
 
         res.status(200).end();
     } catch (e) {

@@ -1,16 +1,16 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
 export type AllowedMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export type BaseObject = Record<string, unknown>;
 
-export interface CollectionElementData<T extends BaseObject = BaseObject> {
-    _id?: ObjectId;
-    body: T;
+export interface WithcollectionElementName {
+    collectionElementName: string;
 }
 
-export interface CollectionRequestParams {
+export type CollectionElement<T extends BaseObject = BaseObject> = WithId<T>;
+
+export interface CollectionRequestParams extends WithcollectionElementName {
     _id?: ObjectId;
-    data?: CollectionElementData;
-    collectionName: string;
+    element?: CollectionElement;
 }

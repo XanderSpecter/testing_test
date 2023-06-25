@@ -9,8 +9,6 @@ export const getUrlParams = <Params extends ParsedUrlQuery = ParsedUrlQuery, Pre
     const path = resolvedUrl.split('?')[0];
     const slug = path.split('/').filter((s) => !!s);
 
-    console.log(resolvedUrl, path);
-
     return {
         resolvedUrl,
         path,

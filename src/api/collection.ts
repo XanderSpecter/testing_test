@@ -1,49 +1,64 @@
 import { ObjectId } from 'mongodb';
 import { handleRequest } from '../helpers/frontendApiHelpers';
-import { BaseObject, CollectionElementData } from '../types/apiModels';
+import { BaseObject, CollectionElement, WithcollectionElementName } from '../types/apiModels';
 
-export const createElement = <T extends BaseObject = BaseObject>(
-    data: CollectionElementData<T>,
-    collectionName: string
-) =>
+export interface CreateElementParams<T extends BaseObject = BaseObject> extends WithcollectionElementName {
+    element?: Partial<CollectionElement<T>>;
+}
+export interface EditElementParams<T extends BaseObject = BaseObject> extends WithcollectionElementName {
+    element: CollectionElement<T>;
+}
+
+export interface DeleteElementParams extends WithcollectionElementName {
+    _id: ObjectId;
+}
+
+export interface GetElementParams extends WithcollectionElementName {
+    query?: BaseObject;
+}
+
+export const createElement = <T extends BaseObject = BaseObject>({
+    element,
+    collectionElementName,
+}: CreateElementParams<T>) =>
     handleRequest({
         url: 'collection/create',
         method: 'PUT',
         data: {
-            data,
-            collectionName,
+            element,
+            collectionElementName,
         },
     });
 
-export const updateElement = <T extends BaseObject = BaseObject>(
-    data: CollectionElementData<T>,
-    collectionName: string
-) =>
+export const updateElement = <T extends BaseObject = BaseObject>({
+    element,
+    collectionElementName,
+}: EditElementParams<T>) =>
     handleRequest({
         url: 'collection/update',
         method: 'POST',
         data: {
-            data,
-            collectionName,
+            element,
+            collectionElementName,
         },
     });
 
-export const deleteElement = (_id: ObjectId, collectionName: string) =>
+export const deleteElement = ({ _id, collectionElementName }: DeleteElementParams) =>
     handleRequest({
         url: 'collection/delete',
         method: 'DELETE',
         params: {
             _id,
-            collectionName,
+            collectionElementName,
         },
     });
 
-export const getElements = <T extends BaseObject = BaseObject>(collectionName: string, searchParams?: BaseObject) =>
-    handleRequest<CollectionElementData<T>[]>({
+export const getElements = <T extends BaseObject = BaseObject>({ collectionElementName, query }: GetElementParams) =>
+    handleRequest<CollectionElement<T>[]>({
         url: 'collection/get',
         method: 'GET',
         params: {
-            collectionName,
-            ...searchParams,
+            collectionElementName,
+            ...query,
         },
     });

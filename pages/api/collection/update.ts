@@ -6,23 +6,23 @@ import { ObjectId } from 'mongodb';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const { data, collectionName } = getBaseRequestParamsIfCorrect(req, true);
+        const { element, collectionElementName } = getBaseRequestParamsIfCorrect(req, true);
 
-        const { body, _id } = data;
+        const { _id, ...rest } = element;
 
         if (!_id) {
             throw new Error(`Ты ебанушка? Как блять обновить элемент без id?`);
         }
 
         const db = await connect();
-        const collection = db.collection(collectionName);
+        const collection = db.collection(collectionElementName);
 
         await collection.updateOne(
             {
                 _id: new ObjectId(_id),
             },
             {
-                $set: { ...body },
+                $set: { ...rest },
             }
         );
 
