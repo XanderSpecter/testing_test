@@ -15,14 +15,13 @@ import { CollectionElementData } from '../../../src/types/apiModels';
 import { getUrlParams } from '../../../src/helpers/serverRenderHelpers/getUrlParams';
 import useUrl from '../../../src/hooks/utils/useUrl';
 
-const RecordsList: NextPage = () => {
+const PageList: NextPage = () => {
     const { slug } = useUrl();
 
-    const collectionName = slug[slug.length - 1];
+    const collectionElementName = slug[slug.length - 1];
 
     const { elementsList, isLoading, refetchElementsList } = useElements({
-        collectionName: `${collectionName}s`,
-        collectionElementName: collectionName,
+        collectionElementName,
     });
 
     const [isFetching, setIsFetching] = useState(false);
@@ -30,7 +29,7 @@ const RecordsList: NextPage = () => {
     const addRecord = async () => {
         setIsFetching(true);
 
-        await createElement({ body: { name: uuid(), key: 'value' } }, 'records');
+        await createElement({ body: { name: uuid(), key: 'value' } }, collectionElementName);
 
         setIsFetching(false);
         refetchElementsList();
@@ -39,7 +38,10 @@ const RecordsList: NextPage = () => {
     const updateRecord = async (record: CollectionElementData) => {
         setIsFetching(true);
 
-        await updateElement({ _id: record._id, body: { ...record.body, name: `updated-${uuid()}` } }, 'records');
+        await updateElement(
+            { _id: record._id, body: { ...record.body, name: `updated-${uuid()}` } },
+            collectionElementName
+        );
 
         setIsFetching(false);
         refetchElementsList();
@@ -48,7 +50,7 @@ const RecordsList: NextPage = () => {
     const deleteRecord = async (_id: CollectionElementData['_id']) => {
         setIsFetching(true);
 
-        await deleteElement(_id as ObjectId, 'records');
+        await deleteElement(_id as ObjectId, collectionElementName);
 
         setIsFetching(false);
         refetchElementsList();
@@ -82,11 +84,11 @@ const RecordsList: NextPage = () => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { slug } = getUrlParams(context);
 
-    const collectionName = slug[slug.length - 1];
+    const collectionElementName = slug[slug.length - 1];
 
     const queryClient = new QueryClient();
 
-    await queryClient.fetchQuery([`${collectionName}s`], () => getElements(`${collectionName}s`));
+    await queryClient.fetchQuery([collectionElementName], () => getElements(collectionElementName));
 
     return {
         props: {
@@ -95,4 +97,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 };
 
-export default RecordsList;
+export default PageList;
