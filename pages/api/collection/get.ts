@@ -7,7 +7,7 @@ import { ObjectId } from 'mongodb';
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { collectionElementName, _id, data, ...rest } = getBaseRequestParamsIfCorrect(req);
+        const { collectionElementName, _id, element, ...rest } = getBaseRequestParamsIfCorrect(req);
 
         const db = await connect();
         const collection = db.collection(collectionElementName);
