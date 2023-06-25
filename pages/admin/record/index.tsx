@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { GetServerSideProps, NextPage } from 'next';
 import { useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { ObjectId } from 'mongodb';
@@ -11,9 +12,18 @@ import { useElements } from '../../../src/hooks/api/useElements';
 import PageContainer from '../../../src/components/base/PageContainer';
 import FullScreenLoader from '../../../src/components/base/FullScreenLoader';
 import { CollectionElementData } from '../../../src/types/apiModels';
+import { getUrlParams } from '../../../src/helpers/serverRenderHelpers/getUrlParams';
+import useUrl from '../../../src/hooks/utils/useUrl';
 
-const RecordsList = () => {
-    const { data, isLoading, refetch } = useElements();
+const RecordsList: NextPage = () => {
+    const { slug } = useUrl();
+
+    const collectionName = slug[slug.length - 1];
+
+    const { elementsList, isLoading, refetchElementsList } = useElements({
+        collectionName: `${collectionName}s`,
+        collectionElementName: collectionName,
+    });
 
     const [isFetching, setIsFetching] = useState(false);
 
@@ -23,7 +33,7 @@ const RecordsList = () => {
         await createElement({ body: { name: uuid(), key: 'value' } }, 'records');
 
         setIsFetching(false);
-        refetch();
+        refetchElementsList();
     };
 
     const updateRecord = async (record: CollectionElementData) => {
@@ -32,7 +42,7 @@ const RecordsList = () => {
         await updateElement({ _id: record._id, body: { ...record.body, name: `updated-${uuid()}` } }, 'records');
 
         setIsFetching(false);
-        refetch();
+        refetchElementsList();
     };
 
     const deleteRecord = async (_id: CollectionElementData['_id']) => {
@@ -41,7 +51,7 @@ const RecordsList = () => {
         await deleteElement(_id as ObjectId, 'records');
 
         setIsFetching(false);
-        refetch();
+        refetchElementsList();
     };
 
     return (
@@ -52,7 +62,7 @@ const RecordsList = () => {
             </Head>
             <PageContainer>
                 <FullScreenLoader show={isLoading || isFetching} />
-                {data?.map((record) => (
+                {elementsList?.map((record) => (
                     <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center' }} key={String(record._id)}>
                         {JSON.stringify(record)}
                         <div style={{ marginLeft: '8px' }}>
@@ -69,10 +79,14 @@ const RecordsList = () => {
     );
 };
 
-export const getServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { slug } = getUrlParams(context);
+
+    const collectionName = slug[slug.length - 1];
+
     const queryClient = new QueryClient();
 
-    await queryClient.fetchQuery(['records'], () => getElements('records'));
+    await queryClient.fetchQuery([`${collectionName}s`], () => getElements(`${collectionName}s`));
 
     return {
         props: {

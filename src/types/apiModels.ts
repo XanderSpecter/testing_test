@@ -4,9 +4,9 @@ export type AllowedMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export type BaseObject = Record<string, unknown>;
 
-export interface CollectionElementData {
+export interface CollectionElementData<T extends BaseObject = BaseObject> {
     _id?: ObjectId;
-    body: BaseObject;
+    body: T;
 }
 
 export interface CollectionRequestParams {

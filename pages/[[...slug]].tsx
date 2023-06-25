@@ -6,6 +6,8 @@ import useUrl from '../src/hooks/utils/useUrl';
 export default function Home() {
     const urlData = useUrl();
 
+    console.log(urlData);
+
     return (
         <div>
             <Head>

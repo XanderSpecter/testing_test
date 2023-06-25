@@ -1,8 +1,11 @@
 import { ObjectId } from 'mongodb';
 import { handleRequest } from '../helpers/frontendApiHelpers';
-import { CollectionElementData } from '../types/apiModels';
+import { BaseObject, CollectionElementData } from '../types/apiModels';
 
-export const createElement = (data: CollectionElementData, collectionName: string) =>
+export const createElement = <T extends BaseObject = BaseObject>(
+    data: CollectionElementData<T>,
+    collectionName: string
+) =>
     handleRequest({
         url: 'collection/create',
         method: 'PUT',
@@ -12,7 +15,10 @@ export const createElement = (data: CollectionElementData, collectionName: strin
         },
     });
 
-export const updateElement = (data: CollectionElementData, collectionName: string) =>
+export const updateElement = <T extends BaseObject = BaseObject>(
+    data: CollectionElementData<T>,
+    collectionName: string
+) =>
     handleRequest({
         url: 'collection/update',
         method: 'POST',
@@ -32,11 +38,12 @@ export const deleteElement = (_id: ObjectId, collectionName: string) =>
         },
     });
 
-export const getElements = (collectionName: string) =>
-    handleRequest<CollectionElementData[]>({
+export const getElements = <T extends BaseObject = BaseObject>(collectionName: string, searchParams?: BaseObject) =>
+    handleRequest<CollectionElementData<T>[]>({
         url: 'collection/get',
         method: 'GET',
         params: {
             collectionName,
+            ...searchParams,
         },
     });

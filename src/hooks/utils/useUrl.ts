@@ -6,14 +6,17 @@ const useUrl = () => {
 
     const {
         query: { slug, ...rest },
+        asPath,
     } = router;
 
-    const path = useMemo(() => (Array.isArray(slug) ? slug.join('/') : slug), [slug]);
+    const path = useMemo(() => asPath.split('?')[0], [asPath]);
+    const computedSlug = useMemo(() => path.split('/').filter((s) => !!s), [path]);
 
     return {
-        path: path || '',
-        slug,
-        params: { ...rest },
+        resolvedUrl: asPath,
+        path,
+        slug: slug || computedSlug,
+        query: { ...rest },
     };
 };
 
