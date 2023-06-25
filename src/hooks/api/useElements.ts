@@ -3,9 +3,9 @@ import { MutationFunction, useMutation, useQuery } from '@tanstack/react-query';
 
 import {
     getElements,
-    createElement,
+    putElement,
     EditElementParams,
-    updateElement,
+    postElement,
     CreateElementParams,
     DeleteElementParams,
     deleteElement,
@@ -24,7 +24,7 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
     } = useQuery([collectionElementName], () => getElements<T>({ collectionElementName, query }));
 
     const { mutate: createElementMutation, isLoading: isCreateElementLoading } = useMutation(
-        createElement as MutationFunction<void, CreateElementParams<T>>,
+        putElement as MutationFunction<void, CreateElementParams<T>>,
         {
             onSuccess: () => {
                 refetchElementsList();
@@ -33,7 +33,7 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
     );
 
     const { mutate: updateElementMutation, isLoading: isUpdateElementLoading } = useMutation(
-        updateElement as MutationFunction<void, EditElementParams<T>>,
+        postElement as MutationFunction<void, EditElementParams<T>>,
         {
             onSuccess: () => {
                 refetchElementsList();
@@ -50,11 +50,11 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
         }
     );
 
-    const addElement = (element?: Partial<CollectionElement<T>>) => {
+    const createElement = (element?: Partial<CollectionElement<T>>) => {
         createElementMutation({ element, collectionElementName });
     };
 
-    const editElement = (element: CollectionElement<T>) => {
+    const updateElement = (element: CollectionElement<T>) => {
         updateElementMutation({ element, collectionElementName });
     };
 
@@ -66,8 +66,8 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
         isLoading: isListLoading || isCreateElementLoading || isUpdateElementLoading || isDeleteElementLoading,
         elementsList,
         refetchElementsList,
-        addElement,
-        editElement,
+        createElement,
+        updateElement,
         removeElement,
     };
 };

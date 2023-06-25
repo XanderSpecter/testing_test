@@ -17,7 +17,7 @@ export interface GetElementParams extends WithcollectionElementName {
     query?: BaseObject;
 }
 
-export const createElement = <T extends BaseObject = BaseObject>({
+export const putElement = <T extends BaseObject = BaseObject>({
     element,
     collectionElementName,
 }: CreateElementParams<T>) =>
@@ -30,7 +30,7 @@ export const createElement = <T extends BaseObject = BaseObject>({
         },
     });
 
-export const updateElement = <T extends BaseObject = BaseObject>({
+export const postElement = <T extends BaseObject = BaseObject>({
     element,
     collectionElementName,
 }: EditElementParams<T>) =>

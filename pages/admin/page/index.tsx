@@ -17,7 +17,7 @@ const PageList: NextPage = () => {
 
     const collectionElementName = slug[slug.length - 1];
 
-    const { elementsList, isLoading, addElement, editElement, removeElement } = useElements({
+    const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
         collectionElementName,
         query,
     });
@@ -34,7 +34,7 @@ const PageList: NextPage = () => {
                     <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center' }} key={String(record._id)}>
                         {JSON.stringify(record)}
                         <div style={{ marginLeft: '8px' }}>
-                            <Button onClick={() => editElement({ ...record, name: `updated-${uuid()}` })}>
+                            <Button onClick={() => updateElement({ ...record, name: `updated-${uuid()}` })}>
                                 Обновить
                             </Button>
                         </div>
@@ -43,7 +43,7 @@ const PageList: NextPage = () => {
                         </div>
                     </div>
                 ))}
-                <Button onClick={() => addElement()}>Добавить</Button>
+                <Button onClick={() => createElement()}>Добавить</Button>
             </PageContainer>
         </div>
     );
