@@ -5,15 +5,14 @@ import {
     putCollectionSchema,
 } from '@/backend/requestSchemas';
 import createHandler from '@/backend/utils/createHandler';
-import { connect } from '@/db';
+import { collectionConnect } from '@/db';
 import { CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
 
 export const GET = createHandler(async (params: CollectionRequestParams) => {
     const { _id, collectionElementName, ...rest } = params;
 
-    const db = await connect();
-    const collection = db.collection(collectionElementName);
+    const collection = await collectionConnect(collectionElementName);
 
     if (_id) {
         const result = await collection.find({ _id: new ObjectId(_id) }).toArray();
@@ -31,8 +30,7 @@ export const POST = createHandler(async (params: CollectionPostRequestParams) =>
 
     const { _id, ...rest } = element;
 
-    const db = await connect();
-    const collection = db.collection(collectionElementName);
+    const collection = await collectionConnect(collectionElementName);
 
     await collection.updateOne(
         {
@@ -49,8 +47,7 @@ export const POST = createHandler(async (params: CollectionPostRequestParams) =>
 export const PUT = createHandler(async (params: CollectionRequestParams) => {
     const { collectionElementName, element } = params;
 
-    const db = await connect();
-    const collection = db.collection(collectionElementName);
+    const collection = await collectionConnect(collectionElementName);
 
     await collection.insertOne(element || {});
 
@@ -60,8 +57,7 @@ export const PUT = createHandler(async (params: CollectionRequestParams) => {
 export const DELETE = createHandler(async (params: CollectionRequestParams) => {
     const { collectionElementName, _id } = params;
 
-    const db = await connect();
-    const collection = db.collection(collectionElementName);
+    const collection = await collectionConnect(collectionElementName);
 
     await collection.deleteOne({
         _id: new ObjectId(_id),

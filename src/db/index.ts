@@ -8,3 +8,10 @@ export async function connect() {
 
     return db;
 }
+
+export async function collectionConnect(name: string) {
+    const db = await connect();
+    const collection = db.collection(name);
+
+    return collection;
+}

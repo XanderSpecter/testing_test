@@ -1,3 +1,5 @@
+'use client';
+
 import { ObjectId } from 'mongodb';
 import { MutationFunction, useMutation, useQuery } from '@tanstack/react-query';
 
