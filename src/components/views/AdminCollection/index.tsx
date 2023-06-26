@@ -5,11 +5,16 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
 import { Button } from 'antd';
-import { Collection } from '@/types/apiModels';
+import { BaseObject, Collection } from '@/types/apiModels';
 
-export default function AdminCollection({ collectionElementName }: Collection) {
+interface AdminCollectionProps extends Collection {
+    query: BaseObject;
+}
+
+export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
         collectionElementName,
+        query,
     });
 
     return (

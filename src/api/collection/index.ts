@@ -53,7 +53,10 @@ export const deleteElement = ({ _id, collectionElementName }: DeleteElementParam
         },
     });
 
-export const getElements = <T extends BaseObject = BaseObject>({ collectionElementName, query }: GetElementParams) =>
+export const getElements = <T extends BaseObject = BaseObject>({
+    collectionElementName,
+    query = {},
+}: GetElementParams) =>
     handleRequest<CollectionElement<T>[]>({
         url: 'collection',
         method: 'GET',
