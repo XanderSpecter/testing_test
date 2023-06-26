@@ -14,7 +14,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     const { collectionElementName } = params;
 
     const queryClient = getQueryClient();
-    await queryClient.prefetchQuery(['page'], () => getElements({ collectionElementName }));
+    await queryClient.prefetchQuery([collectionElementName], () => getElements({ collectionElementName }));
     const dehydratedState = dehydrate(queryClient);
 
     return (
