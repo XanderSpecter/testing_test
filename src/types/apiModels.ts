@@ -4,19 +4,19 @@ export type PossibleMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export type BaseObject = Record<string, unknown>;
 
-export interface WithcollectionElementName extends BaseObject {
+export interface Collection extends BaseObject {
     collectionElementName: string;
 }
 
 export type CollectionElement<T extends BaseObject = BaseObject> = WithId<T>;
 
-export interface CollectionRequestParams extends WithcollectionElementName {
+export interface CollectionRequestParams extends Collection {
     _id?: ObjectId;
     element?: CollectionElement;
     [key: string]: unknown;
 }
 
-export interface CollectionPostRequestParams extends WithcollectionElementName {
+export interface CollectionPostRequestParams extends Collection {
     _id: ObjectId;
     element: CollectionElement;
     [key: string]: unknown;

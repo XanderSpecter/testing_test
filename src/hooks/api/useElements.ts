@@ -12,9 +12,9 @@ import {
     DeleteElementParams,
     deleteElement,
 } from '../../api/collection';
-import { BaseObject, CollectionElement, WithcollectionElementName } from '../../types/apiModels';
+import { BaseObject, CollectionElement, Collection } from '../../types/apiModels';
 
-interface UseElementsParams extends WithcollectionElementName {
+interface UseElementsParams extends Collection {
     query?: BaseObject;
 }
 
@@ -66,7 +66,7 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
 
     return {
         isLoading: isListLoading || isCreateElementLoading || isUpdateElementLoading || isDeleteElementLoading,
-        elementsList,
+        elementsList: elementsList || [],
         refetchElementsList,
         createElement,
         updateElement,

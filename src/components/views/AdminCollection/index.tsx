@@ -5,10 +5,11 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
 import { Button } from 'antd';
+import { Collection } from '@/types/apiModels';
 
-export default function View() {
+export default function AdminCollection({ collectionElementName }: Collection) {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
-        collectionElementName: 'page',
+        collectionElementName,
     });
 
     return (

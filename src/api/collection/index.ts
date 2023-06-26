@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb';
-import { BaseObject, CollectionElement, WithcollectionElementName } from '../../types/apiModels';
+import { BaseObject, CollectionElement, Collection } from '../../types/apiModels';
 import { handleRequest } from '../utils/handleRequest';
 
-export interface CreateElementParams<T extends BaseObject = BaseObject> extends WithcollectionElementName {
+export interface CreateElementParams<T extends BaseObject = BaseObject> extends Collection {
     element?: Partial<CollectionElement<T>>;
 }
-export interface EditElementParams<T extends BaseObject = BaseObject> extends WithcollectionElementName {
+export interface EditElementParams<T extends BaseObject = BaseObject> extends Collection {
     element: CollectionElement<T>;
 }
 
-export interface DeleteElementParams extends WithcollectionElementName {
+export interface DeleteElementParams extends Collection {
     _id: ObjectId;
 }
 
-export interface GetElementParams extends WithcollectionElementName {
+export interface GetElementParams extends Collection {
     query?: BaseObject;
 }
 
@@ -21,7 +21,7 @@ export const putElement = <T extends BaseObject = BaseObject>({
     element,
     collectionElementName,
 }: CreateElementParams<T>) =>
-    handleRequest({
+    handleRequest<void>({
         url: 'collection',
         method: 'PUT',
         data: {
@@ -34,7 +34,7 @@ export const postElement = <T extends BaseObject = BaseObject>({
     element,
     collectionElementName,
 }: EditElementParams<T>) =>
-    handleRequest({
+    handleRequest<void>({
         url: 'collection',
         method: 'POST',
         data: {
@@ -44,7 +44,7 @@ export const postElement = <T extends BaseObject = BaseObject>({
     });
 
 export const deleteElement = ({ _id, collectionElementName }: DeleteElementParams) =>
-    handleRequest({
+    handleRequest<void>({
         url: 'collection',
         method: 'DELETE',
         params: {

@@ -22,7 +22,7 @@ export const GET = createHandler(async (params: CollectionRequestParams) => {
 
     const result = await collection.find({ ...rest }).toArray();
 
-    return result;
+    return result || [];
 }, getCollectionSchema);
 
 export const POST = createHandler(async (params: CollectionPostRequestParams) => {
