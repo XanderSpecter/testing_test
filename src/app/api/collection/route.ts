@@ -3,7 +3,7 @@ import {
     getCollectionSchema,
     postCollectionSchema,
     putCollectionSchema,
-} from '@/backend/requestSchemas';
+} from '@/backend/requestSchemas/collection';
 import createHandler from '@/backend/utils/createHandler';
 import { collectionConnect } from '@/db';
 import { CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';

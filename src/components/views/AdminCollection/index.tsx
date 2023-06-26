@@ -1,9 +1,10 @@
 'use client';
 
+import { v4 as uuid } from 'uuid';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
+
 import { Button } from 'antd';
-import { v4 as uuid } from 'uuid';
 
 export default function View() {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({

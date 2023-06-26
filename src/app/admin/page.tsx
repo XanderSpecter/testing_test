@@ -1,8 +1,8 @@
 import { getElements } from '@/api/collection';
+import View from '@/components/views/AdminCollection';
 import getQueryClient from '@/utils/getQueryClient';
 import Hydrate from '@/utils/hidrateClient';
 import { dehydrate } from '@tanstack/query-core';
-import View from './View';
 
 export default async function Admin() {
     const queryClient = getQueryClient();
