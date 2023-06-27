@@ -10,8 +10,8 @@ import { BaseObject } from '@/types/apiModels';
  * @returns `Response` с результатом выполнения из хендлера или с ошибкой, если что-то пошло не так.
  */
 const createHandler =
-    <Params extends BaseObject = BaseObject, Response = unknown>(
-        handler: (params: Params) => Promise<Response>,
+    <Params extends BaseObject = BaseObject, ResponseData = unknown>(
+        handler: (params: Params) => Promise<ResponseData>,
         requestValidationSchema: ValidateRequestSchema
     ) =>
     async (req: NextRequest) => {
@@ -22,7 +22,7 @@ const createHandler =
 
             const result = await handler(params);
 
-            const response = new NextResponse<Response>(JSON.stringify(result), {
+            const response = new NextResponse<ResponseData>(JSON.stringify(result), {
                 status: 200,
             });
 
