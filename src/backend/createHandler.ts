@@ -3,6 +3,7 @@ import validateRequestParams from './validateRequestParams';
 import parseRequest from './parseRequest';
 import { BaseObject } from '@/types/apiModels';
 import { ValidateSchema } from '@/utils/validation/validateSchema';
+import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
 
 /**
  * Инкапсулирует логику обработки `Request` и возврата `Response`, а также обработку ошибок и валидацию параметров.
@@ -19,16 +20,23 @@ const createHandler =
         try {
             const { params, method } = await parseRequest<Params>(req);
 
-            validateRequestParams({ ...params, method }, requestValidationSchema);
+            const { collectionElementName } = params;
+
+            const extraSchemas = AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.schemas;
+
+            validateRequestParams(
+                { ...params, method },
+                extraSchemas && extraSchemas[method]
+                    ? { ...requestValidationSchema, ...extraSchemas[method] }
+                    : requestValidationSchema
+            );
 
             const result = await handler(params);
 
-            const response = new NextResponse<ResponseData>(JSON.stringify(result), {
+            return NextResponse.json(result, {
                 status: 200,
                 statusText: 'GOOD BOY!',
             });
-
-            return response;
         } catch (e) {
             let message = '';
             let status = 500;
@@ -40,12 +48,13 @@ const createHandler =
                 statusText = 'FUCK YOU!';
             }
 
-            const response = new NextResponse(JSON.stringify({ message }), {
-                status,
-                statusText,
-            });
-
-            return response;
+            return NextResponse.json(
+                { message },
+                {
+                    status,
+                    statusText,
+                }
+            );
         }
     };
 

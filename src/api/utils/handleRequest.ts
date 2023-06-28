@@ -30,5 +30,7 @@ export const handleRequest = async <T>(request: AxiosRequestConfig) => {
         return data;
     } catch (e) {
         console.log(e);
+
+        return null;
     }
 };

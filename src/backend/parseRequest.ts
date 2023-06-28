@@ -1,4 +1,4 @@
-import { BaseObject } from '@/types/apiModels';
+import { BaseObject, PossibleMethod } from '@/types/apiModels';
 import { NextRequest } from 'next/server';
 
 const parseRequest = async <T extends BaseObject = BaseObject>(req: NextRequest) => {
@@ -16,7 +16,7 @@ const parseRequest = async <T extends BaseObject = BaseObject>(req: NextRequest)
 
     return {
         params: params as T,
-        method,
+        method: method as PossibleMethod,
     };
 };
 

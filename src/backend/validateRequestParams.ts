@@ -10,8 +10,10 @@ const validateRequestParams = (params: BaseObject, schema: ValidateSchema) => {
         let message = '';
 
         errorValues.forEach((v, i) => {
-            if (i >= errorValues.length) {
+            if (i >= errorValues.length - 1) {
                 message += v;
+
+                return;
             }
 
             message += `${v}, `;

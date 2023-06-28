@@ -7,6 +7,7 @@ import getQueryClient from '@/utils/queryClient/getQueryClient';
 import Hydrate from '@/utils/queryClient/hidrateClient';
 import { BaseObject, Collection } from '@/types/apiModels';
 import { DEFAULT_APP_TITLE } from '@/constants/appParams';
+import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
 
 interface CollectionPageProps {
     params: Collection;
@@ -16,8 +17,10 @@ interface CollectionPageProps {
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
     const { collectionElementName } = params;
 
+    const collectionTitle = AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.title;
+
     return {
-        title: `Коллекция-${collectionElementName}-${DEFAULT_APP_TITLE}`,
+        title: `${collectionTitle}-${DEFAULT_APP_TITLE}`,
     };
 }
 
