@@ -2,8 +2,8 @@ import { dehydrate } from '@tanstack/query-core';
 
 import { getElements } from '@/api/collection';
 import AdminCollection from '@/components/views/AdminCollection';
-import getQueryClient from '@/utils/getQueryClient';
-import Hydrate from '@/utils/hidrateClient';
+import getQueryClient from '@/utils/queryClient/getQueryClient';
+import Hydrate from '@/utils/queryClient/hidrateClient';
 import { BaseObject, Collection } from '@/types/apiModels';
 
 interface CollectionPageProps {

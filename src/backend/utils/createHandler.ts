@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import validateRequestParams, { ValidateRequestSchema } from './validateRequestParams';
+import validateRequestParams from './validateRequestParams';
 import parseRequest from './parseRequest';
 import { BaseObject } from '@/types/apiModels';
+import { ValidateSchema } from '@/utils/validation/validateSchema';
 
 /**
  * Инкапсулирует логику обработки `Request` и возврата `Response`, а также обработку ошибок и валидацию параметров.
@@ -12,7 +13,7 @@ import { BaseObject } from '@/types/apiModels';
 const createHandler =
     <Params extends BaseObject = BaseObject, ResponseData = unknown>(
         handler: (params: Params) => Promise<ResponseData>,
-        requestValidationSchema: ValidateRequestSchema
+        requestValidationSchema: ValidateSchema
     ) =>
     async (req: NextRequest) => {
         try {
@@ -24,12 +25,24 @@ const createHandler =
 
             const response = new NextResponse<ResponseData>(JSON.stringify(result), {
                 status: 200,
+                statusText: 'GOOD BOY!',
             });
 
             return response;
         } catch (e) {
-            const response = new NextResponse(JSON.stringify({ message: (e as Error)?.message }), {
-                status: 500,
+            let message = '';
+            let status = 500;
+            let statusText = 'OH, SHIT, IM SORRY';
+
+            if ((e as Error)?.message) {
+                message = (e as Error).message;
+                status = 400;
+                statusText = 'FUCK YOU!';
+            }
+
+            const response = new NextResponse(JSON.stringify({ message }), {
+                status,
+                statusText,
             });
 
             return response;

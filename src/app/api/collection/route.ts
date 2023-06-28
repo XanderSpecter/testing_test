@@ -1,3 +1,4 @@
+import { ELEMENT_EXIXTS_ERROR } from '@/backend/messages/errorMessages';
 import {
     deleteCollectionSchema,
     getCollectionSchema,
@@ -5,6 +6,7 @@ import {
     putCollectionSchema,
 } from '@/backend/requestSchemas/collection';
 import createHandler from '@/backend/utils/createHandler';
+import { checkIsElementExists } from '@/backend/utils/dbHelpers';
 import { collectionConnect } from '@/db';
 import { CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
@@ -44,10 +46,18 @@ export const POST = createHandler(async (params: CollectionPostRequestParams) =>
     return;
 }, postCollectionSchema);
 
-export const PUT = createHandler(async (params: CollectionRequestParams) => {
+export const PUT = createHandler(async (params: CollectionPostRequestParams) => {
     const { collectionElementName, element } = params;
 
     const collection = await collectionConnect(collectionElementName);
+
+    const { name } = element;
+
+    const isElementExists = await checkIsElementExists(collection, { name });
+
+    if (isElementExists) {
+        throw new Error(ELEMENT_EXIXTS_ERROR);
+    }
 
     await collection.insertOne(element || {});
 

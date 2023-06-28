@@ -1,37 +1,23 @@
 import { BaseObject } from '@/types/apiModels';
+import validateSchema, { ValidateSchema } from '@/utils/validation/validateSchema';
 
-/**
- * В схеме передаём обработчики валидации для полей,
- * обработчик должен вернуть строку с ошибкой или `null`, если всё ок
- */
-export interface ValidateRequestSchema {
-    [key: string]: (value?: unknown) => string | null;
-}
+const validateRequestParams = (params: BaseObject, schema: ValidateSchema) => {
+    const errors = validateSchema(params, schema);
 
-const validateRequestParams = (params: BaseObject, schema: ValidateRequestSchema) => {
-    const applyValidators = (key: string) => {
-        const validate = schema[key];
+    if (errors) {
+        const errorValues = Object.values(errors);
 
-        if (key.includes('.')) {
-            const keyData = key.split('.');
-            const objKey = keyData[0];
+        let message = '';
 
-            if (typeof params[objKey] === 'object') {
-                const subKey = keyData[1];
-
-                return validate((params[objKey] as BaseObject)[subKey]);
+        errorValues.forEach((v, i) => {
+            if (i >= errorValues.length) {
+                message += v;
             }
-        }
 
-        return validate(params[key]);
-    };
+            message += `${v}, `;
+        });
 
-    const validationCheck = Object.keys(schema).map(applyValidators);
-
-    const errors = validationCheck.filter((v) => v && typeof v === 'string');
-
-    if (errors && errors.length) {
-        throw new Error(errors.join('|'));
+        throw new Error(message);
     }
 };
 

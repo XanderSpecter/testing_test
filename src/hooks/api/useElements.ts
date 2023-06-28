@@ -6,9 +6,9 @@ import { MutationFunction, useMutation, useQuery } from '@tanstack/react-query';
 import {
     getElements,
     putElement,
-    EditElementParams,
-    postElement,
     CreateElementParams,
+    UpdateElementParams,
+    postElement,
     DeleteElementParams,
     deleteElement,
 } from '../../api/collection';
@@ -35,7 +35,7 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
     );
 
     const { mutate: updateElementMutation, isLoading: isUpdateElementLoading } = useMutation(
-        postElement as MutationFunction<void, EditElementParams<T>>,
+        postElement as MutationFunction<void, UpdateElementParams<T>>,
         {
             onSuccess: () => {
                 refetchElementsList();
@@ -52,7 +52,7 @@ export const useElements = <T extends BaseObject = BaseObject>({ collectionEleme
         }
     );
 
-    const createElement = (element?: Partial<CollectionElement<T>>) => {
+    const createElement = (element: Partial<CollectionElement<T>>) => {
         createElementMutation({ element, collectionElementName });
     };
 

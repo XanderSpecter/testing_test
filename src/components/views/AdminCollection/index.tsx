@@ -33,7 +33,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
                     </div>
                 </div>
             ))}
-            <Button onClick={() => createElement()}>Добавить</Button>
+            <Button onClick={() => createElement({})}>Добавить</Button>
         </>
     );
 }

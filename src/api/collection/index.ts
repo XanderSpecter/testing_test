@@ -3,9 +3,9 @@ import { BaseObject, CollectionElement, Collection } from '../../types/apiModels
 import { handleRequest } from '../utils/handleRequest';
 
 export interface CreateElementParams<T extends BaseObject = BaseObject> extends Collection {
-    element?: Partial<CollectionElement<T>>;
+    element: Partial<CollectionElement<T>>;
 }
-export interface EditElementParams<T extends BaseObject = BaseObject> extends Collection {
+export interface UpdateElementParams<T extends BaseObject = BaseObject> extends Collection {
     element: CollectionElement<T>;
 }
 
@@ -33,7 +33,7 @@ export const putElement = <T extends BaseObject = BaseObject>({
 export const postElement = <T extends BaseObject = BaseObject>({
     element,
     collectionElementName,
-}: EditElementParams<T>) =>
+}: UpdateElementParams<T>) =>
     handleRequest<void>({
         url: 'collection',
         method: 'POST',
