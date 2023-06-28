@@ -1,4 +1,4 @@
-import Providers from '@/utils/providers';
+import Providers from '@/utils/appProviders';
 import PageContainer from '@/components/base/PageContainer';
 
 import '../styles/reset.css';
