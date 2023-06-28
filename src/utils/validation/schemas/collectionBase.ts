@@ -6,7 +6,7 @@ import {
     ELEMENT_NAME_ERROR,
     UPDATE_ID_ERROR,
     getWrongMethodError,
-} from '../messages/errorMessages';
+} from '../../../backend/messages/errorMessages';
 
 export const getCollectionSchema: ValidateSchema = {
     method: (v) => (v === 'GET' ? null : getWrongMethodError(v, 'GET')),

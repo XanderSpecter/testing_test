@@ -4,7 +4,7 @@ import {
     getCollectionSchema,
     postCollectionSchema,
     putCollectionSchema,
-} from '@/backend/requestSchemas/collection';
+} from '@/utils/validation/schemas/collectionBase';
 import createHandler from '@/backend/utils/createHandler';
 import { checkIsElementExists } from '@/backend/utils/dbHelpers';
 import { collectionConnect } from '@/db';
