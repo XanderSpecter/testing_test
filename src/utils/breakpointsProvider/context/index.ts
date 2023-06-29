@@ -8,6 +8,10 @@ export interface Breakpoint extends BaseObject {
     screen: number;
 }
 
+export type WithBreakpoints<T> = Omit<T, 'breakpoints'> & {
+    breakpoints: Breakpoint[];
+};
+
 export const DEFAULT_BREAKPOINTS: Breakpoint[] = [
     {
         name: 'mobile',

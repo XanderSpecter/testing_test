@@ -4,6 +4,7 @@ import parseRequest from './parseRequest';
 import { BaseObject } from '@/types/apiModels';
 import { ValidateSchema } from '@/utils/validation/validateSchema';
 import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
+import { STRANGE_ERROR } from '@/utils/validation/errorMessages';
 
 /**
  * Инкапсулирует логику обработки `Request` и возврата `Response`, а также обработку ошибок и валидацию параметров.
@@ -42,7 +43,7 @@ const createHandler =
             let status = 500;
             let statusText = 'OH, SHIT, IM SORRY';
 
-            if ((e as Error)?.message) {
+            if ((e as Error)?.message && (e as Error)?.message !== STRANGE_ERROR) {
                 message = (e as Error).message;
                 status = 400;
                 statusText = 'FUCK YOU!';

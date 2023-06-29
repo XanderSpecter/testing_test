@@ -1,11 +1,14 @@
 'use client';
 
 import { v4 as uuid } from 'uuid';
+import { useMemo } from 'react';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
 import { Button } from 'antd';
 import { BaseObject, Collection } from '@/types/apiModels';
+import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
+import { Container } from '@/components/base/Grid';
 
 interface AdminCollectionProps extends Collection {
     query: BaseObject;
@@ -17,23 +20,15 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
         query,
     });
 
+    const currentCollection = useMemo(
+        () => AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName),
+        [collectionElementName]
+    );
+
     return (
-        <>
+        <Container>
             <FullScreenLoader show={isLoading} />
-            {elementsList?.map((record) => (
-                <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center' }} key={String(record._id)}>
-                    {JSON.stringify(record)}
-                    <div style={{ marginLeft: '8px' }}>
-                        <Button onClick={() => updateElement({ ...record, name: `updated-${uuid()}` })}>
-                            Обновить
-                        </Button>
-                    </div>
-                    <div style={{ marginLeft: '8px' }}>
-                        <Button onClick={() => removeElement(record._id)}>Удалить</Button>
-                    </div>
-                </div>
-            ))}
             <Button onClick={() => createElement({})}>Добавить</Button>
-        </>
+        </Container>
     );
 }

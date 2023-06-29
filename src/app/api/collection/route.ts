@@ -1,4 +1,4 @@
-import { EXISTS_ERROR } from '@/utils/validation/errorMessages';
+import { getExistsError } from '@/utils/validation/errorMessages';
 import {
     deleteCollectionSchema,
     getCollectionSchema,
@@ -8,8 +8,9 @@ import {
 import createHandler from '@/backend/createHandler';
 import { checkIsElementExists } from '@/db/helpers';
 import { collectionConnect } from '@/db';
-import { CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
+import { BaseObject, CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
+import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
 
 export const GET = createHandler(async (params: CollectionRequestParams) => {
     const { _id, collectionElementName, ...rest } = params;
@@ -52,11 +53,26 @@ export const PUT = createHandler(async (params: CollectionPostRequestParams) => 
     const collection = await collectionConnect(collectionElementName);
 
     const { name } = element;
+    const uniqueFields: BaseObject = { name };
 
-    const isElementExists = await checkIsElementExists(collection, { name });
+    const requiredUniqueFields = AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.uniqueFields;
+
+    if (Array.isArray(requiredUniqueFields) && requiredUniqueFields.length) {
+        requiredUniqueFields.forEach((field) => {
+            const value = element[field];
+
+            uniqueFields[field] = value;
+        });
+    }
+
+    const isElementExists = await checkIsElementExists(collection, { ...uniqueFields });
 
     if (isElementExists) {
-        throw new Error(EXISTS_ERROR);
+        const uniqueFieldNames = Object.keys(uniqueFields);
+
+        const errorText = getExistsError(collectionElementName, uniqueFieldNames);
+
+        throw new Error(errorText);
     }
 
     await collection.insertOne(element || {});

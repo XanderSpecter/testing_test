@@ -2,6 +2,8 @@ import { ObjectId, WithId } from 'mongodb';
 
 export type PossibleMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
+export type PossibleFieldType = 'string' | 'number' | 'boolean' | 'object' | 'array';
+
 export type BaseObject = Record<string, unknown>;
 
 export interface Collection extends BaseObject {

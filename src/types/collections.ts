@@ -7,8 +7,15 @@ interface CollectionValidationSchemas {
     DELETE?: ValidateSchema;
 }
 
+interface FieldParams {
+    title: string;
+    description?: string;
+}
+
 export interface AvailableCollection {
     name: string;
     title: string;
+    uniqueFields?: string[];
+    fieldsMapping?: Record<string, FieldParams>;
     schemas?: CollectionValidationSchemas;
 }
