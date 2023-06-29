@@ -9,6 +9,7 @@ interface CollectionValidationSchemas {
 
 interface FieldParams {
     title: string;
+    shortcut: string;
     description?: string;
 }
 

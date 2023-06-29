@@ -1,18 +1,25 @@
 'use client';
 
-import { v4 as uuid } from 'uuid';
 import { useMemo } from 'react';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import { BaseObject, Collection } from '@/types/apiModels';
 import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
-import { Container } from '@/components/base/Grid';
+import { Column, Container, Row } from '@/components/base/Grid';
+import Element from './components/Element';
 
 interface AdminCollectionProps extends Collection {
     query: BaseObject;
 }
+
+const { Title } = Typography;
+
+export const COLS = { 'desktop': 1, 'large-desktop': 1 };
+export const ELEMENT_STYLES = {
+    row: { mobile: { marginTop: '16px' } },
+};
 
 export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
@@ -25,10 +32,66 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
         [collectionElementName]
     );
 
+    const fieldsMappingKeys = Object.keys(currentCollection?.fieldsMapping || []);
+    const quantity = fieldsMappingKeys.length;
+
+    const customMaxCols = useMemo(() => ({ 'desktop': quantity + 2, 'large-desktop': quantity + 2 }), [quantity]);
+
+    const renderHeaders = () => {
+        if (!quantity) {
+            return null;
+        }
+
+        return fieldsMappingKeys.map((key) => {
+            const header = currentCollection?.fieldsMapping?.[key]?.shortcut;
+
+            if (!header) {
+                return null;
+            }
+
+            return (
+                <Column key={`headers-${key}`} cols={COLS} maxCols={customMaxCols}>
+                    <Title level={5}>{header}</Title>
+                </Column>
+            );
+        });
+    };
+
+    const renderElements = () => {
+        if (!elementsList || !elementsList.length) {
+            return (
+                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                    <Column>
+                        <Title level={5}>Здесь ничего нет</Title>
+                    </Column>
+                </Row>
+            );
+        }
+
+        return elementsList.map((e) => (
+            <Element
+                key={String(e._id)}
+                element={e}
+                customMaxCols={customMaxCols}
+                fieldsMappingKeys={fieldsMappingKeys}
+            />
+        ));
+    };
+
+    if (!quantity) {
+        return null;
+    }
+
     return (
         <Container>
             <FullScreenLoader show={isLoading} />
-            <Button onClick={() => createElement({})}>Добавить</Button>
+            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Column>
+                    <Title>{currentCollection?.title}</Title>
+                </Column>
+            </Row>
+            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>{renderHeaders()}</Row>
+            {renderElements()}
         </Container>
     );
 }

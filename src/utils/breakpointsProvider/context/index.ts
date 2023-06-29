@@ -6,6 +6,7 @@ import { createContext } from 'react';
 export interface Breakpoint extends BaseObject {
     name: string;
     screen: number;
+    maxCols: number;
 }
 
 export type WithBreakpoints<T> = Omit<T, 'breakpoints'> & {
@@ -16,14 +17,17 @@ export const DEFAULT_BREAKPOINTS: Breakpoint[] = [
     {
         name: 'mobile',
         screen: 0,
+        maxCols: 4,
     },
     {
         name: 'tablet',
         screen: 768,
+        maxCols: 12,
     },
     {
         name: 'desktop',
         screen: 1280,
+        maxCols: 12,
     },
 ];
 

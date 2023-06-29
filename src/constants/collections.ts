@@ -20,14 +20,17 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
         fieldsMapping: {
             name: {
                 title: 'Название контрольной точки',
+                shortcut: 'Имя',
                 description: 'Должно быть уникальным',
             },
             screen: {
                 title: 'Размер экрана для применения контрольной точки',
+                shortcut: 'Ширина экрана',
                 description: 'Должно быть уникальным целым положительным числом',
             },
-            cols: {
+            maxCols: {
                 title: 'Максимальное количество колонок сетки для указанной контрольной точки',
+                shortcut: 'Маск. колонок сетки',
                 description: 'Должно быть целым положительным числом',
             },
         },

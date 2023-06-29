@@ -10,7 +10,7 @@ function BreakpointsProvider({ children }: React.PropsWithChildren) {
     const hasCustomBreakpoints = elementsList && Array.isArray(elementsList) && elementsList.length > 0;
 
     const breakpoints = hasCustomBreakpoints
-        ? elementsList.map((b) => ({ name: b.name, screen: b.screen }))
+        ? elementsList.map((b) => ({ name: b.name, screen: b.screen, maxCols: b.maxCols }))
         : DEFAULT_BREAKPOINTS;
 
     return <BreakpointsContext.Provider value={breakpoints}>{children}</BreakpointsContext.Provider>;
