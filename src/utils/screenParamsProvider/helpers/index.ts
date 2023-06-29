@@ -13,7 +13,7 @@ export const calculateCurrentScreenParams = (breakpoints: Breakpoint[]): ScreenP
     let shortcut = breakpoints[0].name;
 
     breakpoints.forEach((bp) => {
-        if (clientWidth > bp.screen) {
+        if (clientWidth >= bp.screen) {
             shortcut = bp.name;
         }
     });
