@@ -4,10 +4,16 @@ import { css } from 'styled-components';
 import { CSSProperties } from 'react';
 import { camelToKebabCase } from '../textHelpers';
 
-const generateStylesByBreakpoint = (stylesByBreakpoint?: StylesByBreakpoint, breakpoints?: Breakpoint[]) => {
+const generateStylesByBreakpoint = (
+    stylesByBreakpoint?: StylesByBreakpoint,
+    breakpoints?: Breakpoint[],
+    isEditing?: boolean
+) => {
     if (!stylesByBreakpoint || !breakpoints || !breakpoints.length) {
         return css``;
     }
+
+    const queryParent = isEditing ? '@container' : '@media';
 
     let styleString = '';
 
@@ -30,7 +36,7 @@ const generateStylesByBreakpoint = (stylesByBreakpoint?: StylesByBreakpoint, bre
             breakpointStyleString += `${camelToKebabCase(key)}: ${value};\n`;
         });
 
-        styleString += `@media (min-width: ${b.screen}px) {
+        styleString += `${queryParent} (min-width: ${b.screen}px) {
             ${breakpointStyleString}
         }`;
     });
