@@ -15,6 +15,7 @@ export type CollectionElement<T extends BaseObject = BaseObject> = WithId<T>;
 export interface CollectionRequestParams extends Collection {
     _id?: ObjectId;
     element?: CollectionElement;
+    sortKey?: string;
     [key: string]: unknown;
 }
 

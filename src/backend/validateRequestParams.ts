@@ -16,7 +16,7 @@ const validateRequestParams = (params: BaseObject, schema: ValidateSchema) => {
                 return;
             }
 
-            message += `${v}, `;
+            message += `${v} | `;
         });
 
         throw new Error(message);

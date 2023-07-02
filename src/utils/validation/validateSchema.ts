@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { BaseObject } from '@/types/apiModels';
 
 /**
@@ -8,28 +9,14 @@ export interface ValidateSchema {
     [key: string]: (value?: unknown) => string | null;
 }
 
-const validateSchema = (object: BaseObject, schema: ValidateSchema) => {
-    const applyValidators = (key: string) => {
-        const validate = schema[key];
-
-        if (key.includes('.')) {
-            const keyData = key.split('.');
-            const objKey = keyData[0];
-
-            if (typeof object[objKey] === 'object') {
-                const subKey = keyData[1];
-
-                return validate((object[objKey] as BaseObject)[subKey]);
-            }
-        }
-
-        return validate(object[key]);
-    };
-
+const validateSchema = <T extends BaseObject>(object: T, schema: ValidateSchema) => {
     const errors: Record<string, string> = {};
 
     Object.keys(schema).forEach((key) => {
-        const error = applyValidators(key);
+        const validate = schema[key];
+        const value = get(object, key, null);
+
+        const error = validate(value);
 
         if (error) {
             errors[key] = error;

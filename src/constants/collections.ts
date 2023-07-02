@@ -17,21 +17,22 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
         name: 'breakpoints',
         title: 'Параметры контрольных точек размера экрана',
         uniqueFields: ['screen'],
+        defaultSortKey: 'screen',
         fieldsMapping: {
             name: {
                 title: 'Название контрольной точки',
                 shortcut: 'Имя',
-                description: 'Должно быть уникальным',
+                description: 'Должно быть уникальным.',
             },
             screen: {
                 title: 'Размер экрана для применения контрольной точки',
                 shortcut: 'Ширина экрана',
-                description: 'Должно быть уникальным целым положительным числом',
+                description: 'Должно быть уникальным целым положительным числом.',
             },
             maxCols: {
                 title: 'Максимальное количество колонок сетки для указанной контрольной точки',
                 shortcut: 'Маск. колонок сетки',
-                description: 'Должно быть целым положительным числом',
+                description: 'Должно быть целым положительным числом.',
             },
         },
         schemas: {

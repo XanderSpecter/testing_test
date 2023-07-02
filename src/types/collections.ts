@@ -16,6 +16,7 @@ interface FieldParams {
 export interface AvailableCollection {
     name: string;
     title: string;
+    defaultSortKey?: string;
     uniqueFields?: string[];
     fieldsMapping?: Record<string, FieldParams>;
     schemas?: CollectionValidationSchemas;

@@ -25,6 +25,25 @@ export const GET = createHandler(async (params: CollectionRequestParams) => {
 
     const result = await collection.find({ ...rest }).toArray();
 
+    const sortKey =
+        params.sortKey || AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.defaultSortKey;
+
+    if (result && result.length && sortKey && typeof sortKey === 'string') {
+        const sorted = result.sort((a, b) => {
+            if (a[sortKey] < b[sortKey]) {
+                return -1;
+            }
+
+            if (a[sortKey] > b[sortKey]) {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        return sorted;
+    }
+
     return result || [];
 }, getCollectionSchema);
 
