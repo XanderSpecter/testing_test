@@ -1,15 +1,15 @@
-import { ValidateSchema } from '@/utils/validation/validateSchema';
+import { ValidationSchema } from '@/utils/validation/validateSchema';
 import { getRequiredParamError, getWrongMethodError } from '../errorMessages';
-import checkIsCollectionAvailable from '@/backend/checkIsCollectionAvailable';
 import isFieldValid from '../isFieldValid';
+import { checkIsCollectionAvailable } from '@/utils/collections';
 
-export const getCollectionSchema: ValidateSchema = {
+export const getCollectionSchema: ValidationSchema = {
     method: (v) => (v === 'GET' ? null : getWrongMethodError(v, 'GET')),
     collectionElementName: (v) =>
         checkIsCollectionAvailable(v) ? null : getRequiredParamError('collectionElementName'),
 };
 
-export const putCollectionSchema: ValidateSchema = {
+export const putCollectionSchema: ValidationSchema = {
     'method': (v) => (v === 'PUT' ? null : getWrongMethodError(v, 'PUT')),
     'collectionElementName': (v) =>
         checkIsCollectionAvailable(v) ? null : getRequiredParamError('collectionElementName'),
@@ -17,7 +17,7 @@ export const putCollectionSchema: ValidateSchema = {
     'element.name': (v) => (isFieldValid(v, 'string') ? null : getRequiredParamError('element.name')),
 };
 
-export const postCollectionSchema: ValidateSchema = {
+export const postCollectionSchema: ValidationSchema = {
     'method': (v) => (v === 'POST' ? null : getWrongMethodError(v, 'POST')),
     'collectionElementName': (v) =>
         checkIsCollectionAvailable(v) ? null : getRequiredParamError('collectionElementName'),
@@ -26,7 +26,7 @@ export const postCollectionSchema: ValidateSchema = {
     'element.name': (v) => (isFieldValid(v, 'string') ? null : getRequiredParamError('element.name')),
 };
 
-export const deleteCollectionSchema: ValidateSchema = {
+export const deleteCollectionSchema: ValidationSchema = {
     method: (v) => (v === 'DELETE' ? null : getWrongMethodError(v, 'DELETE')),
     collectionElementName: (v) =>
         checkIsCollectionAvailable(v) ? null : getRequiredParamError('collectionElementName'),

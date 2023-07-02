@@ -1,7 +1,7 @@
 import { BaseObject } from '@/types/apiModels';
-import validateSchema, { ValidateSchema } from '@/utils/validation/validateSchema';
+import validateSchema, { ValidationSchema } from '@/utils/validation/validateSchema';
 
-const validateRequestParams = (params: BaseObject, schema: ValidateSchema) => {
+const validateRequestParams = (params: BaseObject, schema: ValidationSchema) => {
     const errors = validateSchema(params, schema);
 
     if (errors) {

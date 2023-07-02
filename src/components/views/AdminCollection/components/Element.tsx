@@ -1,11 +1,12 @@
 'use client';
 
+import React from 'react';
 import { Typography, Button } from 'antd';
 import { EditFilled, DeleteFilled } from '@ant-design/icons';
 import { BaseObject, CollectionElement } from '@/types/apiModels';
 import { Column, Row } from '@/components/base/Grid';
 import { ColumnProps } from '@/components/base/Grid/Column';
-import { COLS, ELEMENT_STYLES } from '..';
+import { COLS, ELEMENT_STYLES } from '../constants';
 
 interface ElementProps<T extends BaseObject> {
     fieldsMappingKeys: string[];

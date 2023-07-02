@@ -1,15 +1,16 @@
 'use client';
 
-import { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
 import { Button, Typography } from 'antd';
-import { BaseObject, Collection } from '@/types/apiModels';
-import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
+import { BaseObject, Collection, CollectionElement } from '@/types/apiModels';
 import { Column, Container, Row } from '@/components/base/Grid';
 import Element from './components/Element';
-import { StylesByBreakpoint } from '@/types/elementStyles';
+import { COLS, ELEMENT_STYLES } from './constants';
+import { getCollectionParams } from '@/utils/collections';
+import Form from './components/Form';
 
 interface AdminCollectionProps extends Collection {
     query: BaseObject;
@@ -17,34 +18,36 @@ interface AdminCollectionProps extends Collection {
 
 const { Title } = Typography;
 
-export const COLS = {
-    text: { all: 2 },
-    button: { all: 1 },
-};
-export const ELEMENT_STYLES = {
-    row: { all: { marginTop: '16px' } } as StylesByBreakpoint,
-    tableRow: {
-        all: { paddingTop: '8px', paddingBottom: '8px', borderBottom: '1px solid grey' },
-    } as StylesByBreakpoint,
-    buttonColumn: { all: { justifyContent: 'space-evenly', alignItems: 'center' } } as StylesByBreakpoint,
-    column: { all: { alignItems: 'center' } } as StylesByBreakpoint,
-};
-
 export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
         collectionElementName,
         query,
     });
 
-    const currentCollection = useMemo(
-        () => AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName),
-        [collectionElementName]
-    );
+    const [isFormOpened, setIsFormOpened] = useState(false);
+    const [selectedElement, setSelectedElement] = useState<CollectionElement | null>(null);
+
+    const currentCollection = useMemo(() => getCollectionParams(collectionElementName), [collectionElementName]);
 
     const fieldsMappingKeys = Object.keys(currentCollection?.fieldsMapping || []);
     const quantity = fieldsMappingKeys.length;
 
     const customMaxCols = useMemo(() => ({ all: quantity * 2 + 1 }), [quantity]);
+
+    const onSubmit = (element: Partial<CollectionElement>) => {
+        console.log(selectedElement, element);
+
+        setIsFormOpened(false);
+
+        if (selectedElement) {
+            updateElement({ _id: selectedElement._id, ...element });
+            setSelectedElement(null);
+
+            return;
+        }
+
+        createElement(element);
+    };
 
     const renderHeaders = () => {
         if (!quantity) {
@@ -83,8 +86,11 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
                 element={e}
                 customMaxCols={customMaxCols}
                 fieldsMappingKeys={fieldsMappingKeys}
-                onEditClick={() => {}}
-                onDeleteClick={() => {}}
+                onEditClick={() => {
+                    setSelectedElement(e);
+                    setIsFormOpened(true);
+                }}
+                onDeleteClick={() => removeElement(e._id)}
             />
         ));
     };
@@ -103,7 +109,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             </Row>
             <Row>
                 <Column>
-                    <Button type="primary" onClick={() => createElement({})}>
+                    <Button type="primary" onClick={() => setIsFormOpened(true)}>
                         Добавить
                     </Button>
                 </Column>
@@ -113,6 +119,19 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
                 <Column cols={COLS.button} maxCols={customMaxCols} />
             </Row>
             {renderElements()}
+            <Form
+                opened={isFormOpened}
+                fieldsMapping={currentCollection?.fieldsMapping}
+                element={selectedElement}
+                onSubmit={onSubmit}
+                onCancel={() => {
+                    if (selectedElement) {
+                        setSelectedElement(null);
+                    }
+
+                    setIsFormOpened(false);
+                }}
+            />
         </Container>
     );
 }

@@ -5,11 +5,11 @@ import { BaseObject } from '@/types/apiModels';
  * В схеме передаём обработчики валидации для полей,
  * обработчик должен вернуть строку с ошибкой или `null`, если всё ок
  */
-export interface ValidateSchema {
+export interface ValidationSchema {
     [key: string]: (value?: unknown) => string | null;
 }
 
-const validateSchema = <T extends BaseObject>(object: T, schema: ValidateSchema) => {
+const validateSchema = <T extends BaseObject>(object: T, schema: ValidationSchema) => {
     const errors: Record<string, string> = {};
 
     Object.keys(schema).forEach((key) => {

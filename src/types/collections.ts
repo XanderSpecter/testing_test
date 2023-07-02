@@ -1,10 +1,11 @@
-import { ValidateSchema } from '@/utils/validation/validateSchema';
+import { ValidationSchema } from '@/utils/validation/validateSchema';
+import { PossibleFieldType } from './apiModels';
 
 interface CollectionValidationSchemas {
-    GET?: ValidateSchema;
-    POST?: ValidateSchema;
-    PUT?: ValidateSchema;
-    DELETE?: ValidateSchema;
+    GET?: ValidationSchema;
+    POST?: ValidationSchema;
+    PUT?: ValidationSchema;
+    DELETE?: ValidationSchema;
 }
 
 interface FieldParams {
@@ -17,7 +18,21 @@ interface FieldParams {
      */
     shortcut: string;
     /**
-     * Описание поля. Отображается пользователю иногда, если указано.
+     * Тип поля. От этого зависит валидация, а также тип поля ввода при редактировании в форме.
+     * Для типов `array` и `object` текстовый ввод в форме недоступен. Необходимо учитывать это в валидации.
+     */
+    type: PossibleFieldType;
+    /**
+     * Обязательность поля. Влияет на валидацию при добавлении или обновлении элемента.
+     */
+    required: boolean;
+    /**
+     * Должно ли поле быть уникальным в рамках коллекции. Влияет на валидацию при добавлении или обновлении элемента на стороне бэка.
+     */
+    mustBeUnique: boolean;
+    /**
+     * Позволяет добавить пояснение о требуемом типе или обязательности поля.
+     * Отображается в подсказках в форме, а также в сообщениях об ошибках при валидации.
      */
     description?: string;
     /**
@@ -36,7 +51,7 @@ interface FieldParams {
      * По умолчанию, поле считается редактируемым, если добавлено в `fieldsMapping`.
      * При помощи этого флага можно запретить редактирование поля, но оставить его демонстрацию и описание.
      */
-    disableTextEdit?: boolean;
+    disabled?: boolean;
 }
 
 export interface AvailableCollection {
@@ -53,10 +68,6 @@ export interface AvailableCollection {
      */
     defaultSortKey?: string;
     /**
-     * Список полей коллекции, которые бэк должен проверять на уникальность перед сохранением элемента в БД.
-     */
-    uniqueFields?: string[];
-    /**
      * Описание полей коллекции.
      * Должно содержать описание тех полей, которые могут быть видны в общей таблице на странице коллекции,
      * а также доступны для прямого редактирования пользователем через текстовую форму.
@@ -66,6 +77,9 @@ export interface AvailableCollection {
     fieldsMapping?: Record<string, FieldParams>;
     /**
      * Схемы валидации полей для проверки корректности данных перед записью в БД.
+     * Для каждого из CRUD запросов прописывается отдельная схема, она расширяет базовую валидацию.
+     * Позволяет расширить валидацию, помимо базовой на тип поля и обязательность.
+     * При создании схемы, все поля должны содержать префикс `element.`, например `'element.name': validator`.
      */
-    schemas?: CollectionValidationSchemas;
+    extraSchemas?: CollectionValidationSchemas;
 }

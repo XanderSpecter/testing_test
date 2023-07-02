@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import validateRequestParams from './validateRequestParams';
 import parseRequest from './parseRequest';
 import { BaseObject } from '@/types/apiModels';
-import { ValidateSchema } from '@/utils/validation/validateSchema';
-import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
+import { ValidationSchema } from '@/utils/validation/validateSchema';
 import { STRANGE_ERROR } from '@/utils/validation/errorMessages';
+import { getValidationSchema } from '@/utils/collections';
 
 /**
  * Инкапсулирует логику обработки `Request` и возврата `Response`, а также обработку ошибок и валидацию параметров.
@@ -15,7 +15,7 @@ import { STRANGE_ERROR } from '@/utils/validation/errorMessages';
 const createHandler =
     <Params extends BaseObject = BaseObject, ResponseData = unknown>(
         handler: (params: Params) => Promise<ResponseData>,
-        requestValidationSchema: ValidateSchema
+        requestValidationSchema: ValidationSchema
     ) =>
     async (req: NextRequest) => {
         try {
@@ -23,13 +23,11 @@ const createHandler =
 
             const { collectionElementName } = params;
 
-            const extraSchemas = AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.schemas;
+            const extraSchema = getValidationSchema(collectionElementName, method);
 
             validateRequestParams(
                 { ...params, method },
-                extraSchemas && extraSchemas[method]
-                    ? { ...requestValidationSchema, ...extraSchemas[method] }
-                    : requestValidationSchema
+                extraSchema ? { ...requestValidationSchema, ...extraSchema } : requestValidationSchema
             );
 
             const result = await handler(params);

@@ -10,7 +10,7 @@ import { checkIsElementExists } from '@/db/helpers';
 import { collectionConnect } from '@/db';
 import { BaseObject, CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
-import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
+import { getCollectionParams, getRequredUniqeFields } from '@/utils/collections';
 
 export const GET = createHandler(async (params: CollectionRequestParams) => {
     const { _id, collectionElementName, ...rest } = params;
@@ -25,8 +25,7 @@ export const GET = createHandler(async (params: CollectionRequestParams) => {
 
     const result = await collection.find({ ...rest }).toArray();
 
-    const sortKey =
-        params.sortKey || AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.defaultSortKey;
+    const sortKey = params.sortKey || getCollectionParams(collectionElementName)?.defaultSortKey;
 
     if (result && result.length && sortKey && typeof sortKey === 'string') {
         const sorted = result.sort((a, b) => {
@@ -74,9 +73,9 @@ export const PUT = createHandler(async (params: CollectionPostRequestParams) => 
     const { name } = element;
     const uniqueFields: BaseObject = { name };
 
-    const requiredUniqueFields = AVAILABLE_COLLECTIONS.find((c) => c.name === collectionElementName)?.uniqueFields;
+    const requiredUniqueFields = getRequredUniqeFields(collectionElementName);
 
-    if (Array.isArray(requiredUniqueFields) && requiredUniqueFields.length) {
+    if (requiredUniqueFields) {
         requiredUniqueFields.forEach((field) => {
             const value = element[field];
 
