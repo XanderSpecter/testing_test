@@ -9,6 +9,7 @@ import { BaseObject, Collection } from '@/types/apiModels';
 import { AVAILABLE_COLLECTIONS } from '@/constants/collections';
 import { Column, Container, Row } from '@/components/base/Grid';
 import Element from './components/Element';
+import { StylesByBreakpoint } from '@/types/elementStyles';
 
 interface AdminCollectionProps extends Collection {
     query: BaseObject;
@@ -16,9 +17,17 @@ interface AdminCollectionProps extends Collection {
 
 const { Title } = Typography;
 
-export const COLS = { all: 3 };
+export const COLS = {
+    text: { all: 2 },
+    button: { all: 1 },
+};
 export const ELEMENT_STYLES = {
-    row: { all: { marginTop: '16px' } },
+    row: { all: { marginTop: '16px' } } as StylesByBreakpoint,
+    tableRow: {
+        all: { paddingTop: '8px', paddingBottom: '8px', borderBottom: '1px solid grey' },
+    } as StylesByBreakpoint,
+    buttonColumn: { all: { justifyContent: 'space-evenly', alignItems: 'center' } } as StylesByBreakpoint,
+    column: { all: { alignItems: 'center' } } as StylesByBreakpoint,
 };
 
 export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
@@ -35,7 +44,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
     const fieldsMappingKeys = Object.keys(currentCollection?.fieldsMapping || []);
     const quantity = fieldsMappingKeys.length;
 
-    const customMaxCols = useMemo(() => ({ all: quantity * 3 + 2 }), [quantity]);
+    const customMaxCols = useMemo(() => ({ all: quantity * 2 + 1 }), [quantity]);
 
     const renderHeaders = () => {
         if (!quantity) {
@@ -50,7 +59,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             }
 
             return (
-                <Column key={`headers-${key}`} cols={COLS} maxCols={customMaxCols}>
+                <Column key={`headers-${key}`} cols={COLS.text} maxCols={customMaxCols}>
                     <Title level={5}>{header}</Title>
                 </Column>
             );
@@ -60,7 +69,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
     const renderElements = () => {
         if (!elementsList || !elementsList.length) {
             return (
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
                     <Column>
                         <Title level={5}>Здесь ничего нет</Title>
                     </Column>
@@ -74,6 +83,8 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
                 element={e}
                 customMaxCols={customMaxCols}
                 fieldsMappingKeys={fieldsMappingKeys}
+                onEditClick={() => {}}
+                onDeleteClick={() => {}}
             />
         ));
     };
@@ -92,10 +103,15 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             </Row>
             <Row>
                 <Column>
-                    <Button onClick={() => createElement({})}>Добавить</Button>
+                    <Button type="primary" onClick={() => createElement({})}>
+                        Добавить
+                    </Button>
                 </Column>
             </Row>
-            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>{renderHeaders()}</Row>
+            <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
+                {renderHeaders()}
+                <Column cols={COLS.button} maxCols={customMaxCols} />
+            </Row>
             {renderElements()}
         </Container>
     );
