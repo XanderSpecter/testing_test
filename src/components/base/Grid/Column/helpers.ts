@@ -40,13 +40,9 @@ export const recalcColumnStyles = (
     breakpoints.forEach((b) => {
         const { name, maxCols } = b;
 
-        if (!name) {
-            return;
-        }
-
-        const correctedMaxCols = getMaxColsWithLimits(customMaxCols?.[name] || maxCols, name);
-        const customStyles = stylesByBreakpoint?.[name];
-        const currentCols = cols?.[name] || correctedMaxCols;
+        const correctedMaxCols = getMaxColsWithLimits(customMaxCols?.[name] || customMaxCols?.all || maxCols, name);
+        const customStyles = stylesByBreakpoint?.[name] || stylesByBreakpoint?.all;
+        const currentCols = cols?.[name] || cols?.all || correctedMaxCols;
 
         const baseStyles: CSSProperties = { maxWidth: getColumnMaxWidth(currentCols, correctedMaxCols) };
 

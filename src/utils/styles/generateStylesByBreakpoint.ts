@@ -18,7 +18,7 @@ const generateStylesByBreakpoint = (
     let styleString = '';
 
     breakpoints.forEach((b) => {
-        const styles = stylesByBreakpoint?.[b.name];
+        const styles = stylesByBreakpoint?.[b.name] || stylesByBreakpoint?.all;
 
         if (!styles) {
             return;

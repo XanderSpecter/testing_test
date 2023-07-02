@@ -42,7 +42,10 @@ export const mergeStylesByBreakpoint = (
     breakpoints.map((b) => {
         const { name } = b;
 
-        merged[name] = mergeStyles(defaultStyles[name] || {}, customStyles[name] || {});
+        merged[name] = mergeStyles(
+            defaultStyles[name] || defaultStyles.all || {},
+            customStyles[name] || customStyles.all || {}
+        );
     });
 
     return merged;

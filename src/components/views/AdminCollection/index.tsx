@@ -16,9 +16,9 @@ interface AdminCollectionProps extends Collection {
 
 const { Title } = Typography;
 
-export const COLS = { 'desktop': 1, 'large-desktop': 1 };
+export const COLS = { all: 3 };
 export const ELEMENT_STYLES = {
-    row: { mobile: { marginTop: '16px' } },
+    row: { all: { marginTop: '16px' } },
 };
 
 export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
@@ -35,7 +35,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
     const fieldsMappingKeys = Object.keys(currentCollection?.fieldsMapping || []);
     const quantity = fieldsMappingKeys.length;
 
-    const customMaxCols = useMemo(() => ({ 'desktop': quantity + 2, 'large-desktop': quantity + 2 }), [quantity]);
+    const customMaxCols = useMemo(() => ({ all: quantity * 3 + 2 }), [quantity]);
 
     const renderHeaders = () => {
         if (!quantity) {
@@ -88,6 +88,11 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
                 <Column>
                     <Title>{currentCollection?.title}</Title>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Button onClick={() => createElement({})}>Добавить</Button>
                 </Column>
             </Row>
             <Row stylesByBreakpoint={ELEMENT_STYLES.row}>{renderHeaders()}</Row>
