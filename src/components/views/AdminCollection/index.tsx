@@ -35,8 +35,6 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
     const customMaxCols = useMemo(() => ({ all: quantity * 2 + 1 }), [quantity]);
 
     const onSubmit = (element: Partial<CollectionElement>) => {
-        console.log(selectedElement, element);
-
         setIsFormOpened(false);
 
         if (selectedElement) {
