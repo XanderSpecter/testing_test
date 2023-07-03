@@ -25,23 +25,3 @@ export const getRequiredParamError = (
 
     return `Поле '${name}' не указано или заполнено некорректно.${description ? ` ${description}` : ''}`;
 };
-
-export const getExistsError = (collectionElementName: string, uniqueFieldNames: string[]) => {
-    if (!collectionElementName || !uniqueFieldNames || !uniqueFieldNames.length) {
-        return STRANGE_ERROR;
-    }
-
-    let errorText = '';
-
-    uniqueFieldNames.forEach((field, index) => {
-        const fieldParams = getMappedFieldParams(collectionElementName, field);
-
-        errorText += `Поле '${fieldParams?.title || field}' должно быть уникальным`;
-
-        if (index < uniqueFieldNames.length - 1) {
-            errorText += ' | ';
-        }
-    });
-
-    return errorText;
-};

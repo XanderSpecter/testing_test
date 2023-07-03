@@ -1,17 +1,24 @@
-import { BaseObject } from '@/types/apiModels';
+import { BaseObject, FieldsErrors } from '@/types/apiModels';
+import { getMappedFieldParams } from '@/utils/collections';
 import { Collection, ObjectId } from 'mongodb';
 
-export const checkIsElementExists = async <T extends Collection>(
+interface ExistedElements {
+    fieldName: string;
+    elements?: unknown;
+}
+
+export const getExistedFieldsErrors = async <T extends Collection>(
     collection: T,
+    collectionElementName: string,
     fields?: BaseObject,
     _id?: ObjectId
 ) => {
     if (!fields) {
-        return false;
+        return null;
     }
 
     if (Object.keys(fields).length === 0) {
-        return false;
+        return null;
     }
 
     const allResultsArray = await Promise.all(
@@ -20,21 +27,45 @@ export const checkIsElementExists = async <T extends Collection>(
 
             const result = await collection.find({ ...check }).toArray();
 
-            return result || [];
+            const existed: ExistedElements = {
+                fieldName: key,
+            };
+
+            if (Array.isArray(result) && result.length) {
+                if (_id) {
+                    const filtered = result.filter((e) => String(e._id) !== String(_id));
+
+                    existed.elements = filtered.length ? filtered : null;
+
+                    return existed;
+                }
+
+                existed.elements = result;
+
+                return existed;
+            }
+
+            existed.elements = null;
+
+            return existed;
         })
     );
 
-    const allResults = allResultsArray.reduce((acc, current) => {
-        current.forEach((e) => acc.push(e));
+    const allMatches = allResultsArray.filter((e) => Array.isArray(e.elements) && e.elements.length > 0);
 
-        return acc;
-    });
-
-    if (_id) {
-        const withoutEditedElement = allResults.filter((e) => String(e._id) !== String(_id));
-
-        return withoutEditedElement && Array.isArray(withoutEditedElement) && withoutEditedElement.length > 0;
+    if (!allMatches || !allMatches.length) {
+        return null;
     }
 
-    return allResults && Array.isArray(allResults) && allResults.length > 0;
+    const errors: FieldsErrors = {};
+
+    allMatches.forEach((field) => {
+        const { fieldName } = field;
+
+        const fieldParams = getMappedFieldParams(collectionElementName, fieldName);
+
+        errors[fieldName] = `Поле '${fieldParams?.title || field}' должно быть уникальным`;
+    });
+
+    return errors;
 };

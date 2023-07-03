@@ -5,6 +5,8 @@ export type PossibleMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 export type PossibleFieldType = 'string' | 'number' | 'boolean' | 'object' | 'array';
 export type FormEditableFieldType = Exclude<PossibleFieldType, 'object' | 'array'>;
 
+export type FieldsErrors = Record<string, string>;
+
 export type BaseObject = Record<string, unknown>;
 
 export interface Collection extends BaseObject {

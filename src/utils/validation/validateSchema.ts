@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { BaseObject } from '@/types/apiModels';
+import { BaseObject, FieldsErrors } from '@/types/apiModels';
 
 /**
  * В схеме передаём обработчики валидации для полей,
@@ -10,7 +10,7 @@ export interface ValidationSchema {
 }
 
 const validateSchema = <T extends BaseObject>(object: T, schema: ValidationSchema) => {
-    const errors: Record<string, string> = {};
+    const errors: FieldsErrors = {};
 
     Object.keys(schema).forEach((key) => {
         const validate = schema[key];

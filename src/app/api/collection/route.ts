@@ -1,4 +1,3 @@
-import { getExistsError } from '@/utils/validation/errorMessages';
 import {
     deleteCollectionSchema,
     getCollectionSchema,
@@ -6,11 +5,12 @@ import {
     putCollectionSchema,
 } from '@/utils/validation/schemas/collectionBase';
 import createHandler from '@/backend/createHandler';
-import { checkIsElementExists } from '@/db/helpers';
+import { getExistedFieldsErrors } from '@/db/helpers';
 import { collectionConnect } from '@/db';
 import { BaseObject, CollectionPostRequestParams, CollectionRequestParams } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
 import { getCollectionParams, getRequredUniqeFields } from '@/utils/collections';
+import concatErrors from '@/utils/validation/concatErrors';
 
 export const GET = createHandler(async (params: CollectionRequestParams) => {
     const { _id, collectionElementName, ...rest } = params;
@@ -65,12 +65,10 @@ export const POST = createHandler(async (params: CollectionPostRequestParams) =>
         });
     }
 
-    const isElementExists = await checkIsElementExists(collection, { ...uniqueFields }, _id);
+    const existedErrors = await getExistedFieldsErrors(collection, collectionElementName, { ...uniqueFields }, _id);
 
-    if (isElementExists) {
-        const uniqueFieldNames = Object.keys(uniqueFields);
-
-        const errorText = getExistsError(collectionElementName, uniqueFieldNames);
+    if (existedErrors) {
+        const errorText = concatErrors(existedErrors);
 
         throw new Error(errorText);
     }
@@ -105,12 +103,10 @@ export const PUT = createHandler(async (params: CollectionPostRequestParams) => 
         });
     }
 
-    const isElementExists = await checkIsElementExists(collection, { ...uniqueFields });
+    const existedErrors = await getExistedFieldsErrors(collection, collectionElementName, { ...uniqueFields });
 
-    if (isElementExists) {
-        const uniqueFieldNames = Object.keys(uniqueFields);
-
-        const errorText = getExistsError(collectionElementName, uniqueFieldNames);
+    if (existedErrors) {
+        const errorText = concatErrors(existedErrors);
 
         throw new Error(errorText);
     }
