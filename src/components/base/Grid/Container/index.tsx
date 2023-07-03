@@ -19,6 +19,8 @@ const StyledContainer = styled.div<WithEditing<WithBreakpoints<WithBreakpointSty
     width: 100%;
     margin: auto;
 
+    box-sizing: border-box;
+
     ${({ stylesByBreakpoint, breakpoints, isEditing }) =>
         generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, isEditing)}
 `;
@@ -32,7 +34,7 @@ const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
     );
 
     return (
-        <StyledContainer stylesByBreakpoint={styles} breakpoints={breakpoints}>
+        <StyledContainer stylesByBreakpoint={styles} breakpoints={breakpoints} isEditing>
             {children}
         </StyledContainer>
     );

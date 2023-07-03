@@ -31,7 +31,7 @@ export const mergeStyles = (defaultStyles: CSSProperties, customStyles?: CSSProp
 export const mergeStylesByBreakpoint = (
     defaultStyles: StylesByBreakpoint,
     breakpoints: Breakpoint[],
-    customStyles?: StylesByBreakpoint
+    customStyles?: StylesByBreakpoint | null
 ) => {
     if (!customStyles || !breakpoints || !breakpoints.length) {
         return defaultStyles;

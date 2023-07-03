@@ -5,7 +5,7 @@ import { CSSProperties } from 'react';
 import { camelToKebabCase } from '../textHelpers';
 
 const generateStylesByBreakpoint = (
-    stylesByBreakpoint?: StylesByBreakpoint,
+    stylesByBreakpoint?: StylesByBreakpoint | null,
     breakpoints?: Breakpoint[],
     isEditing?: boolean
 ) => {
@@ -13,7 +13,7 @@ const generateStylesByBreakpoint = (
         return css``;
     }
 
-    const queryParent = isEditing ? '@container' : '@media';
+    const queryParent = isEditing ? '@container editor' : '@media';
 
     let styleString = '';
 

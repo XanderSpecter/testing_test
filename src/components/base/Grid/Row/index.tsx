@@ -12,6 +12,8 @@ const StyledRow = styled.div<WithEditing<WithBreakpoints<WithBreakpointStyles>>>
     margin-left: -4px;
     margin-right: -4px;
 
+    box-sizing: border-box;
+
     flex-wrap: wrap;
     flex-direction: row;
 
