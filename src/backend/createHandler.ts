@@ -32,7 +32,14 @@ const createHandler =
 
             const result = await handler(params);
 
-            return NextResponse.json(result || null, {
+            if (!result) {
+                return new NextResponse(undefined, {
+                    status: 200,
+                    statusText: 'GOOD BOY!',
+                });
+            }
+
+            return NextResponse.json(result, {
                 status: 200,
                 statusText: 'GOOD BOY!',
             });

@@ -35,7 +35,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
                 shortcut: 'Маск. колонок сетки',
                 type: 'number',
                 required: false,
-                mustBeUnique: true,
+                mustBeUnique: false,
                 description: 'Должно быть целым положительным числом.',
             },
         },

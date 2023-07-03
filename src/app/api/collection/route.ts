@@ -49,9 +49,31 @@ export const GET = createHandler(async (params: CollectionRequestParams) => {
 export const POST = createHandler(async (params: CollectionPostRequestParams) => {
     const { collectionElementName, element } = params;
 
-    const { _id, ...rest } = element;
+    const { _id, name, ...rest } = element;
 
     const collection = await collectionConnect(collectionElementName);
+
+    const uniqueFields: BaseObject = { name };
+
+    const requiredUniqueFields = getRequredUniqeFields(collectionElementName);
+
+    if (requiredUniqueFields) {
+        requiredUniqueFields.forEach((field) => {
+            const value = element[field];
+
+            uniqueFields[field] = value;
+        });
+    }
+
+    const isElementExists = await checkIsElementExists(collection, { ...uniqueFields }, _id);
+
+    if (isElementExists) {
+        const uniqueFieldNames = Object.keys(uniqueFields);
+
+        const errorText = getExistsError(collectionElementName, uniqueFieldNames);
+
+        throw new Error(errorText);
+    }
 
     await collection.updateOne(
         {

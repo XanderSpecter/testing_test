@@ -39,7 +39,7 @@ export const getExistsError = (collectionElementName: string, uniqueFieldNames: 
         errorText += `Поле '${fieldParams?.title || field}' должно быть уникальным`;
 
         if (index < uniqueFieldNames.length - 1) {
-            errorText += ', ';
+            errorText += ' | ';
         }
     });
 
