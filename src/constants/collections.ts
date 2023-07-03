@@ -4,6 +4,26 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
     {
         name: 'page',
         title: 'Страницы',
+        defaultSortKey: 'name',
+        editorEnabled: true,
+        fieldsMapping: {
+            name: {
+                title: 'Название страницы',
+                shortcut: 'Имя',
+                type: 'string',
+                required: true,
+                mustBeUnique: false,
+                description: 'Отображается в списке, сортировка по нему. Желательно, уникальное.',
+            },
+            url: {
+                title: 'Адрес страницы относительно корня сайта',
+                shortcut: 'URL/PATH',
+                type: 'string',
+                required: true,
+                mustBeUnique: true,
+                description: 'Должно быть уникальным.',
+            },
+        },
     },
     {
         name: 'zone',
@@ -34,7 +54,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
                 title: 'Максимальное количество колонок сетки для указанной контрольной точки',
                 shortcut: 'Маск. колонок сетки',
                 type: 'number',
-                required: false,
+                required: true,
                 mustBeUnique: false,
                 description: 'Должно быть целым положительным числом.',
             },
