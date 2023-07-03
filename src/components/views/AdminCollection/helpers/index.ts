@@ -1,8 +1,19 @@
 import { BaseObject, CollectionElement, PossibleFieldType } from '@/types/apiModels';
-import { AvailableCollection } from '@/types/collections';
+import { AvailableCollection, FieldParams } from '@/types/collections';
 import { getDefaultValueByType } from '@/utils/collections';
 
-export const isTypeEditable = (type: PossibleFieldType) => type === 'string' || type === 'number' || type === 'boolean';
+export const isTypeEditableInForm = (type: PossibleFieldType) =>
+    type === 'string' || type === 'number' || type === 'boolean';
+
+export const isFieldHiddenInTable = (field: FieldParams) => {
+    if (!field) {
+        return true;
+    }
+
+    const { title, hiddenInTable, type } = field;
+
+    return Boolean(!title || hiddenInTable || type === 'hidden');
+};
 
 export const createEmptyElement = (fieldsMapping: AvailableCollection['fieldsMapping']) => {
     if (!fieldsMapping) {
@@ -14,9 +25,9 @@ export const createEmptyElement = (fieldsMapping: AvailableCollection['fieldsMap
     Object.keys(fieldsMapping).forEach((key) => {
         const fieldParams = fieldsMapping[key];
 
-        const { type, hidden } = fieldParams;
+        const { type } = fieldParams;
 
-        if (!hidden && isTypeEditable(type)) {
+        if (isTypeEditableInForm(type)) {
             emptyElement[key] = getDefaultValueByType(type);
         }
     });

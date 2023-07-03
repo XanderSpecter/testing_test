@@ -6,30 +6,47 @@ import { EditFilled, DeleteFilled } from '@ant-design/icons';
 import { BaseObject, CollectionElement } from '@/types/apiModels';
 import { Column, Row } from '@/components/base/Grid';
 import { ColumnProps } from '@/components/base/Grid/Column';
+import { AvailableCollection } from '@/types/collections';
 import { COLS, ELEMENT_STYLES } from '../constants';
+import { isFieldHiddenInTable } from '../helpers';
+import { ObjectId } from 'mongodb';
 
 interface ElementProps<T extends BaseObject> {
-    fieldsMappingKeys: string[];
+    fieldsMapping: AvailableCollection['fieldsMapping'];
     element: CollectionElement<T>;
     customMaxCols: ColumnProps['maxCols'];
     onEditClick: () => void;
     onDeleteClick: () => void;
+    onEditorOpenClick: (_id?: ObjectId) => void;
 }
 
 export default function Element<T extends BaseObject = BaseObject>({
-    fieldsMappingKeys,
+    fieldsMapping,
     customMaxCols,
     element,
     onEditClick,
     onDeleteClick,
+    onEditorOpenClick,
 }: ElementProps<T>) {
-    if (!fieldsMappingKeys || !fieldsMappingKeys.length) {
+    if (!fieldsMapping) {
         return null;
     }
 
     const renderFields = () => {
-        return fieldsMappingKeys.map((key) => {
-            const value = element[key];
+        return Object.keys(fieldsMapping).map((key) => {
+            const field = fieldsMapping[key];
+
+            if (isFieldHiddenInTable(field)) {
+                return null;
+            }
+
+            const { type } = field;
+
+            let value: React.ReactNode = String(element[key]);
+
+            if (type === 'object') {
+                value = <Button onClick={() => onEditorOpenClick(element._id)}>Изменить в редакторе</Button>;
+            }
 
             return (
                 <Column
@@ -38,7 +55,7 @@ export default function Element<T extends BaseObject = BaseObject>({
                     maxCols={customMaxCols}
                     stylesByBreakpoint={ELEMENT_STYLES.column}
                 >
-                    <Typography>{String(value)}</Typography>
+                    <Typography>{value}</Typography>
                 </Column>
             );
         });

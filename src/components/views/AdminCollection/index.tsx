@@ -11,6 +11,7 @@ import Element from './components/Element';
 import { COLS, ELEMENT_STYLES } from './constants';
 import { getCollectionParams } from '@/utils/collections';
 import Form from './components/Form';
+import { isFieldHiddenInTable } from './helpers';
 
 interface AdminCollectionProps extends Collection {
     query: BaseObject;
@@ -28,10 +29,18 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
     const [selectedElement, setSelectedElement] = useState<CollectionElement | null>(null);
 
     const currentCollection = useMemo(() => getCollectionParams(collectionElementName), [collectionElementName]);
+    const fieldsMapping = useMemo(() => currentCollection?.fieldsMapping || {}, [currentCollection]);
+    const quantity = useMemo(() => {
+        let q = 0;
 
-    const fieldsMappingKeys = Object.keys(currentCollection?.fieldsMapping || []);
-    const quantity = fieldsMappingKeys.length;
+        Object.values(fieldsMapping).forEach((v) => {
+            if (!isFieldHiddenInTable(v)) {
+                q += 1;
+            }
+        });
 
+        return q;
+    }, [fieldsMapping]);
     const customMaxCols = useMemo(() => ({ all: quantity * 2 + 1 }), [quantity]);
 
     const onSubmit = (element: Partial<CollectionElement>) => {
@@ -52,16 +61,18 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             return null;
         }
 
-        return fieldsMappingKeys.map((key) => {
-            const header = currentCollection?.fieldsMapping?.[key]?.shortcut;
+        return Object.keys(fieldsMapping).map((key) => {
+            const field = fieldsMapping[key];
 
-            if (!header) {
+            if (isFieldHiddenInTable(field)) {
                 return null;
             }
 
+            const { title } = field;
+
             return (
                 <Column key={`headers-${key}`} cols={COLS.text} maxCols={customMaxCols}>
-                    <Title level={5}>{header}</Title>
+                    <Title level={5}>{title}</Title>
                 </Column>
             );
         });
@@ -72,7 +83,7 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
             return (
                 <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
                     <Column>
-                        <Title level={5}>Здесь ничего нет</Title>
+                        <Typography>Здесь ничего нет</Typography>
                     </Column>
                 </Row>
             );
@@ -83,12 +94,13 @@ export default function AdminCollection({ collectionElementName, query }: AdminC
                 key={String(e._id)}
                 element={e}
                 customMaxCols={customMaxCols}
-                fieldsMappingKeys={fieldsMappingKeys}
+                fieldsMapping={fieldsMapping}
                 onEditClick={() => {
                     setSelectedElement(e);
                     setIsFormOpened(true);
                 }}
                 onDeleteClick={() => removeElement(e._id)}
+                onEditorOpenClick={(_id) => console.log(_id)}
             />
         ));
     };

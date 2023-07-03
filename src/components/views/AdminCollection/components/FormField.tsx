@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Input, Checkbox, Typography } from 'antd';
+import { Input, Checkbox, Typography, InputNumber } from 'antd';
 import { FormEditableFieldType } from '@/types/apiModels';
 import { Column, Row } from '@/components/base/Grid';
-import { isTypeEditable } from '../helpers';
+import { isTypeEditableInForm } from '../helpers';
 import { ELEMENT_STYLES } from '../constants';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { FieldParams } from '@/types/collections';
 
 export type FieldValue<T extends FormEditableFieldType> = T extends 'string'
     ? string
@@ -14,17 +15,14 @@ export type FieldValue<T extends FormEditableFieldType> = T extends 'string'
     ? number
     : boolean;
 
-interface FormFieldProps<T extends FormEditableFieldType> {
+interface FormFieldProps<T extends FormEditableFieldType> extends FieldParams {
     type: T;
     id: string;
-    title: string;
-    description?: string;
-    disabled?: boolean;
     value?: FieldValue<T>;
     onChange: (newValue: FieldValue<T>) => void;
 }
 
-const { Title } = Typography;
+const INPUT_STYLES = { width: '100%' };
 
 export default function FormField<T extends FormEditableFieldType>({
     type,
@@ -32,17 +30,23 @@ export default function FormField<T extends FormEditableFieldType>({
     title,
     description,
     disabled,
+    prefix,
+    postfix,
     value,
     onChange,
 }: FormFieldProps<T>) {
-    if (!isTypeEditable(type) || !title || !onChange) {
+    if (!isTypeEditableInForm(type) || !title || !onChange) {
         return null;
     }
 
-    const onInputFieldChange = (e: React.ChangeEvent<HTMLInputElement>, type: FormEditableFieldType) => {
+    const onInputFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange && typeof onChange === 'function') {
-            const newValue = type === 'number' ? parseFloat(e.target.value) : e.target.value;
+            onChange(e.target.value as FieldValue<T>);
+        }
+    };
 
+    const onInputNumberFieldChange = (newValue: number | null) => {
+        if (onChange && typeof onChange === 'function') {
             onChange(newValue as FieldValue<T>);
         }
     };
@@ -53,48 +57,88 @@ export default function FormField<T extends FormEditableFieldType>({
         }
     };
 
+    const renderPrefix = () => {
+        if (!prefix) {
+            return null;
+        }
+
+        if (typeof prefix === 'function') {
+            return prefix();
+        }
+
+        return prefix;
+    };
+
+    const renderPostfix = () => {
+        if (!postfix) {
+            return null;
+        }
+
+        if (typeof postfix === 'function') {
+            return postfix();
+        }
+
+        return postfix;
+    };
+
     const renderFieldByType = () => {
-        if (!isTypeEditable(type)) {
+        if (!isTypeEditableInForm(type)) {
             return null;
         }
 
         switch (type) {
             case 'number':
                 return (
-                    <Input
-                        type="number"
+                    <InputNumber
+                        style={INPUT_STYLES}
                         id={id}
+                        addonBefore={renderPrefix()}
+                        addonAfter={renderPostfix()}
                         disabled={disabled}
                         placeholder={description}
                         value={Number(value)}
-                        onChange={(e) => onInputFieldChange(e, 'number')}
+                        onChange={onInputNumberFieldChange}
                     />
                 );
             case 'boolean':
                 return (
-                    <Checkbox disabled={disabled} id={id} checked={Boolean(value)} onChange={onCheckboxFieldChange} />
+                    <Checkbox disabled={disabled} id={id} checked={Boolean(value)} onChange={onCheckboxFieldChange}>
+                        {title}
+                    </Checkbox>
                 );
             default:
                 return (
                     <Input
                         disabled={disabled}
                         id={id}
+                        addonBefore={renderPrefix()}
+                        addonAfter={renderPostfix()}
                         placeholder={description}
                         value={String(value)}
-                        onChange={(e) => onInputFieldChange(e, 'string')}
+                        onChange={onInputFieldChange}
                     />
                 );
         }
     };
 
-    return (
-        <>
+    const renderHeader = () => {
+        if (!title || type === 'boolean') {
+            return null;
+        }
+
+        return (
             <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
                 <Column>
-                    <Title level={5}>{title}</Title>
+                    <Typography>{title}</Typography>
                 </Column>
             </Row>
-            <Row>
+        );
+    };
+
+    return (
+        <>
+            {renderHeader()}
+            <Row stylesByBreakpoint={type === 'boolean' ? ELEMENT_STYLES.row : null}>
                 <Column>{renderFieldByType()}</Column>
             </Row>
         </>

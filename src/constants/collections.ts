@@ -5,7 +5,6 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
         name: 'page',
         title: 'Страницы',
         defaultSortKey: 'name',
-        editorEnabled: true,
         fieldsMapping: {
             name: {
                 title: 'Название страницы',
@@ -13,7 +12,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
                 type: 'string',
                 required: true,
                 mustBeUnique: false,
-                description: 'Отображается в списке, сортировка по нему. Желательно, уникальное.',
+                description: 'Должно быть уникальным.',
             },
             url: {
                 title: 'Адрес страницы относительно корня сайта',
@@ -22,6 +21,14 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
                 required: true,
                 mustBeUnique: true,
                 description: 'Должно быть уникальным.',
+                prefix: () => window?.location?.origin || '',
+            },
+            content: {
+                title: 'Контент',
+                shortcut: 'Контент',
+                type: 'object',
+                required: false,
+                mustBeUnique: false,
             },
         },
     },
@@ -49,6 +56,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
                 required: true,
                 mustBeUnique: true,
                 description: 'Должно быть уникальным целым положительным числом.',
+                postfix: 'px',
             },
             maxCols: {
                 title: 'Максимальное количество колонок сетки для указанной контрольной точки',

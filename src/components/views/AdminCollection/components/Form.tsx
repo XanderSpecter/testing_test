@@ -52,18 +52,16 @@ export default function Form({ fieldsMapping, opened, element, onSubmit, onCance
                 return null;
             }
 
-            const { title, type, disabled, description } = fieldParams;
+            const { type } = fieldParams;
 
             return (
                 <FormField
+                    {...fieldParams}
                     key={key}
-                    title={title}
-                    description={description}
                     type={type as FormEditableFieldType}
                     id={key}
-                    disabled={disabled}
                     onChange={(newValue) => onFieldChange(key, newValue)}
-                    value={editedElement[key] as FieldValue<Exclude<typeof type, 'object' | 'array'>>}
+                    value={editedElement[key] as FieldValue<Exclude<typeof type, 'object' | 'hidden'>>}
                 />
             );
         });
