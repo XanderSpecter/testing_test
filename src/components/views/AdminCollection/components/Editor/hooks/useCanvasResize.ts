@@ -1,7 +1,7 @@
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
-import { DEFAULT_SCREEN_PARAMS, ScreenParams, ScreenParamsContext } from '@/utils/screenParamsProvider';
-import { CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { CONTROL_PANEL_WIDTH, SCROLLBAR_COMPENSATION } from '../constants';
+import { DEFAULT_SCREEN_PARAMS, ScreenParams } from '@/utils/screenParamsProvider';
+import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { SCROLLBAR_COMPENSATION } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
@@ -10,15 +10,12 @@ const DEFAULT_CANVAS_PARAMS: CSSProperties = {
 
 const useCanvasResize = () => {
     const breakpoints = useContext(BreakpointsContext);
-    const screenParams = useContext(ScreenParamsContext);
 
     const [mockScreenParams, setMockScreenParams] = useState<ScreenParams>(DEFAULT_SCREEN_PARAMS);
     const [canvasParams, setCanvasParams] = useState<CSSProperties | null>(DEFAULT_CANVAS_PARAMS);
 
     const canvasRef = useRef<HTMLDivElement>();
     const canvasParamsCalc = useRef<CSSProperties | null>();
-
-    const widthLimit = useMemo(() => screenParams.width - CONTROL_PANEL_WIDTH, [screenParams]);
 
     const calcMockScreenParams = useCallback(() => {
         const width = canvasRef.current?.getBoundingClientRect().width;

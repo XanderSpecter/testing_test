@@ -22,13 +22,13 @@ const StyledContainer = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpo
 
     box-sizing: border-box;
 
-    ${({ stylesByBreakpoint, breakpoints, editor }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editor)}
+    ${({ stylesByBreakpoint, breakpoints, editing }) =>
+        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
 const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editor = useContext(EditorContext);
+    const editing = useContext(EditorContext);
 
     const styles = useMemo(
         () => mergeStylesByBreakpoint(DEFAULT_CONTAINER_STYLES, breakpoints, stylesByBreakpoint),
@@ -36,7 +36,7 @@ const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
     );
 
     return (
-        <StyledContainer stylesByBreakpoint={styles} breakpoints={breakpoints} editor={editor}>
+        <StyledContainer stylesByBreakpoint={styles} breakpoints={breakpoints} editing={editing}>
             {children}
         </StyledContainer>
     );

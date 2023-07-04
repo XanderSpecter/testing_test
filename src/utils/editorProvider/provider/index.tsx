@@ -4,11 +4,11 @@ import React from 'react';
 import { EditorContext } from '../context';
 
 interface EditorProviderProps {
-    editor: boolean;
+    editing: boolean;
 }
 
-function EditorProvider({ children, editor }: React.PropsWithChildren<EditorProviderProps>) {
-    return <EditorContext.Provider value={editor}>{children}</EditorContext.Provider>;
+function EditorProvider({ children, editing }: React.PropsWithChildren<EditorProviderProps>) {
+    return <EditorContext.Provider value={editing}>{children}</EditorContext.Provider>;
 }
 
 export default EditorProvider;

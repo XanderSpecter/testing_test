@@ -18,16 +18,16 @@ const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointSty
     flex-wrap: wrap;
     flex-direction: row;
 
-    ${({ stylesByBreakpoint, breakpoints, editor }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editor)}
+    ${({ stylesByBreakpoint, breakpoints, editing }) =>
+        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
 const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editor = useContext(EditorContext);
+    const editing = useContext(EditorContext);
 
     return (
-        <StyledRow stylesByBreakpoint={stylesByBreakpoint} breakpoints={breakpoints} editor={editor}>
+        <StyledRow stylesByBreakpoint={stylesByBreakpoint} breakpoints={breakpoints} editing={editing}>
             {children}
         </StyledRow>
     );

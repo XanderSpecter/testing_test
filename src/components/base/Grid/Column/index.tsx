@@ -18,8 +18,8 @@ const StyledColumn = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpoint
 
     box-sizing: border-box;
 
-    ${({ stylesByBreakpoint, breakpoints, editor }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editor)}
+    ${({ stylesByBreakpoint, breakpoints, editing }) =>
+        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
 interface BaseColumnProps {
@@ -33,7 +33,7 @@ const Column = (props: ColumnProps) => {
     const { children } = props;
 
     const breakpoints = useContext(BreakpointsContext);
-    const editor = useContext(EditorContext);
+    const editing = useContext(EditorContext);
 
     const [columnStyles, setColumnStyles] = useState<StylesByBreakpoint>({});
 
@@ -44,7 +44,7 @@ const Column = (props: ColumnProps) => {
     }, [props, breakpoints]);
 
     return (
-        <StyledColumn stylesByBreakpoint={{ ...columnStyles }} breakpoints={breakpoints} editor={editor}>
+        <StyledColumn stylesByBreakpoint={{ ...columnStyles }} breakpoints={breakpoints} editing={editing}>
             {children}
         </StyledColumn>
     );

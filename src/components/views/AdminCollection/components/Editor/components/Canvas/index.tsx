@@ -23,7 +23,7 @@ export default function Canvas({ children }: React.PropsWithChildren) {
                     </Text>
                 </InfoLabel>
                 <ScreenParamsProvider mockScreenParams={mockScreenParams}>
-                    <EditorProvider editor={true}>
+                    <EditorProvider editing={true}>
                         <ScrollBarCompensator>
                             <Scrollable>{children}</Scrollable>
                         </ScrollBarCompensator>

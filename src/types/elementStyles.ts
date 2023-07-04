@@ -7,7 +7,7 @@ export type WithBreakpointStyles<T extends PropsWithChildren = PropsWithChildren
 };
 
 export type WithEditorSupport<T extends PropsWithChildren = PropsWithChildren> = Omit<T, 'editor'> & {
-    editor?: boolean;
+    editing?: boolean;
 };
 /**
  * Расширение компонента для поддержки редактируемых стилей в Styled
