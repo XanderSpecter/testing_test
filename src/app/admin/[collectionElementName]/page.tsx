@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getElements } from '@/api/collection';
-import AdminCollection from '@/components/views/AdminCollection';
+import Collection from '@/components/system/Collection';
 import getQueryClient from '@/utils/queryClient/getQueryClient';
 import Hydrate from '@/utils/queryClient/hidrateClient';
 import { BaseObject, Collection } from '@/types/apiModels';
@@ -42,7 +42,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
     return (
         <Hydrate state={dehydratedState}>
-            <AdminCollection collectionElementName={collectionElementName} query={searchParams} />
+            <Collection collectionElementName={collectionElementName} query={searchParams} />
         </Hydrate>
     );
 }

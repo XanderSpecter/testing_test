@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SCROLLBAR_COMPENSATION } from '../../../constants';
+import { SCROLLBAR_COMPENSATION } from '../constants';
 
 export const CanvasContainer = styled.div.attrs((props) => ({
     style: { ...props.style },

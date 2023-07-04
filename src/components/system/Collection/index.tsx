@@ -13,13 +13,13 @@ import { getCollectionParams } from '@/utils/collections';
 import Form from './components/Form';
 import { isFieldHiddenInTable } from './helpers';
 
-interface AdminCollectionProps extends Collection {
+interface CollectionProps extends Collection {
     query: BaseObject;
 }
 
 const { Title } = Typography;
 
-export default function AdminCollection({ collectionElementName, query }: AdminCollectionProps) {
+export default function Collection({ collectionElementName, query }: CollectionProps) {
     const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
         collectionElementName,
         query,
