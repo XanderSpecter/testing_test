@@ -5,7 +5,7 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
 import { Button, Typography } from 'antd';
-import { BaseObject, Collection, CollectionElement } from '@/types/apiModels';
+import { BaseObject, CollectionParams, CollectionElement } from '@/types/apiModels';
 import { Column, Container, Row } from '@/components/base/Grid';
 import Element from './components/Element';
 import { COLS, ELEMENT_STYLES } from './constants';
@@ -13,7 +13,7 @@ import { getCollectionParams } from '@/utils/collections';
 import Form from './components/Form';
 import { isFieldHiddenInTable } from './helpers';
 
-interface CollectionProps extends Collection {
+interface CollectionProps extends CollectionParams {
     query: BaseObject;
 }
 

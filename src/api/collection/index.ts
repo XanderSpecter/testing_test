@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb';
-import { BaseObject, CollectionElement, Collection } from '../../types/apiModels';
+import { BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
 import { handleRequest } from '../utils/handleRequest';
 
-export interface CreateElementParams<T extends BaseObject = BaseObject> extends Collection {
+export interface CreateElementParams<T extends BaseObject = BaseObject> extends CollectionParams {
     element: Partial<CollectionElement<T>>;
 }
-export interface UpdateElementParams<T extends BaseObject = BaseObject> extends Collection {
+export interface UpdateElementParams<T extends BaseObject = BaseObject> extends CollectionParams {
     element: CollectionElement<T>;
 }
 
-export interface DeleteElementParams extends Collection {
+export interface DeleteElementParams extends CollectionParams {
     _id: ObjectId;
 }
 
-export interface GetElementParams extends Collection {
+export interface GetElementParams extends CollectionParams {
     query?: BaseObject;
 }
 

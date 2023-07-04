@@ -6,12 +6,12 @@ import { getElements } from '@/api/collection';
 import Collection from '@/components/system/Collection';
 import getQueryClient from '@/utils/queryClient/getQueryClient';
 import Hydrate from '@/utils/queryClient/hidrateClient';
-import { BaseObject, Collection } from '@/types/apiModels';
+import { BaseObject, CollectionParams } from '@/types/apiModels';
 import { DEFAULT_APP_TITLE } from '@/constants/appParams';
 import { checkIsCollectionAvailable, getCollectionParams } from '@/utils/collections';
 
 interface CollectionPageProps {
-    params: Collection;
+    params: CollectionParams;
     searchParams: BaseObject;
 }
 

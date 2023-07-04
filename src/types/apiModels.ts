@@ -9,20 +9,20 @@ export type FieldsErrors = Record<string, string>;
 
 export type BaseObject = Record<string, unknown>;
 
-export interface Collection extends BaseObject {
+export interface CollectionParams extends BaseObject {
     collectionElementName: string;
 }
 
 export type CollectionElement<T extends BaseObject = BaseObject> = WithId<T>;
 
-export interface CollectionRequestParams extends Collection {
+export interface CollectionRequestParams extends CollectionParams {
     _id?: ObjectId;
     element?: CollectionElement;
     sortKey?: string;
     [key: string]: unknown;
 }
 
-export interface CollectionPostRequestParams extends Collection {
+export interface CollectionPostRequestParams extends CollectionParams {
     _id: ObjectId;
     element: CollectionElement;
     [key: string]: unknown;

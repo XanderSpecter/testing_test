@@ -5,7 +5,7 @@ import { Typography } from 'antd';
 
 import { ScreenParamsProvider } from '@/utils/screenParamsProvider';
 import { EditorProvider } from '@/utils/editorProvider';
-import { Resizer, CanvasContainer, InfoLabel, Scrollable, CanvasWrapper, ScrollBarCompensator } from './styled';
+import { Resizer, CanvasContainer, InfoLabel, Scrollable, CanvasWrapper, ScrollBarCompensator } from '../styled';
 import useCanvasResize from '../hooks/useCanvasResize';
 
 const { Text } = Typography;

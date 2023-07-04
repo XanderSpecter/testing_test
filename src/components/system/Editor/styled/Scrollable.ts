@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SCROLLBAR_WIDTH } from '../../../constants';
+import { SCROLLBAR_WIDTH } from '../constants';
 
 export const Scrollable = styled.div`
     position: absolute;
