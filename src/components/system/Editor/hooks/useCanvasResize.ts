@@ -1,6 +1,7 @@
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { HEADER_HEIGHT } from '../../AdminLayout/constants';
 import { SCROLLBAR_COMPENSATION } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
@@ -34,7 +35,7 @@ const useCanvasResize = () => {
 
             setMockScreenParams({
                 width: width - SCROLLBAR_COMPENSATION,
-                height: clientHeight,
+                height: clientHeight - HEADER_HEIGHT,
                 breakpoint: shortcut,
                 verticalScrollOffset: 0,
             });
