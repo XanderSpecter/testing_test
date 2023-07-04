@@ -12,6 +12,9 @@ export const HeaderWrapper = styled.div`
     padding: 16px;
     box-sizing: border-box;
 
+    display: flex;
+    align-items: center;
+
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 50%);
 
     z-index: 10;

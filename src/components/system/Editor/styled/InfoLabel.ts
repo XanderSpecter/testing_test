@@ -4,7 +4,7 @@ export const InfoLabel = styled.div`
     position: absolute;
 
     top: 0;
-    left: 0;
+    right: 0;
 
     padding: 4px;
 
@@ -12,7 +12,7 @@ export const InfoLabel = styled.div`
 
     color: #ffffff;
 
-    border-radius: 0 0 8px 0;
+    border-radius: 0 0 0 8px;
 
     z-index: 1;
 
