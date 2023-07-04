@@ -14,6 +14,8 @@ export const InfoLabel = styled.div`
 
     border-radius: 0 0 8px 0;
 
+    z-index: 1;
+
     & * {
         color: #ffffff;
     }

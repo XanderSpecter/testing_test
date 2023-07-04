@@ -24,8 +24,10 @@ const useCanvasResize = () => {
             let shortcut = breakpoints[0].name;
             const clientHeight = window.innerHeight || 0;
 
+            const viewportWidth = width - SCROLLBAR_COMPENSATION;
+
             breakpoints.forEach((bp) => {
-                if (width >= bp.screen) {
+                if (viewportWidth >= bp.screen) {
                     shortcut = bp.name;
                 }
             });

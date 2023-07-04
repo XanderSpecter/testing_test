@@ -21,9 +21,7 @@ export default function Editor({ element }: EditorProps) {
     return (
         <EditorWrapper>
             <Canvas>
-                <Container>
-                    <div style={{ height: 1000, width: '30%', margin: 'auto', backgroundColor: 'green' }}></div>
-                </Container>
+                <Container>123</Container>
             </Canvas>
         </EditorWrapper>
     );
