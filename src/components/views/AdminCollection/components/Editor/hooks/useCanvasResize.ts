@@ -1,7 +1,7 @@
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams, ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { CONTROL_PANEL_WIDTH } from '../constants';
+import { CONTROL_PANEL_WIDTH, SCROLLBAR_COMPENSATION } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
@@ -34,7 +34,7 @@ const useCanvasResize = () => {
             });
 
             setMockScreenParams({
-                width,
+                width: width - SCROLLBAR_COMPENSATION,
                 height: clientHeight,
                 breakpoint: shortcut,
                 verticalScrollOffset: 0,
@@ -49,9 +49,12 @@ const useCanvasResize = () => {
 
             if (canvasParamsCalc.current) {
                 const currentParams = canvasParamsCalc.current;
+
+                const width = e.pageX - SCROLLBAR_COMPENSATION;
+
                 canvasParamsCalc.current = {
                     ...currentParams,
-                    width: e.pageX <= widthLimit ? e.pageX : widthLimit,
+                    width: width,
                 };
 
                 setCanvasParams(canvasParamsCalc.current);
@@ -69,7 +72,7 @@ const useCanvasResize = () => {
 
             canvasParamsCalc.current = {
                 ...DEFAULT_CANVAS_PARAMS,
-                width: Math.round(rect.width),
+                width: Math.round(rect.width - SCROLLBAR_COMPENSATION),
             };
 
             setCanvasParams(canvasParamsCalc.current);

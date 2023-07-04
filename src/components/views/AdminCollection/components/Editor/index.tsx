@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { CollectionElement } from '@/types/apiModels';
 import { Container } from '@/components/base/Grid';
 import Canvas from './components/Canvas';
-import { ControlPanelZone, EditorWrapper } from './styled';
+import { EditorWrapper } from './styled';
 
 interface EditorProps {
     element: CollectionElement;
@@ -25,7 +25,6 @@ export default function Editor({ element }: EditorProps) {
                     <div style={{ height: 1000, width: '30%', margin: 'auto', backgroundColor: 'green' }}></div>
                 </Container>
             </Canvas>
-            <ControlPanelZone>123</ControlPanelZone>
         </EditorWrapper>
     );
 }

@@ -1,12 +1,13 @@
 import styled from 'styled-components';
+import { RESIZER_WIDTH } from '../../../constants';
 
 export const Resizer = styled.div`
     position: absolute;
     cursor: ew-resize;
 
     top: 0;
-    right: -3px;
+    right: 0px;
     bottom: 0;
-    width: 3px;
+    width: ${RESIZER_WIDTH}px;
     background-color: #1677ff;
 `;

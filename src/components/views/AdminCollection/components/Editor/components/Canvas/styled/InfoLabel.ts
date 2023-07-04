@@ -12,7 +12,7 @@ export const InfoLabel = styled.div`
 
     color: #ffffff;
 
-    border-radius: 0 0 4px 0;
+    border-radius: 0 0 8px 0;
 
     & * {
         color: #ffffff;

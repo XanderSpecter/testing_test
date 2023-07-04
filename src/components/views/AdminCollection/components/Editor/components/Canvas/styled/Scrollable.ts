@@ -7,8 +7,7 @@ export const Scrollable = styled.div`
     top: 0;
     bottom: 0;
     left: 0;
-    /* right: -${SCROLLBAR_WIDTH}px; */
-    right: 0;
+    right: -${SCROLLBAR_WIDTH}px;
 
     overflow-y: auto;
 
