@@ -9,8 +9,12 @@ import { calculateCurrentScreenParams } from '../helpers';
 
 const SCREEN_PARAMS_UPDATE_DELAY = 300;
 
-function ScreenParamsProvider({ children }: React.PropsWithChildren) {
-    const [params, setParams] = useState<ScreenParams>(DEFAULT_SCREEN_PARAMS);
+interface ScreenParamsProviderProps {
+    mockScreenParams?: ScreenParams;
+}
+
+function ScreenParamsProvider({ children, mockScreenParams }: React.PropsWithChildren<ScreenParamsProviderProps>) {
+    const [params, setParams] = useState<ScreenParams>(mockScreenParams || DEFAULT_SCREEN_PARAMS);
 
     const breakpoints = useContext(BreakpointsContext);
 
@@ -20,7 +24,7 @@ function ScreenParamsProvider({ children }: React.PropsWithChildren) {
     );
 
     useEffect(() => {
-        if (!window || typeof window === 'undefined') {
+        if (mockScreenParams || !window || typeof window === 'undefined') {
             return;
         }
 

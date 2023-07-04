@@ -1,12 +1,11 @@
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams, ScreenParamsContext } from '@/utils/screenParamsProvider';
-import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { BorderProps } from '../styled/Border';
+import { CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { CONTROL_PANEL_WIDTH } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
     height: '100%',
-    position: 'relative',
 };
 
 const useCanvasResize = () => {
@@ -17,9 +16,9 @@ const useCanvasResize = () => {
     const [canvasParams, setCanvasParams] = useState<CSSProperties | null>(DEFAULT_CANVAS_PARAMS);
 
     const canvasRef = useRef<HTMLDivElement>();
-
-    const selectedBorder = useRef<BorderProps['position']>();
     const canvasParamsCalc = useRef<CSSProperties | null>();
+
+    const widthLimit = useMemo(() => screenParams.width - CONTROL_PANEL_WIDTH, [screenParams]);
 
     const calcMockScreenParams = useCallback(() => {
         const width = canvasRef.current?.getBoundingClientRect().width;
@@ -50,24 +49,12 @@ const useCanvasResize = () => {
 
             if (canvasParamsCalc.current) {
                 const currentParams = canvasParamsCalc.current;
+                canvasParamsCalc.current = {
+                    ...currentParams,
+                    width: e.pageX <= widthLimit ? e.pageX : widthLimit,
+                };
 
-                if (selectedBorder.current === 'left') {
-                    canvasParamsCalc.current = {
-                        ...currentParams,
-                        left: Math.round(e.pageX),
-                    };
-
-                    setCanvasParams(canvasParamsCalc.current);
-                }
-
-                if (selectedBorder.current === 'right') {
-                    canvasParamsCalc.current = {
-                        ...currentParams,
-                        right: Math.round(screenParams.width - e.pageX),
-                    };
-
-                    setCanvasParams(canvasParamsCalc.current);
-                }
+                setCanvasParams(canvasParamsCalc.current);
 
                 calcMockScreenParams();
             }
@@ -76,18 +63,13 @@ const useCanvasResize = () => {
         [breakpoints]
     );
 
-    const onBorderMouseDown = (e: React.MouseEvent<HTMLDivElement>, position: BorderProps['position']) => {
-        selectedBorder.current = position;
-
+    const onResizerMouseDown = () => {
         if (canvasRef.current) {
             const rect = canvasRef.current.getBoundingClientRect();
 
             canvasParamsCalc.current = {
                 ...DEFAULT_CANVAS_PARAMS,
-                position: 'absolute',
-                width: 'auto',
-                left: Math.round(rect.left),
-                right: Math.round(screenParams.width - rect.right),
+                width: Math.round(rect.width),
             };
 
             setCanvasParams(canvasParamsCalc.current);
@@ -116,7 +98,7 @@ const useCanvasResize = () => {
     return {
         mockScreenParams,
         canvasParams: canvasParams || canvasParamsCalc.current || {},
-        onBorderMouseDown,
+        onResizerMouseDown,
         onMouseUp,
         canvasRef,
     };

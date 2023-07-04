@@ -1,26 +1,28 @@
 import styled from 'styled-components';
+import { SCROLLBAR_WIDTH } from '../../../constants';
 
 export const Scrollable = styled.div`
-    position: relative;
+    position: absolute;
 
-    width: 100%;
-    height: 100vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    /* right: -${SCROLLBAR_WIDTH}px; */
+    right: 0;
 
     overflow-y: auto;
 
     &::-webkit-scrollbar {
-        width: 8px;
-        position: absolute;
-        right: 4px;
+        width: ${SCROLLBAR_WIDTH}px;
     }
 
     &::-webkit-scrollbar-track {
-        background-color: rgba(22, 119, 255, 45%);
+        background-color: rgba(22, 119, 255, 10%);
     }
 
     &::-webkit-scrollbar-thumb {
         background-color: rgba(22, 119, 255, 70%);
-        border-radius: 4px;
+        border-radius: ${SCROLLBAR_WIDTH / 2}px;
     }
 
     ::-webkit-resizer,

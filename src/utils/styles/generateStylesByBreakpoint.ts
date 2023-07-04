@@ -7,13 +7,13 @@ import { camelToKebabCase } from '../textHelpers';
 const generateStylesByBreakpoint = (
     stylesByBreakpoint?: StylesByBreakpoint | null,
     breakpoints?: Breakpoint[],
-    isEditing?: boolean
+    editor?: boolean
 ) => {
     if (!stylesByBreakpoint || !breakpoints || !breakpoints.length) {
         return css``;
     }
 
-    const queryParent = isEditing ? '@container editor' : '@media';
+    const queryParent = editor ? '@container editor' : '@media';
 
     let styleString = '';
 
