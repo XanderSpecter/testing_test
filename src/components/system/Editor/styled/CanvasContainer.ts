@@ -11,7 +11,7 @@ export const CanvasContainer = styled.div.attrs((props) => ({
 
     padding-right: ${SCROLLBAR_COMPENSATION}px;
 
-    max-height: 100vh;
+    max-height: 100%;
 
     background-color: #ffffff;
 `;

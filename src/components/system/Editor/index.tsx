@@ -20,7 +20,7 @@ export default function Editor({ element }: EditorProps) {
     return (
         <Canvas>
             <DragNDrop onDrop={(style, shortcut) => console.log(style, shortcut)}>
-                <div style={{ width: '100%', height: '100%', backgroundColor: 'red' }}></div>
+                <div style={{ width: '100%', height: '100%', backgroundColor: 'red', borderRadius: '50%' }}></div>
             </DragNDrop>
         </Canvas>
     );

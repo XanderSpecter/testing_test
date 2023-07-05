@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { RESIZER_WIDTH } from '../constants';
 
 export const DragNDropWrapper = styled.div.attrs((props) => ({
     style: { ...props.style },
@@ -6,9 +7,5 @@ export const DragNDropWrapper = styled.div.attrs((props) => ({
     position: absolute;
     cursor: move;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border: 1px solid rgba(22, 119, 255, 10%);
+    padding: ${RESIZER_WIDTH}px;
 `;

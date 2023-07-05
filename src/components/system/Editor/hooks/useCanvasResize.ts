@@ -2,7 +2,7 @@ import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { SCROLLBAR_COMPENSATION } from '../constants';
+import { MOUSEDOWN_LEFT_BUTTON, SCROLLBAR_COMPENSATION } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
@@ -66,7 +66,11 @@ const useCanvasResize = () => {
         [breakpoints]
     );
 
-    const onResizerMouseDown = () => {
+    const onResizerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.button !== MOUSEDOWN_LEFT_BUTTON) {
+            return;
+        }
+
         if (canvasRef.current) {
             const rect = canvasRef.current.getBoundingClientRect();
 
