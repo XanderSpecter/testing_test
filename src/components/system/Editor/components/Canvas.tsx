@@ -5,8 +5,8 @@ import { Typography } from 'antd';
 
 import { ScreenParamsProvider } from '@/utils/screenParamsProvider';
 import { EditorProvider } from '@/utils/editorProvider';
-import { Resizer, CanvasContainer, InfoLabel, Scrollable, CanvasWrapper, ScrollBarCompensator } from './styled';
-import useCanvasResize from '../../hooks/useCanvasResize';
+import { Resizer, CanvasContainer, InfoLabel, Scrollable, CanvasWrapper, ScrollBarCompensator } from '../styled';
+import useCanvasResize from '../hooks/useCanvasResize';
 
 const { Text } = Typography;
 
@@ -15,13 +15,13 @@ export default function Canvas({ children }: React.PropsWithChildren) {
 
     return (
         <CanvasWrapper onMouseUp={onMouseUp}>
+            <InfoLabel>
+                <Text color="#ffffff">
+                    {mockScreenParams.breakpoint}: {mockScreenParams.width}px
+                </Text>
+            </InfoLabel>
             <CanvasContainer ref={canvasRef as RefObject<HTMLDivElement>} style={canvasParams}>
                 <Resizer onMouseDown={onResizerMouseDown} />
-                <InfoLabel>
-                    <Text color="#ffffff">
-                        {mockScreenParams.breakpoint}: {mockScreenParams.width}px
-                    </Text>
-                </InfoLabel>
                 <ScreenParamsProvider mockScreenParams={mockScreenParams}>
                     <EditorProvider editing={true}>
                         <ScrollBarCompensator>

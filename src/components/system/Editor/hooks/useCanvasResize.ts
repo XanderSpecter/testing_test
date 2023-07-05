@@ -1,7 +1,8 @@
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { SCROLLBAR_COMPENSATION } from '../constants';
+import { HEADER_HEIGHT } from '../../AdminLayout/constants';
+import { MOUSEDOWN_LEFT_BUTTON, SCROLLBAR_COMPENSATION } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
@@ -24,15 +25,17 @@ const useCanvasResize = () => {
             let shortcut = breakpoints[0].name;
             const clientHeight = window.innerHeight || 0;
 
+            const viewportWidth = width - SCROLLBAR_COMPENSATION;
+
             breakpoints.forEach((bp) => {
-                if (width >= bp.screen) {
+                if (viewportWidth >= bp.screen) {
                     shortcut = bp.name;
                 }
             });
 
             setMockScreenParams({
                 width: width - SCROLLBAR_COMPENSATION,
-                height: clientHeight,
+                height: clientHeight - HEADER_HEIGHT,
                 breakpoint: shortcut,
                 verticalScrollOffset: 0,
             });
@@ -63,7 +66,11 @@ const useCanvasResize = () => {
         [breakpoints]
     );
 
-    const onResizerMouseDown = () => {
+    const onResizerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.button !== MOUSEDOWN_LEFT_BUTTON) {
+            return;
+        }
+
         if (canvasRef.current) {
             const rect = canvasRef.current.getBoundingClientRect();
 

@@ -1,4 +1,4 @@
-import Editor from '@/components/views/AdminCollection/components/Editor';
+import Editor from '@/components/system/Editor';
 import { BaseObject, Collection, CollectionElement } from '@/types/apiModels';
 
 interface CollectionPageProps {

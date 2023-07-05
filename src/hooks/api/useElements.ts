@@ -12,9 +12,9 @@ import {
     DeleteElementParams,
     deleteElement,
 } from '../../api/collection';
-import { BaseObject, CollectionElement, Collection } from '../../types/apiModels';
+import { BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
 
-interface UseElementsParams extends Collection {
+interface UseElementsParams extends CollectionParams {
     query?: BaseObject;
 }
 

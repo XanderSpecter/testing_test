@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { RESIZER_WIDTH } from '../../../constants';
+import { RESIZER_WIDTH } from '../constants';
 
 export const Resizer = styled.div`
     position: absolute;

@@ -40,6 +40,12 @@ function ScreenParamsProvider({ children, mockScreenParams }: React.PropsWithChi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [breakpoints]);
 
+    useEffect(() => {
+        if (mockScreenParams) {
+            setParams(mockScreenParams);
+        }
+    }, [mockScreenParams]);
+
     return <ScreenParamsContext.Provider value={params}>{children}</ScreenParamsContext.Provider>;
 }
 

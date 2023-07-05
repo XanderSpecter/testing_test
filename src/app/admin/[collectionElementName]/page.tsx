@@ -3,15 +3,15 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getElements } from '@/api/collection';
-import AdminCollection from '@/components/views/AdminCollection';
+import Collection from '@/components/system/Collection';
 import getQueryClient from '@/utils/queryClient/getQueryClient';
 import Hydrate from '@/utils/queryClient/hidrateClient';
-import { BaseObject, Collection } from '@/types/apiModels';
+import { BaseObject, CollectionParams } from '@/types/apiModels';
 import { DEFAULT_APP_TITLE } from '@/constants/appParams';
 import { checkIsCollectionAvailable, getCollectionParams } from '@/utils/collections';
 
 interface CollectionPageProps {
-    params: Collection;
+    params: CollectionParams;
     searchParams: BaseObject;
 }
 
@@ -42,7 +42,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
     return (
         <Hydrate state={dehydratedState}>
-            <AdminCollection collectionElementName={collectionElementName} query={searchParams} />
+            <Collection collectionElementName={collectionElementName} query={searchParams} />
         </Hydrate>
     );
 }

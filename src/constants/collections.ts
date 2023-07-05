@@ -38,7 +38,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
     },
     {
         name: 'breakpoints',
-        title: 'Параметры контрольных точек размера экрана',
+        title: 'Контрольные точки экрана',
         defaultSortKey: 'screen',
         fieldsMapping: {
             name: {

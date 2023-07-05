@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 
 import { CollectionElement } from '@/types/apiModels';
-import { Container } from '@/components/base/Grid';
 import Canvas from './components/Canvas';
-import { EditorWrapper } from './styled';
+import DragNDrop from './components/DragNDrop';
 
 interface EditorProps {
     element: CollectionElement;
@@ -19,12 +18,10 @@ export default function Editor({ element }: EditorProps) {
     }
 
     return (
-        <EditorWrapper>
-            <Canvas>
-                <Container>
-                    <div style={{ height: 1000, width: '30%', margin: 'auto', backgroundColor: 'green' }}></div>
-                </Container>
-            </Canvas>
-        </EditorWrapper>
+        <Canvas>
+            <DragNDrop onDrop={(style, shortcut) => console.log(style, shortcut)}>
+                <div style={{ width: '100%', height: '100%', backgroundColor: 'red', borderRadius: '50%' }}></div>
+            </DragNDrop>
+        </Canvas>
     );
 }

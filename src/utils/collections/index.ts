@@ -4,6 +4,10 @@ import { ValidationSchema } from '../validation/validateSchema';
 import isFieldValid from '../validation/isFieldValid';
 import { getRequiredParamError } from '../validation/errorMessages';
 
+export const getCorrectCollections = () => {
+    return AVAILABLE_COLLECTIONS.filter((c) => c.name && c.title && c.fieldsMapping && c.defaultSortKey);
+};
+
 export const checkIsCollectionAvailable = (collectionElementName?: unknown) => {
     if (!collectionElementName) {
         return false;

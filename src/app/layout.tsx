@@ -1,6 +1,5 @@
 import Providers from '@/utils/appProviders';
 import { DEFAULT_APP_TITLE } from '@/constants/appParams';
-import PageContainer from '@/components/base/PageContainer';
 
 import '../styles/reset.css';
 import '../styles/reset.css';
@@ -13,9 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="ru">
             <body>
-                <Providers>
-                    <PageContainer>{children}</PageContainer>
-                </Providers>
+                <Providers>{children}</Providers>
             </body>
         </html>
     );
