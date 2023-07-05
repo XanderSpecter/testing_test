@@ -1,17 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { CollectionElement } from '@/types/apiModels';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
+import { HeaderContentContext } from '../AdminLayout';
+import { Button } from 'antd';
+import { HeaderControls } from './styled';
 
 interface EditorProps {
     element: CollectionElement;
 }
 
 export default function Editor({ element }: EditorProps) {
+    const setHeaderContent = useContext(HeaderContentContext);
     const [editedElement, setEditedElement] = useState<CollectionElement>(element);
+
+    const onSave = () => {
+        console.log('saved');
+    };
+
+    useEffect(() => {
+        if (setHeaderContent) {
+            setHeaderContent(
+                <HeaderControls>
+                    <Button danger onClick={onSave}>
+                        Отмена
+                    </Button>
+                    <Button onClick={onSave}>Сохранить</Button>
+                </HeaderControls>
+            );
+        }
+    }, [setHeaderContent]);
 
     if (!editedElement) {
         return null;

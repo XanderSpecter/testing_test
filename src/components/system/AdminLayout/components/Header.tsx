@@ -3,14 +3,14 @@
 import React from 'react';
 import { Typography } from 'antd';
 
-import { HeaderWrapper, MenuLink } from '../styled';
+import { HeaderLinksWrapper, HeaderWrapper, MenuLink } from '../styled';
 import { getCorrectCollections } from '@/utils/collections';
 
 const collections = getCorrectCollections();
 
 const { Text } = Typography;
 
-export default function Header() {
+export default function Header({ children }: React.PropsWithChildren) {
     const renderLinks = () => {
         if (!collections.length) {
             return null;
@@ -23,5 +23,10 @@ export default function Header() {
         ));
     };
 
-    return <HeaderWrapper>{renderLinks()}</HeaderWrapper>;
+    return (
+        <HeaderWrapper>
+            <HeaderLinksWrapper>{renderLinks()}</HeaderLinksWrapper>
+            <HeaderLinksWrapper>{children}</HeaderLinksWrapper>
+        </HeaderWrapper>
+    );
 }

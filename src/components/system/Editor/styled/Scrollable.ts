@@ -13,6 +13,7 @@ export const Scrollable = styled.div`
 
     &::-webkit-scrollbar {
         width: ${SCROLLBAR_WIDTH}px;
+        height: ${SCROLLBAR_WIDTH}px;
     }
 
     &::-webkit-scrollbar-track {
