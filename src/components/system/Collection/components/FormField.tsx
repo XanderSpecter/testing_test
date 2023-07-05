@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { Input, Checkbox, Typography, InputNumber } from 'antd';
-import { FormEditableFieldType } from '@/types/apiModels';
+import { FormEditableFieldType, PossibleFieldType } from '@/types/apiModels';
 import { Column, Row } from '@/components/base/Grid';
 import { isTypeEditableInForm } from '../helpers';
 import { ELEMENT_STYLES } from '../constants';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { FieldParams } from '@/types/collections';
 
-export type FieldValue<T extends FormEditableFieldType> = T extends 'string'
+export type FieldValue<T extends FormEditableFieldType> = T extends PossibleFieldType.STRING
     ? string
-    : T extends 'number'
+    : T extends PossibleFieldType.NUMBER
     ? number
     : boolean;
 
@@ -87,7 +87,7 @@ export default function FormField<T extends FormEditableFieldType>({
         }
 
         switch (type) {
-            case 'number':
+            case PossibleFieldType.NUMBER:
                 return (
                     <InputNumber
                         style={INPUT_STYLES}
@@ -100,7 +100,7 @@ export default function FormField<T extends FormEditableFieldType>({
                         onChange={onInputNumberFieldChange}
                     />
                 );
-            case 'boolean':
+            case PossibleFieldType.BOOLEAN:
                 return (
                     <Checkbox disabled={disabled} id={id} checked={Boolean(value)} onChange={onCheckboxFieldChange}>
                         {title}
@@ -122,7 +122,7 @@ export default function FormField<T extends FormEditableFieldType>({
     };
 
     const renderHeader = () => {
-        if (!title || type === 'boolean') {
+        if (!title || type === PossibleFieldType.BOOLEAN) {
             return null;
         }
 
@@ -138,7 +138,7 @@ export default function FormField<T extends FormEditableFieldType>({
     return (
         <>
             {renderHeader()}
-            <Row stylesByBreakpoint={type === 'boolean' ? ELEMENT_STYLES.row : null}>
+            <Row stylesByBreakpoint={type === PossibleFieldType.BOOLEAN ? ELEMENT_STYLES.row : null}>
                 <Column>{renderFieldByType()}</Column>
             </Row>
         </>

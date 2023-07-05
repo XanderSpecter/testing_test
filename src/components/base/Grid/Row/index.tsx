@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useContext } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
 import { styled } from 'styled-components';
 
-import { WithBreakpointStyles, WithEditorSupport } from '@/types/elementStyles';
+import { WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
 import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
 import { EditorContext } from '@/utils/editorProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 
-const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles>>>`
+const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles<PropsWithChildren>>>>`
     display: flex;
     margin-left: -4px;
     margin-right: -4px;
@@ -22,7 +22,7 @@ const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointSty
         generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
-const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
+const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 

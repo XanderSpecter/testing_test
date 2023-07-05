@@ -2,10 +2,10 @@ import styled, { css } from 'styled-components';
 import { RESIZER_WIDTH } from '../constants';
 
 export enum DnDResizerPosition {
-    TOP = 'top',
-    RIGHT = 'right',
-    BOTTOM = 'bottom',
-    LEFT = 'left',
+    TOP = 'TOP',
+    RIGHT = 'RIGHT',
+    BOTTOM = 'BOTTOM',
+    LEFT = 'LEFT',
 }
 
 const calcStyles = (pos: DnDResizerPosition) => {

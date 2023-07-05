@@ -3,6 +3,7 @@ import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } f
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
 import { MOUSEDOWN_LEFT_BUTTON, RESIZER_WIDTH } from '../constants';
 import { DnDResizerPosition } from '../styled/DnDResizer';
+import { WithBreakpointStyles } from '@/types/HTMLElements';
 
 const DEFAULT_ELEMENT_STYLE = {
     width: 50,
@@ -11,10 +12,11 @@ const DEFAULT_ELEMENT_STYLE = {
     left: 50,
 };
 
-export interface UseDragNDropParams {
-    style?: CSSProperties;
+interface UseDragNDropParams {
     onDrop?: (style: CSSProperties, screenShortcut: string) => void;
 }
+
+export type DragNDropProps = WithBreakpointStyles<UseDragNDropParams>;
 
 interface CoordinateParams {
     x: number;
@@ -28,13 +30,13 @@ interface ChangableStyles {
     height: number;
 }
 
-const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
+const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
 
-    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>(style || DEFAULT_ELEMENT_STYLE);
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>(DEFAULT_ELEMENT_STYLE);
 
     const dndRef = useRef<HTMLDivElement>();
-    const calcStyle = useRef<CSSProperties | null>();
+    const calcStyles = useRef<CSSProperties | null>();
     const cursorStartPosition = useRef<CoordinateParams>({
         x: 0,
         y: 0,
@@ -104,7 +106,7 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
             e.stopPropagation();
 
             const offsets = calcCursorOffsets(e);
-            const currentStyles = calcStyle.current;
+            const currentStyles = calcStyles.current;
 
             if (currentStyles && offsets && startStyles.current) {
                 if (resizerPos.current) {
@@ -113,7 +115,7 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
                     if (calculatedSizes) {
                         const { width, height, top, left } = calculatedSizes;
 
-                        calcStyle.current = {
+                        calcStyles.current = {
                             ...currentStyles,
                             top,
                             left,
@@ -121,7 +123,7 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
                             height: height < 0 ? 0 : height,
                         };
 
-                        setCalculatedStyle(calcStyle.current);
+                        setCalculatedStyle(calcStyles.current);
                     }
 
                     return;
@@ -131,13 +133,13 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
 
                 const { top, left } = startStyles.current;
 
-                calcStyle.current = {
+                calcStyles.current = {
                     ...currentStyles,
                     top: top + y,
                     left: left + x,
                 };
 
-                setCalculatedStyle(calcStyle.current);
+                setCalculatedStyle(calcStyles.current);
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,7 +160,7 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
         }
 
         if (dndRef.current) {
-            const currentStyles = calcStyle.current || DEFAULT_ELEMENT_STYLE;
+            const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
 
             console.log(width, height);
@@ -173,22 +175,22 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
                 width: width - RESIZER_WIDTH * 2,
                 height: height - RESIZER_WIDTH * 2,
             };
-            calcStyle.current = {
+            calcStyles.current = {
                 ...currentStyles,
             };
 
-            setCalculatedStyle(calcStyle.current);
+            setCalculatedStyle(calcStyles.current);
 
             window.addEventListener('mousemove', onMouseMove);
         }
     };
 
     const onMouseUp = () => {
-        if (calcStyle.current) {
-            setCalculatedStyle(calcStyle.current);
+        if (calcStyles.current) {
+            setCalculatedStyle(calcStyles.current);
 
             if (onDrop) {
-                onDrop(calcStyle.current, screenParams.breakpoint);
+                onDrop(calcStyles.current, screenParams.breakpoint);
             }
         }
 
@@ -199,15 +201,17 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
     };
 
     useEffect(() => {
-        if (style) {
-            setCalculatedStyle(style);
-            calcStyle.current = style;
+        if (stylesByBreakpoint && screenParams?.breakpoint) {
+            const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || DEFAULT_ELEMENT_STYLE;
+
+            setCalculatedStyle(currentStyles);
+            calcStyles.current = currentStyles;
         }
-    }, [style]);
+    }, [stylesByBreakpoint, screenParams]);
 
     return {
         dndRef,
-        calculatedStyle: calculatedStyle || calcStyle.current || {},
+        calculatedStyle: calculatedStyle || calcStyles.current || {},
         onMouseUp,
         onDnDMouseDown,
     };

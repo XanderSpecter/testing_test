@@ -9,7 +9,11 @@ const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     height: '100%',
 };
 
-const useCanvasResize = () => {
+interface UseCanvasResizeParams {
+    onBreakpointChange: (shortcut: string) => void;
+}
+
+const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
     const breakpoints = useContext(BreakpointsContext);
 
     const [mockScreenParams, setMockScreenParams] = useState<ScreenParams>(DEFAULT_SCREEN_PARAMS);
@@ -39,7 +43,12 @@ const useCanvasResize = () => {
                 breakpoint: shortcut,
                 verticalScrollOffset: 0,
             });
+
+            if (onBreakpointChange && typeof onBreakpointChange === 'function') {
+                onBreakpointChange(shortcut);
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [breakpoints, canvasRef]);
 
     const onMouseMove = useCallback(

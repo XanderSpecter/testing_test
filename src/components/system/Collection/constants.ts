@@ -1,4 +1,4 @@
-import { StylesByBreakpoint } from '@/types/elementStyles';
+import { StylesByBreakpoint } from '@/types/HTMLElements';
 
 export const COLS = {
     text: { all: 2 },

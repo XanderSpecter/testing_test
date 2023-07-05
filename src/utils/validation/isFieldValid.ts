@@ -6,15 +6,13 @@ const isFieldValid = (field: unknown, type?: PossibleFieldType) => {
     }
 
     switch (type) {
-        case 'string':
+        case PossibleFieldType.STRING:
             return typeof field === 'string';
-        case 'number':
+        case PossibleFieldType.NUMBER:
             return typeof field === 'number' && !Number.isNaN(field);
-        case 'boolean':
+        case PossibleFieldType.BOOLEAN:
             return typeof field === 'boolean';
-        case 'object':
-            return typeof field === 'object';
-        case 'array':
+        case PossibleFieldType.EDITOR:
             return Array.isArray(field);
         default:
             return true;

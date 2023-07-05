@@ -10,8 +10,15 @@ import useCanvasResize from '../hooks/useCanvasResize';
 
 const { Text } = Typography;
 
-export default function Canvas({ children }: React.PropsWithChildren) {
-    const { mockScreenParams, canvasParams, onResizerMouseDown, onMouseUp, canvasRef } = useCanvasResize();
+interface CanvasProps {
+    onCanvasClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+    onBreakpointChange: (shortcut: string) => void;
+}
+
+export default function Canvas({ children, onCanvasClick, onBreakpointChange }: React.PropsWithChildren<CanvasProps>) {
+    const { mockScreenParams, canvasParams, onResizerMouseDown, onMouseUp, canvasRef } = useCanvasResize({
+        onBreakpointChange,
+    });
 
     return (
         <CanvasWrapper onMouseUp={onMouseUp}>
@@ -25,7 +32,7 @@ export default function Canvas({ children }: React.PropsWithChildren) {
                 <ScreenParamsProvider mockScreenParams={mockScreenParams}>
                     <EditorProvider editing={true}>
                         <ScrollBarCompensator>
-                            <Scrollable>{children}</Scrollable>
+                            <Scrollable onClick={onCanvasClick}>{children}</Scrollable>
                         </ScrollBarCompensator>
                     </EditorProvider>
                 </ScreenParamsProvider>

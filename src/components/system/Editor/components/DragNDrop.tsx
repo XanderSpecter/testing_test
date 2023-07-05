@@ -4,10 +4,10 @@ import React, { RefObject } from 'react';
 
 import { DnDResizer, DragNDropWrapper } from '../styled';
 import { DnDResizerPosition } from '../styled/DnDResizer';
-import useDragNDrop, { UseDragNDropParams } from '../hooks/useDragNDrop';
+import useDragNDrop, { DragNDropProps } from '../hooks/useDragNDrop';
 
-export default function DragNDrop({ children, style, onDrop }: React.PropsWithChildren<UseDragNDropParams>) {
-    const { dndRef, calculatedStyle, onDnDMouseDown, onMouseUp } = useDragNDrop({ style, onDrop });
+export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: React.PropsWithChildren<DragNDropProps>) {
+    const { dndRef, calculatedStyle, onDnDMouseDown, onMouseUp } = useDragNDrop({ stylesByBreakpoint, onDrop });
 
     return (
         <DragNDropWrapper

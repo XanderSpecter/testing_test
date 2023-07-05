@@ -3,13 +3,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 
-import { StylesByBreakpoint, WithBreakpointStyles, WithEditorSupport } from '@/types/elementStyles';
+import { StylesByBreakpoint, WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
 import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
 import { EditorContext } from '@/utils/editorProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { recalcColumnStyles } from './helpers';
 
-const StyledColumn = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles>>>`
+const StyledColumn = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles<BaseColumnProps>>>>`
     display: block;
     width: 100%;
 

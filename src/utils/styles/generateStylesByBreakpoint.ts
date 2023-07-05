@@ -1,4 +1,4 @@
-import { StylesByBreakpoint } from '@/types/elementStyles';
+import { StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 import { css } from 'styled-components';
 import { CSSProperties } from 'react';

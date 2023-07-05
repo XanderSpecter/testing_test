@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
@@ -20,7 +20,7 @@ interface CollectionProps extends CollectionParams {
 const { Title } = Typography;
 
 export default function Collection({ collectionElementName, query }: CollectionProps) {
-    const { elementsList, isLoading, createElement, updateElement, removeElement } = useElements({
+    const { elementsList, isLoading, createElement, updateElement, removeElement, refetchElementsList } = useElements({
         collectionElementName,
         query,
     });
@@ -42,6 +42,11 @@ export default function Collection({ collectionElementName, query }: CollectionP
         return q;
     }, [fieldsMapping]);
     const customMaxCols = useMemo(() => ({ all: quantity * 2 + 1 }), [quantity]);
+
+    useEffect(() => {
+        refetchElementsList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const onSubmit = (element: Partial<CollectionElement>) => {
         setIsFormOpened(false);
@@ -100,7 +105,6 @@ export default function Collection({ collectionElementName, query }: CollectionP
                     setIsFormOpened(true);
                 }}
                 onDeleteClick={() => removeElement(e._id)}
-                onEditorOpenClick={(_id) => console.log(_id)}
             />
         ));
     };

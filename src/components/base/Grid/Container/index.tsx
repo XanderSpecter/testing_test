@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useContext, useMemo } from 'react';
 import { styled } from 'styled-components';
 
-import { StylesByBreakpoint, WithBreakpointStyles, WithEditorSupport } from '@/types/elementStyles';
+import { StylesByBreakpoint, WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
 import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { mergeStylesByBreakpoint } from '@/utils/styles/mergeStyles';
@@ -15,7 +15,7 @@ const DEFAULT_CONTAINER_STYLES: StylesByBreakpoint = {
     desktop: { padding: '0', maxWidth: '1200px' },
 };
 
-const StyledContainer = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles>>>`
+const StyledContainer = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles<PropsWithChildren>>>>`
     display: block;
     width: 100%;
     margin: auto;
@@ -26,7 +26,7 @@ const StyledContainer = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpo
         generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
-const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
+const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 
