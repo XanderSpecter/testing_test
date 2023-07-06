@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { RESIZER_WIDTH } from '../constants';
+import { RESIZER_SIZE } from '../constants';
 
 export enum DnDResizerPosition {
     TOP = 'TOP',
@@ -19,7 +19,7 @@ const calcStyles = (pos: DnDResizerPosition) => {
                 top: 0;
                 right: 0;
                 bottom: 0;
-                width: ${RESIZER_WIDTH}px;
+                width: ${RESIZER_SIZE}px;
                 cursor: ew-resize;
             `;
         case DnDResizerPosition.LEFT:
@@ -27,7 +27,7 @@ const calcStyles = (pos: DnDResizerPosition) => {
                 top: 0;
                 left: 0;
                 bottom: 0;
-                width: ${RESIZER_WIDTH}px;
+                width: ${RESIZER_SIZE}px;
                 cursor: ew-resize;
             `;
         case DnDResizerPosition.BOTTOM:
@@ -35,7 +35,7 @@ const calcStyles = (pos: DnDResizerPosition) => {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                height: ${RESIZER_WIDTH}px;
+                height: ${RESIZER_SIZE}px;
                 cursor: ns-resize;
             `;
         default:
@@ -43,7 +43,7 @@ const calcStyles = (pos: DnDResizerPosition) => {
                 left: 0;
                 right: 0;
                 top: 0;
-                height: ${RESIZER_WIDTH}px;
+                height: ${RESIZER_SIZE}px;
                 cursor: ns-resize;
             `;
     }

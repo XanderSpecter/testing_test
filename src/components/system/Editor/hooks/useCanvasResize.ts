@@ -2,7 +2,7 @@ import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { DEFAULT_SCREEN_PARAMS, ScreenParams } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { MOUSEDOWN_LEFT_BUTTON, SCROLLBAR_COMPENSATION } from '../constants';
+import { MOUSEDOWN_LEFT_BUTTON, RESIZER_SIZE } from '../constants';
 
 const DEFAULT_CANVAS_PARAMS: CSSProperties = {
     width: 1600,
@@ -29,7 +29,7 @@ const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
             let shortcut = breakpoints[0].name;
             const clientHeight = window.innerHeight || 0;
 
-            const viewportWidth = width - SCROLLBAR_COMPENSATION;
+            const viewportWidth = width - RESIZER_SIZE;
 
             breakpoints.forEach((bp) => {
                 if (viewportWidth >= bp.screen) {
@@ -38,7 +38,7 @@ const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
             });
 
             setMockScreenParams({
-                width: width - SCROLLBAR_COMPENSATION,
+                width: width - RESIZER_SIZE,
                 height: clientHeight - HEADER_HEIGHT,
                 breakpoint: shortcut,
                 verticalScrollOffset: 0,
@@ -59,7 +59,7 @@ const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
             if (canvasParamsCalc.current) {
                 const currentParams = canvasParamsCalc.current;
 
-                const width = e.pageX - SCROLLBAR_COMPENSATION;
+                const width = e.pageX - RESIZER_SIZE;
 
                 canvasParamsCalc.current = {
                     ...currentParams,
@@ -85,7 +85,7 @@ const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
 
             canvasParamsCalc.current = {
                 ...DEFAULT_CANVAS_PARAMS,
-                width: Math.round(rect.width - SCROLLBAR_COMPENSATION),
+                width: Math.round(rect.width - RESIZER_SIZE),
             };
 
             setCanvasParams(canvasParamsCalc.current);

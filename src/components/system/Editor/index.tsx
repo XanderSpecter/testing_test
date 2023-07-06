@@ -2,9 +2,12 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { useRouter } from 'next/navigation';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { BaseElementParams } from '@/types/HTMLElements';
+import { BaseBlockParams, StylesByBreakpoint } from '@/types/HTMLElements';
+import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
 import { HeaderContentContext } from '../AdminLayout';
@@ -12,8 +15,7 @@ import { Button } from 'antd';
 import { HeaderControls, NewBlockButton } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
-import BaseElement from './components/BaseElement';
-import { PlusOutlined } from '@ant-design/icons';
+import BaseBlock from '../../base/BaseBlock';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -23,18 +25,69 @@ interface EditorProps extends CollectionParams {
 export default function Editor({ id, field, collectionElementName }: EditorProps) {
     const setHeaderContent = useContext(HeaderContentContext);
 
-    const { elementsList, isLoading } = useElements({
+    const router = useRouter();
+
+    const { elementsList, isLoading, updateElement, isOperationRunning } = useElements({
         collectionElementName,
         query: { _id: id },
     });
 
     const [editedElement, setEditedElement] = useState<CollectionElement | null>();
-    const [editedField, setEditedField] = useState<BaseElementParams[] | null>();
-    const [selectedElement, setSelectedElement] = useState<string | null>(null);
+    const [editedField, setEditedField] = useState<BaseBlockParams[] | null>();
+    const [selectedBlock, setSelectedBlock] = useState<BaseBlockParams | null>(null);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
 
     const onSave = () => {
-        console.log(elementsList);
+        if (!editedElement) {
+            return;
+        }
+
+        updateElement(editedElement);
+    };
+
+    const clearAndExit = () => {
+        localStorage.removeItem(id);
+
+        router.push(`${Routes.ADMIN}/${collectionElementName}`);
+    };
+
+    useEffect(() => {
+        if (isOperationRunning === false) {
+            clearAndExit();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOperationRunning]);
+
+    const onDrop = (style: React.CSSProperties, screenShortcut: string) => {
+        if (!selectedBlock || !editedElement || !editedField) {
+            return;
+        }
+
+        let updatedStyles: StylesByBreakpoint = {};
+
+        const { stylesByBreakpoint } = selectedBlock;
+
+        if (!stylesByBreakpoint) {
+            updatedStyles[screenShortcut] = style;
+        } else {
+            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
+        }
+
+        const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
+        const updatedField = editedField.map((b) => {
+            if (b.editorId === updatedSelectedBlock.editorId) {
+                return updatedSelectedBlock;
+            }
+
+            return b;
+        });
+        const updatedElement = { ...editedElement, [field]: updatedField };
+
+        setSelectedBlock(updatedSelectedBlock);
+        setEditedField(updatedField);
+        setEditedElement(updatedElement);
+
+        localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
     };
 
     const addBlock = () => {
@@ -42,12 +95,12 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             return;
         }
 
-        const newBlock: BaseElementParams = {
+        const newBlock: BaseBlockParams = {
             tag: 'div',
             editorId: uuid(),
             stylesByBreakpoint: {
-                [currentMockedBreakpoint]: {
-                    height: '50px',
+                all: {
+                    height: 50,
                     backgroundColor: 'red',
                 },
             },
@@ -58,10 +111,24 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
     useEffect(() => {
         if (elementsList && elementsList.length === 1) {
-            setEditedElement(elementsList[0]);
-
             const newEditedField = elementsList[0][field];
+            const id = elementsList[0]._id;
 
+            if (!newEditedField || !Array.isArray(newEditedField) || !newEditedField.length) {
+                const cache = localStorage.getItem(String(id));
+
+                if (cache) {
+                    const cachedElement: CollectionElement = JSON.parse(cache);
+                    const cachedField = cachedElement[field];
+
+                    setEditedElement(cachedElement);
+                    setEditedField(Array.isArray(cachedField) ? cachedField : []);
+
+                    return;
+                }
+            }
+
+            setEditedElement(elementsList[0]);
             setEditedField(Array.isArray(newEditedField) ? newEditedField : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,19 +138,23 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         if (setHeaderContent) {
             setHeaderContent(
                 <HeaderControls>
-                    <Button danger onClick={onSave}>
+                    <Button danger onClick={() => clearAndExit()}>
                         Отмена
                     </Button>
-                    <Button onClick={onSave}>Сохранить</Button>
+                    <Button onClick={() => onSave()}>Сохранить</Button>
                 </HeaderControls>
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setHeaderContent]);
+    }, [setHeaderContent, editedElement]);
 
     const onCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((e.target as HTMLDivElement).dataset.editorId) {
-            setSelectedElement(String((e.target as HTMLDivElement).dataset.editorId));
+            const block = editedField?.find((b) => b.editorId === (e.target as HTMLDivElement).dataset.editorId);
+
+            if (block) {
+                setSelectedBlock(block);
+            }
         }
     };
 
@@ -93,19 +164,15 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
 
         return editedField.map((e) => {
-            if (e.editorId === selectedElement) {
+            if (e.editorId === selectedBlock?.editorId) {
                 return (
-                    <DragNDrop
-                        stylesByBreakpoint={e.stylesByBreakpoint}
-                        key={e.editorId}
-                        onDrop={(style, shortcut) => console.log(style, shortcut)}
-                    >
-                        <BaseElement tag={e.tag} editorId={e.editorId} />
+                    <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
+                        <BaseBlock tag={e.tag} editorId={e.editorId} />
                     </DragNDrop>
                 );
             }
 
-            return <BaseElement key={e.editorId} {...e} />;
+            return <BaseBlock key={e.editorId} {...e} />;
         });
     };
 

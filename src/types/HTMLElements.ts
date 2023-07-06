@@ -22,10 +22,10 @@ export enum ElementType {
     COMPONENT = 'COMPONENT',
 }
 
-interface ElementParams {
+interface BlockParams {
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
     stylesByBreakpoint?: StylesByBreakpoint | null;
 }
 
-export type BaseElementParams = WithBreakpointStyles<ElementParams>;
+export type BaseBlockParams = WithBreakpointStyles<BlockParams>;

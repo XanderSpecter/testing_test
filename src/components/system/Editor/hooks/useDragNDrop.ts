@@ -1,11 +1,19 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { MOUSEDOWN_LEFT_BUTTON, RESIZER_WIDTH } from '../constants';
+import { MOUSEDOWN_LEFT_BUTTON } from '../constants';
 import { DnDResizerPosition } from '../styled/DnDResizer';
 import { WithBreakpointStyles } from '@/types/HTMLElements';
 
-const DEFAULT_ELEMENT_STYLE = {
+const DEFAULT_ELEMENT_STYLE: CSSProperties = {
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    top: 50,
+    left: 50,
+};
+
+const DEFAULT_COORDINATES = {
     width: 50,
     height: 50,
     top: 50,
@@ -42,7 +50,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         y: 0,
     });
     const startStyles = useRef<ChangableStyles>({
-        ...DEFAULT_ELEMENT_STYLE,
+        ...DEFAULT_COORDINATES,
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
 
@@ -133,10 +141,13 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                 const { top, left } = startStyles.current;
 
+                const calculatedTop = top + y;
+                const calculatedLeft = left + x;
+
                 calcStyles.current = {
                     ...currentStyles,
-                    top: top + y,
-                    left: left + x,
+                    top: calculatedTop < 0 ? 0 : calculatedTop,
+                    left: calculatedLeft < 0 ? 0 : calculatedLeft,
                 };
 
                 setCalculatedStyle(calcStyles.current);
@@ -163,8 +174,6 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
 
-            console.log(width, height);
-
             cursorStartPosition.current = {
                 x: e.pageX,
                 y: e.pageY,
@@ -172,8 +181,8 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             startStyles.current = {
                 top: top - HEADER_HEIGHT,
                 left,
-                width: width - RESIZER_WIDTH * 2,
-                height: height - RESIZER_WIDTH * 2,
+                width: width,
+                height: height,
             };
             calcStyles.current = {
                 ...currentStyles,
@@ -202,9 +211,17 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
     useEffect(() => {
         if (stylesByBreakpoint && screenParams?.breakpoint) {
-            const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || DEFAULT_ELEMENT_STYLE;
+            const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || stylesByBreakpoint?.all;
 
-            setCalculatedStyle(currentStyles);
+            if (currentStyles && !currentStyles.width) {
+                currentStyles.width = screenParams.width;
+            }
+
+            if (currentStyles && !currentStyles.position) {
+                currentStyles.position = 'absolute';
+            }
+
+            setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
             calcStyles.current = currentStyles;
         }
     }, [stylesByBreakpoint, screenParams]);

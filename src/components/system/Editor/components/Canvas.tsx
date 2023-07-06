@@ -31,9 +31,7 @@ export default function Canvas({ children, onCanvasClick, onBreakpointChange }: 
                 <Resizer onMouseDown={onResizerMouseDown} />
                 <ScreenParamsProvider mockScreenParams={mockScreenParams}>
                     <EditorProvider editing={true}>
-                        <ScrollBarCompensator>
-                            <Scrollable onClick={onCanvasClick}>{children}</Scrollable>
-                        </ScrollBarCompensator>
+                        <Scrollable onClick={onCanvasClick}>{children}</Scrollable>
                     </EditorProvider>
                 </ScreenParamsProvider>
             </CanvasContainer>

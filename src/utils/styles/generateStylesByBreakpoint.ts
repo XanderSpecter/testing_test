@@ -33,7 +33,9 @@ const generateStylesByBreakpoint = (
                 return;
             }
 
-            breakpointStyleString += `${camelToKebabCase(key)}: ${value};\n`;
+            const withUnits = typeof value === 'number' ? `${value}px` : value;
+
+            breakpointStyleString += `${camelToKebabCase(key)}: ${withUnits};\n`;
         });
 
         styleString += `${queryParent} (min-width: ${b.screen}px) {

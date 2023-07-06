@@ -3,7 +3,7 @@
 import React, { useContext } from 'react';
 import { styled } from 'styled-components';
 
-import { BaseElementParams, WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
+import { BaseBlockParams, WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
 import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
@@ -13,7 +13,7 @@ const StyledBaseElement = styled.div<WithEditorSupport<WithBreakpoints<WithBreak
         generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
 `;
 
-const BaseElement = ({ stylesByBreakpoint, tag, editorId }: BaseElementParams) => {
+const BaseBlock = ({ stylesByBreakpoint, tag, editorId }: BaseBlockParams) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 
@@ -28,4 +28,4 @@ const BaseElement = ({ stylesByBreakpoint, tag, editorId }: BaseElementParams) =
     );
 };
 
-export default BaseElement;
+export default BaseBlock;
