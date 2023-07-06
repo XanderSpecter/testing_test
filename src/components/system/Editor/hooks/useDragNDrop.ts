@@ -337,6 +337,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         dndRef,
         calculatedStyle: calculatedStyle,
         isStatic: blockPositioning.current === BlockPosition.STATIC,
+        screenWidth: screenParams.width,
         onMouseUp,
         onDnDMouseDown,
     };

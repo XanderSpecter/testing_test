@@ -1,41 +1,38 @@
 import styled, { css } from 'styled-components';
 import { DnDResizerPosition } from './DnDResizer';
 
-interface DnDResizerLabelProps {
+export interface DnDResizerLabelProps {
     position: DnDResizerPosition;
-    distance?: string | number;
+    distanceLabel?: string | number;
+    distance?: number;
 }
 
-const calcStyles = (pos: DnDResizerPosition, distance?: string | number) => {
-    if (!pos || !distance) {
+const calcStyles = ({ position, distance }: DnDResizerLabelProps) => {
+    if (!position || !distance) {
         return css``;
     }
 
-    switch (pos) {
+    switch (position) {
         case DnDResizerPosition.RIGHT:
             return css`
-                top: 0;
-                right: 0;
-                bottom: 0;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                border-radius: 4px;
+                left: calc(100% + ${distance / 2}px);
             `;
         case DnDResizerPosition.LEFT:
             return css`
-                top: 0;
-                left: 0;
-                bottom: 0;
-            `;
-        case DnDResizerPosition.BOTTOM:
-            return css`
-                left: 0;
-                right: 0;
-                bottom: 0;
+                top: 50%;
+                transform: translate(50%, -50%);
+                border-radius: 4px;
+                right: calc(100% + ${distance / 2}px);
             `;
         default:
             return css`
                 left: 50%;
-                transform: translateX(-50%);
+                transform: translate(-50%, 50%);
                 border-radius: 4px;
-                top: -50%;
+                bottom: calc(100% + ${distance / 2}px);
             `;
     }
 };
@@ -60,7 +57,7 @@ export const DnDResizerLabel = styled.div<DnDResizerLabelProps>`
 
     z-index: 1;
 
-    ${(props) => calcStyles(props.position, props.distance)};
+    ${(props) => calcStyles(props)};
 
     & * {
         color: #ffffff;
@@ -69,5 +66,7 @@ export const DnDResizerLabel = styled.div<DnDResizerLabelProps>`
         line-height: 12px;
 
         display: block;
+
+        white-space: nowrap;
     }
 `;

@@ -1,23 +1,47 @@
 'use client';
 
-import React, { RefObject } from 'react';
+import React, { RefObject, useMemo } from 'react';
 import { Typography } from 'antd';
 
 import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DragNDropWrapper } from '../styled';
 import { DnDResizerPosition } from '../styled/DnDResizer';
 import useDragNDrop, { DragNDropProps } from '../hooks/useDragNDrop';
+import { DnDResizerLabelProps } from '../styled/DnDResizerLabel';
+import { recalcWidthAndMargins } from '../helpers';
 
 const { Text } = Typography;
 
 export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: React.PropsWithChildren<DragNDropProps>) {
-    const { dndRef, calculatedStyle, isStatic, onDnDMouseDown, onMouseUp } = useDragNDrop({
+    const { dndRef, calculatedStyle, isStatic, screenWidth, onDnDMouseDown, onMouseUp } = useDragNDrop({
         stylesByBreakpoint,
         onDrop,
     });
 
+    const { calculatedMarginLeft, calculatedMarginRight } = useMemo(
+        () =>
+            recalcWidthAndMargins({
+                width: calculatedStyle?.width || 0,
+                marginLeft: calculatedStyle?.marginLeft || 0,
+                screenWidth,
+            }),
+        [calculatedStyle, screenWidth]
+    );
+
     if (!calculatedStyle) {
         return children;
     }
+
+    const renderDistanceLabel = ({ position, distanceLabel, distance }: DnDResizerLabelProps) => {
+        if (!position || !distance || !distanceLabel) {
+            return null;
+        }
+
+        return (
+            <DnDResizerLabel position={position} distanceLabel={distanceLabel} distance={distance}>
+                <Text>{distanceLabel}</Text>
+            </DnDResizerLabel>
+        );
+    };
 
     return (
         <DragNDropWrapper
@@ -27,16 +51,27 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
             ref={dndRef as RefObject<HTMLDivElement>}
         >
             <DnDResizer data-pos={DnDResizerPosition.TOP} position={DnDResizerPosition.TOP}>
-                <DnDResizerLabel
-                    position={DnDResizerPosition.TOP}
-                    distance={calculatedStyle.top || calculatedStyle.marginTop}
-                >
-                    <Text>{calculatedStyle.top || calculatedStyle.marginTop}</Text>
-                </DnDResizerLabel>
+                {renderDistanceLabel({
+                    position: DnDResizerPosition.TOP,
+                    distanceLabel: calculatedStyle.top || calculatedStyle.marginTop,
+                    distance: parseInt(String(calculatedStyle.top)) || parseInt(String(calculatedStyle.marginTop)),
+                })}
             </DnDResizer>
-            <DnDResizer data-pos={DnDResizerPosition.RIGHT} position={DnDResizerPosition.RIGHT} />
+            <DnDResizer data-pos={DnDResizerPosition.RIGHT} position={DnDResizerPosition.RIGHT}>
+                {renderDistanceLabel({
+                    position: DnDResizerPosition.RIGHT,
+                    distanceLabel: calculatedStyle.right || calculatedStyle.marginRight,
+                    distance: parseInt(String(calculatedStyle.right)) || calculatedMarginRight,
+                })}
+            </DnDResizer>
             <DnDResizer data-pos={DnDResizerPosition.BOTTOM} position={DnDResizerPosition.BOTTOM} />
-            <DnDResizer data-pos={DnDResizerPosition.LEFT} position={DnDResizerPosition.LEFT} />
+            <DnDResizer data-pos={DnDResizerPosition.LEFT} position={DnDResizerPosition.LEFT}>
+                {renderDistanceLabel({
+                    position: DnDResizerPosition.LEFT,
+                    distanceLabel: calculatedStyle.left || calculatedStyle.marginLeft,
+                    distance: parseInt(String(calculatedStyle.left)) || calculatedMarginLeft,
+                })}
+            </DnDResizer>
             <DnDInfoLabel>
                 <Text>Позиционирование: {isStatic ? 'Относительное' : 'Абсолютное'}</Text>
                 <br />

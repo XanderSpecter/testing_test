@@ -1,6 +1,6 @@
 interface RecalcWidthAndMarginsParams {
-    width: string | number;
-    marginLeft: string | number;
+    width?: string | number;
+    marginLeft?: string | number;
     screenWidth: number;
 }
 
