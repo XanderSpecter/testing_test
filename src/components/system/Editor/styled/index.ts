@@ -9,3 +9,5 @@ export { DnDResizer } from './DnDResizer';
 export { HeaderControls } from './HeaderControls';
 export { NewBlockButton } from './NewBlockButton';
 export { ContextMenuWrapper } from './ContextMenuWrapper';
+export { DnDInfoLabel } from './DnDInfoLabel';
+export { DnDResizerLabel } from './DnDResizerLabel';

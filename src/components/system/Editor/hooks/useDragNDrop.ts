@@ -218,8 +218,6 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                         calcMarginLeft < calcMarginRight - ACCURACY_TOLERANCE ||
                         calcMarginRight < calcMarginLeft - ACCURACY_TOLERANCE;
 
-                    console.log(calcMarginLeft, calcMarginRight);
-
                     positionStyles.top = 0;
                     positionStyles.left = 0;
                     positionStyles.marginTop = renderedMarginTop;
@@ -254,6 +252,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
         if (dndRef.current) {
             const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
+
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
             const { position } = dndRef.current.style;
 
@@ -268,9 +267,11 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             if (!position || BLOCK_POSITIONS_STATIC.includes(position as BlockPosition)) {
                 blockPositioning.current = BlockPosition.STATIC;
 
+                const marginTop = currentStyles.marginTop;
+
                 positionStyles.top = 0;
                 positionStyles.left = 0;
-                positionStyles.marginTop = top - HEADER_HEIGHT;
+                positionStyles.marginTop = typeof marginTop === 'number' ? marginTop : 0;
                 positionStyles.marginLeft = left;
                 positionStyles.marginRight = screenParams.width - (left + width);
             }
@@ -319,7 +320,11 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                 currentStyles.width = '100%';
             }
 
-            if (currentStyles && !currentStyles.position) {
+            if (
+                currentStyles &&
+                (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition))
+            ) {
+                blockPositioning.current = BlockPosition.STATIC;
                 currentStyles.position = 'relative';
             }
 
@@ -331,6 +336,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     return {
         dndRef,
         calculatedStyle: calculatedStyle,
+        isStatic: blockPositioning.current === BlockPosition.STATIC,
         onMouseUp,
         onDnDMouseDown,
     };
