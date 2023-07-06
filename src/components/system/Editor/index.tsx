@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { BaseBlockParams, StylesByBreakpoint } from '@/types/HTMLElements';
+import { BaseBlockParams, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
@@ -100,8 +100,9 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
 
         const newBlock: BaseBlockParams = {
-            tag: 'div',
+            type: ElementType.HTMLELEMENT,
             editorId: uuid(),
+            tag: 'div',
             stylesByBreakpoint: {
                 all: {
                     height: 50,
@@ -265,7 +266,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             if (e.editorId === selectedBlock?.editorId) {
                 return (
                     <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
-                        <BaseBlock tag={e.tag} editorId={e.editorId} />
+                        <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId} />
                     </DragNDrop>
                 );
             }

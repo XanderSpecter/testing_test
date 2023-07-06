@@ -23,6 +23,7 @@ export enum ElementType {
 }
 
 interface BlockParams {
+    type: ElementType;
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
     stylesByBreakpoint?: StylesByBreakpoint | null;

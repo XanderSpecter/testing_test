@@ -20,7 +20,7 @@ const BaseBlock = ({ stylesByBreakpoint, tag, editorId }: BaseBlockParams) => {
     return (
         <StyledBaseElement
             as={tag}
-            data-editor-id={editorId}
+            data-editor-id={editing ? editorId : null}
             stylesByBreakpoint={stylesByBreakpoint}
             breakpoints={breakpoints}
             editing={editing}
