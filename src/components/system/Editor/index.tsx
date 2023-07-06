@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { useRouter } from 'next/navigation';
 import { PlusOutlined } from '@ant-design/icons';
@@ -16,6 +16,8 @@ import { HeaderControls, NewBlockButton } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
+import { CANVAS_ID, CANVAS_RESIZER_ID } from './constants';
+import ContextMenu, { ContextMenuProps, ContextOption } from './components/ContextMenu';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -36,6 +38,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     const [editedField, setEditedField] = useState<BaseBlockParams[] | null>();
     const [selectedBlock, setSelectedBlock] = useState<BaseBlockParams | null>(null);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
+    const [contextParams, setContextParams] = useState<ContextMenuProps>({ top: 0, left: 0 });
 
     const onSave = () => {
         if (!editedElement) {
@@ -69,8 +72,9 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         if (!stylesByBreakpoint) {
             updatedStyles[screenShortcut] = style;
+            updatedStyles.all = style;
         } else {
-            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
+            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style, all: style };
         }
 
         const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
@@ -108,6 +112,74 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         setEditedField([...editedField, newBlock]);
     };
+
+    const copyBlock = (editorId: BaseBlockParams['editorId']) => {
+        if (!editorId || !editedElement || !editedField) {
+            return;
+        }
+
+        const block = editedField.find((b) => b.editorId === editorId);
+
+        if (block) {
+            const copy = {
+                ...block,
+                editorId: uuid(),
+            };
+
+            const updatedField = [...editedField, copy];
+            const updatedElement = { ...editedElement, [field]: updatedField };
+
+            setEditedField(updatedField);
+            setEditedElement(updatedElement);
+
+            localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
+
+            setSelectedBlock(copy);
+
+            setContextParams({
+                ...contextParams,
+                editorId: null,
+            });
+        }
+    };
+
+    const deleteBlock = (editorId: BaseBlockParams['editorId']) => {
+        if (!editorId || !editedElement || !editedField) {
+            return;
+        }
+
+        const updatedField = editedField.filter((b) => b.editorId !== editorId);
+        const updatedElement = { ...editedElement, [field]: updatedField };
+
+        setEditedField(updatedField);
+        setEditedElement(updatedElement);
+
+        localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
+
+        setContextParams({
+            ...contextParams,
+            editorId: null,
+        });
+    };
+
+    const contextOptions: ContextOption[] = useMemo(
+        () => [
+            {
+                name: 'Копировать',
+                handler: copyBlock,
+            },
+            {
+                name: 'Редактировать',
+                handler: (id) => console.log(id),
+            },
+            {
+                name: 'Удалить',
+                handler: deleteBlock,
+            },
+        ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [contextParams]
+    );
 
     useEffect(() => {
         if (elementsList && elementsList.length === 1) {
@@ -149,12 +221,38 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     }, [setHeaderContent, editedElement]);
 
     const onCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        setContextParams({
+            ...contextParams,
+            editorId: null,
+        });
+
         if ((e.target as HTMLDivElement).dataset.editorId) {
             const block = editedField?.find((b) => b.editorId === (e.target as HTMLDivElement).dataset.editorId);
 
             if (block) {
                 setSelectedBlock(block);
             }
+
+            return;
+        }
+
+        if ((e.target as HTMLDivElement).id === CANVAS_ID || (e.target as HTMLDivElement).id === CANVAS_RESIZER_ID) {
+            setSelectedBlock(null);
+        }
+    };
+
+    const onContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if ((e.target as HTMLDivElement)?.dataset?.editorId) {
+            const { target, pageX, pageY } = e;
+
+            setContextParams({
+                editorId: (target as HTMLDivElement).dataset.editorId,
+                top: pageY,
+                left: pageX,
+            });
         }
     };
 
@@ -181,6 +279,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             <FullScreenLoader show={isLoading || !editedElement || !editedField} />
             <Canvas
                 onCanvasClick={onCanvasClick}
+                onContextMenu={onContextMenu}
                 onBreakpointChange={(shortcut) => setCurrentMockedBreakpoint(shortcut)}
             >
                 {renderBlocks()}
@@ -190,6 +289,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                     </Button>
                 </NewBlockButton>
             </Canvas>
+            <ContextMenu {...contextParams} options={contextOptions} />
         </>
     );
 }

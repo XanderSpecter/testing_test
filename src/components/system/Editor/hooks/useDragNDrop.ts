@@ -41,7 +41,7 @@ interface ChangableStyles {
 const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
 
-    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>(DEFAULT_ELEMENT_STYLE);
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
     const dndRef = useRef<HTMLDivElement>();
     const calcStyles = useRef<CSSProperties | null>();
@@ -228,7 +228,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
     return {
         dndRef,
-        calculatedStyle: calculatedStyle || calcStyles.current || {},
+        calculatedStyle: calculatedStyle,
         onMouseUp,
         onDnDMouseDown,
     };

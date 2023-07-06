@@ -11,9 +11,10 @@ const DEFAULT_CANVAS_PARAMS: CSSProperties = {
 
 interface UseCanvasResizeParams {
     onBreakpointChange: (shortcut: string) => void;
+    onCanvasClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
+const useCanvasResize = ({ onBreakpointChange, onCanvasClick }: UseCanvasResizeParams) => {
     const breakpoints = useContext(BreakpointsContext);
 
     const [mockScreenParams, setMockScreenParams] = useState<ScreenParams>(DEFAULT_SCREEN_PARAMS);
@@ -76,6 +77,10 @@ const useCanvasResize = ({ onBreakpointChange }: UseCanvasResizeParams) => {
     );
 
     const onResizerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (onCanvasClick && typeof onCanvasClick === 'function') {
+            onCanvasClick(e);
+        }
+
         if (e.button !== MOUSEDOWN_LEFT_BUTTON) {
             return;
         }

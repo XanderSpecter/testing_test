@@ -9,6 +9,10 @@ import useDragNDrop, { DragNDropProps } from '../hooks/useDragNDrop';
 export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: React.PropsWithChildren<DragNDropProps>) {
     const { dndRef, calculatedStyle, onDnDMouseDown, onMouseUp } = useDragNDrop({ stylesByBreakpoint, onDrop });
 
+    if (!calculatedStyle) {
+        return children;
+    }
+
     return (
         <DragNDropWrapper
             onMouseDown={onDnDMouseDown}

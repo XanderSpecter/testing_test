@@ -8,3 +8,4 @@ export { DragNDropWrapper } from './DragNDropWrapper';
 export { DnDResizer } from './DnDResizer';
 export { HeaderControls } from './HeaderControls';
 export { NewBlockButton } from './NewBlockButton';
+export { ContextMenuWrapper } from './ContextMenuWrapper';
