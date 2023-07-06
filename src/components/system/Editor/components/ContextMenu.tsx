@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { ContextMenuWrapper } from '../styled';
 import { Button } from 'antd';
 
@@ -40,11 +39,10 @@ const ContextMenu = ({ editorId, options, top, left }: ContextMenuProps) => {
         });
     };
 
-    return ReactDOM.createPortal(
+    return (
         <ContextMenuWrapper visible={!!editorId} style={{ top, left }}>
             {renderOptions()}
-        </ContextMenuWrapper>,
-        document?.body
+        </ContextMenuWrapper>
     );
 };
 

@@ -22,6 +22,16 @@ export enum ElementType {
     COMPONENT = 'COMPONENT',
 }
 
+export enum BlockPosition {
+    ABSOLUTE = 'absolute',
+    FIXED = 'fixed',
+    STICKY = 'sticky',
+    RELATIVE = 'relative',
+    STATIC = 'static',
+}
+
+export type PositionVariant = Extract<BlockPosition, BlockPosition.STATIC | BlockPosition.ABSOLUTE>;
+
 interface BlockParams {
     type: ElementType;
     editorId: string;

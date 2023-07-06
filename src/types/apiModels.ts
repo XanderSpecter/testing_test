@@ -15,7 +15,7 @@ export enum PossibleFieldType {
     EDITOR = 'EDITOR',
 }
 
-export type FormEditableFieldType = Exclude<PossibleFieldType, 'EDITOR' | 'HIDDEN'>;
+export type FormEditableFieldType = Exclude<PossibleFieldType, PossibleFieldType.EDITOR | PossibleFieldType.HIDDEN>;
 
 export type FieldsErrors = Record<string, string>;
 

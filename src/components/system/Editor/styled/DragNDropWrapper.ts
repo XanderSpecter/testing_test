@@ -4,4 +4,5 @@ export const DragNDropWrapper = styled.div.attrs((props) => ({
     style: { ...props.style },
 }))`
     cursor: move;
+    position: absolute;
 `;

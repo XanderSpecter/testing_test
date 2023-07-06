@@ -1,23 +1,19 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { MOUSEDOWN_LEFT_BUTTON } from '../constants';
+import { ACCURACY_TOLERANCE, BLOCK_POSITIONS_STATIC, MOUSEDOWN_LEFT_BUTTON } from '../constants';
 import { DnDResizerPosition } from '../styled/DnDResizer';
-import { WithBreakpointStyles } from '@/types/HTMLElements';
+import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HTMLElements';
+import { recalcWidthAndMargins } from '../helpers';
 
-const DEFAULT_ELEMENT_STYLE: CSSProperties = {
-    position: 'absolute',
-    width: 50,
+const DEFAULT_ELEMENT_STYLE = {
+    width: 100,
     height: 50,
-    top: 50,
-    left: 50,
-};
-
-const DEFAULT_COORDINATES = {
-    width: 50,
-    height: 50,
-    top: 50,
-    left: 50,
+    marginTop: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    top: 0,
+    left: 0,
 };
 
 interface UseDragNDropParams {
@@ -34,9 +30,14 @@ interface CoordinateParams {
 interface ChangableStyles {
     top: number;
     left: number;
-    width: number;
+    marginTop: number;
+    marginLeft: string | number;
+    marginRight: string | number;
+    width: string | number;
     height: number;
 }
+
+type PositionStyles = Omit<ChangableStyles, 'width' | 'height'>;
 
 const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
@@ -50,9 +51,10 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         y: 0,
     });
     const startStyles = useRef<ChangableStyles>({
-        ...DEFAULT_COORDINATES,
+        ...DEFAULT_ELEMENT_STYLE,
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
+    const blockPositioning = useRef<PositionVariant>(BlockPosition.ABSOLUTE);
 
     const calcCursorOffsets = (e: MouseEvent): CoordinateParams | null => {
         if (!e || !cursorStartPosition.current) {
@@ -73,36 +75,58 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             return null;
         }
 
-        const { width, height, top, left } = startStyles.current;
+        const { width, height, top, left, marginLeft, marginTop } = startStyles.current;
         const { x, y } = offsets;
+
+        const { width: screenWidth } = screenParams;
+
+        const fullScreenWidth = screenParams.width - ACCURACY_TOLERANCE;
+
+        const { calculatedWidth, calculatedMarginLeft, calculatedMarginRight } = recalcWidthAndMargins({
+            width,
+            marginLeft,
+            screenWidth,
+        });
 
         switch (resizerPos.current) {
             case DnDResizerPosition.BOTTOM:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight,
                     top,
                     left,
-                    width,
+                    width: calculatedWidth,
                     height: height + y,
                 };
             case DnDResizerPosition.TOP:
                 return {
+                    marginTop: marginTop + y,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight,
                     left,
                     top: top + y,
-                    width,
+                    width: calculatedWidth,
                     height: height - y,
                 };
             case DnDResizerPosition.RIGHT:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight - x,
                     top,
                     left,
-                    width: width + x,
+                    width: calculatedWidth + x >= fullScreenWidth ? '100%' : calculatedWidth + x,
                     height,
                 };
             default:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft + x,
+                    marginRight: calculatedMarginRight,
                     top,
                     left: left + x,
-                    width: width - x,
+                    width: calculatedWidth - x >= fullScreenWidth ? '100%' : calculatedWidth - x,
                     height,
                 };
         }
@@ -116,18 +140,41 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             const offsets = calcCursorOffsets(e);
             const currentStyles = calcStyles.current;
 
+            const isStatic = blockPositioning.current === BlockPosition.STATIC;
+
+            const { width: screenWidth } = screenParams;
+
             if (currentStyles && offsets && startStyles.current) {
                 if (resizerPos.current) {
                     const calculatedSizes = calcResize(offsets);
 
                     if (calculatedSizes) {
-                        const { width, height, top, left } = calculatedSizes;
+                        const { width, height, top, left, marginLeft, marginRight, marginTop } = calculatedSizes;
+
+                        const positionStyles: PositionStyles = {
+                            top,
+                            left,
+                            marginTop: 0,
+                            marginLeft: 0,
+                            marginRight: 0,
+                        };
+
+                        if (isStatic && typeof marginLeft === 'number' && typeof marginRight === 'number') {
+                            const calcMarginTop = marginTop < 0 ? 0 : marginTop;
+                            const calcMarginLeft = marginLeft < 0 ? 0 : marginLeft;
+                            const calcMarginRight = marginRight < 0 ? 0 : marginRight;
+
+                            positionStyles.top = 0;
+                            positionStyles.left = 0;
+                            positionStyles.marginTop = calcMarginTop;
+                            positionStyles.marginLeft = calcMarginLeft;
+                            positionStyles.marginRight = calcMarginRight;
+                        }
 
                         calcStyles.current = {
                             ...currentStyles,
-                            top,
-                            left,
-                            width: width < 0 ? 0 : width,
+                            ...positionStyles,
+                            width: parseInt(String(width)) < 0 ? 0 : width,
                             height: height < 0 ? 0 : height,
                         };
 
@@ -139,15 +186,50 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                 const { x, y } = offsets;
 
-                const { top, left } = startStyles.current;
+                const { top, left, marginTop, marginLeft, width } = startStyles.current;
+
+                const { calculatedWidth, calculatedMarginLeft } = recalcWidthAndMargins({
+                    width,
+                    marginLeft,
+                    screenWidth,
+                });
 
                 const calculatedTop = top + y;
                 const calculatedLeft = left + x;
 
-                calcStyles.current = {
-                    ...currentStyles,
+                const positionStyles: PositionStyles = {
                     top: calculatedTop < 0 ? 0 : calculatedTop,
                     left: calculatedLeft < 0 ? 0 : calculatedLeft,
+                    marginTop: 0,
+                    marginLeft: 0,
+                    marginRight: 0,
+                };
+
+                if (isStatic) {
+                    const calcMarginTop = marginTop + y;
+                    const calcMarginLeft = calculatedMarginLeft + x;
+                    const calcMarginRight = screenWidth - (calcMarginLeft + calculatedWidth);
+
+                    const renderedMarginTop = calcMarginTop < 0 ? 0 : calcMarginTop;
+                    const renderedMarginLeft = calcMarginLeft < 0 ? 0 : calcMarginLeft;
+                    const renderedMarginRight = calcMarginRight < 0 ? 0 : calcMarginRight;
+
+                    const isMarginNotAuto =
+                        calcMarginLeft < calcMarginRight - ACCURACY_TOLERANCE ||
+                        calcMarginRight < calcMarginLeft - ACCURACY_TOLERANCE;
+
+                    console.log(calcMarginLeft, calcMarginRight);
+
+                    positionStyles.top = 0;
+                    positionStyles.left = 0;
+                    positionStyles.marginTop = renderedMarginTop;
+                    positionStyles.marginLeft = isMarginNotAuto ? renderedMarginLeft : 'auto';
+                    positionStyles.marginRight = isMarginNotAuto ? renderedMarginRight : 'auto';
+                }
+
+                calcStyles.current = {
+                    ...currentStyles,
+                    ...positionStyles,
                 };
 
                 setCalculatedStyle(calcStyles.current);
@@ -173,17 +255,37 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         if (dndRef.current) {
             const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
+            const { position } = dndRef.current.style;
+
+            const positionStyles: PositionStyles = {
+                top: top - HEADER_HEIGHT,
+                left,
+                marginTop: 0,
+                marginLeft: 0,
+                marginRight: 0,
+            };
+
+            if (!position || BLOCK_POSITIONS_STATIC.includes(position as BlockPosition)) {
+                blockPositioning.current = BlockPosition.STATIC;
+
+                positionStyles.top = 0;
+                positionStyles.left = 0;
+                positionStyles.marginTop = top - HEADER_HEIGHT;
+                positionStyles.marginLeft = left;
+                positionStyles.marginRight = screenParams.width - (left + width);
+            }
 
             cursorStartPosition.current = {
                 x: e.pageX,
                 y: e.pageY,
             };
+
             startStyles.current = {
-                top: top - HEADER_HEIGHT,
-                left,
+                ...positionStyles,
                 width: width,
                 height: height,
             };
+
             calcStyles.current = {
                 ...currentStyles,
             };
@@ -214,11 +316,11 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || stylesByBreakpoint?.all;
 
             if (currentStyles && !currentStyles.width) {
-                currentStyles.width = screenParams.width;
+                currentStyles.width = '100%';
             }
 
             if (currentStyles && !currentStyles.position) {
-                currentStyles.position = 'absolute';
+                currentStyles.position = 'relative';
             }
 
             setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
