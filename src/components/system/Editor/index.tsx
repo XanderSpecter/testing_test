@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { useRouter } from 'next/navigation';
-import { PlusOutlined } from '@ant-design/icons';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
 import { PageBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
@@ -12,13 +11,14 @@ import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
 import { HeaderContentContext } from '../AdminLayout';
 import { Button } from 'antd';
-import { HeaderControls, NewBlockButton } from './styled';
+import { HeaderControls } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
 import { CANVAS_ID, CANVAS_RESIZER_ID } from './constants';
-import ContextMenu, { ContextMenuProps, ContextOption } from './components/ContextMenu';
-import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
+import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
+import { createEmptyPageBlock, getLocalStorageCache, saveLocalStorageCache } from './helpers';
+import Form from './components/Form';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -38,6 +38,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     const [editedElement, setEditedElement] = useState<CollectionElement | null>();
     const [editedField, setEditedField] = useState<PageBlock[] | null>();
     const [selectedBlock, setSelectedBlock] = useState<PageBlock | null>(null);
+    const [formEditedBlock, setFormEditedBlock] = useState<PageBlock | null>(null);
+    const [isFormOpened, setIsFormOpened] = useState(false);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
     const [contextParams, setContextParams] = useState<ContextMenuProps>({ top: 0, left: 0 });
 
@@ -100,22 +102,31 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             return;
         }
 
-        const newBlock: PageBlock = {
-            type: ElementType.HTMLELEMENT,
-            editorId: uuid(),
-            tag: 'div',
-            stylesByBreakpoint: {
-                all: {
-                    height: 50,
-                    backgroundColor: 'red',
-                },
-            },
-        };
+        const newBlock = createEmptyPageBlock(ElementType.HTMLELEMENT);
 
-        setEditedField([...editedField, newBlock]);
+        setFormEditedBlock(newBlock);
+        setIsFormOpened(true);
     };
 
-    const copyBlock = (editorId: PageBlock['editorId']) => {
+    const editBlock = ({ editorId }: HandlerParams) => {
+        if (!editorId || !editedElement || !editedField) {
+            return;
+        }
+
+        const block = editedField.find((b) => b.editorId === editorId);
+
+        if (block) {
+            setFormEditedBlock(block);
+            setIsFormOpened(true);
+
+            setContextParams({
+                ...contextParams,
+                editorId: null,
+            });
+        }
+    };
+
+    const copyBlock = ({ editorId }: HandlerParams) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
@@ -128,15 +139,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 editorId: uuid(),
             };
 
-            const updatedField = [...editedField, copy];
-            const updatedElement = { ...editedElement, [field]: updatedField };
-
-            setEditedField(updatedField);
-            setEditedElement(updatedElement);
-
-            saveLocalStorageCache(updatedElement._id, updatedElement);
-
-            setSelectedBlock(copy);
+            setFormEditedBlock(copy);
+            setIsFormOpened(true);
 
             setContextParams({
                 ...contextParams,
@@ -145,7 +149,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
     };
 
-    const deleteBlock = (editorId: PageBlock['editorId']) => {
+    const deleteBlock = ({ editorId }: HandlerParams) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
@@ -172,7 +176,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             },
             {
                 name: 'Редактировать',
-                handler: (id) => console.log(id),
+                handler: editBlock,
             },
             {
                 name: 'Удалить',
@@ -214,10 +218,13 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         if (setHeaderContent) {
             setHeaderContent(
                 <HeaderControls>
-                    <Button danger onClick={() => clearAndExit()}>
-                        Отмена
+                    <Button type="primary" onClick={addBlock}>
+                        Добавить элемент
                     </Button>
-                    <Button onClick={() => onSave()}>Сохранить</Button>
+                    <Button danger onClick={() => clearAndExit()}>
+                        Закрыть редактор
+                    </Button>
+                    <Button onClick={() => onSave()}>Сохранить и выйти</Button>
                 </HeaderControls>
             );
         }
@@ -295,12 +302,13 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 onBreakpointChange={(shortcut) => setCurrentMockedBreakpoint(shortcut)}
             >
                 {renderBlocks()}
-                <NewBlockButton>
-                    <Button type="primary" shape="circle" onClick={addBlock}>
-                        <PlusOutlined />
-                    </Button>
-                </NewBlockButton>
             </Canvas>
+            <Form
+                block={formEditedBlock}
+                opened={isFormOpened}
+                onSubmit={(b) => console.log(b)}
+                onCancel={() => setIsFormOpened(false)}
+            />
             <ContextMenu {...contextParams} options={contextOptions} />
         </>
     );

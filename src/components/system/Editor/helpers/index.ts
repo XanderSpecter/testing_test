@@ -1,3 +1,5 @@
+import { ElementType, StyledBlock, StyledText } from '@/types/HTMLElements';
+import { v4 as uuid } from 'uuid';
 import { CollectionElement } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
 
@@ -59,5 +61,32 @@ export const getLocalStorageCache = (id: ObjectId | string) => {
         return data;
     } catch (e) {
         return null;
+    }
+};
+
+export const createEmptyPageBlock = (type: ElementType) => {
+    if (!type) {
+        return null;
+    }
+
+    switch (type) {
+        case ElementType.HTMLELEMENT:
+            return {
+                type: ElementType.HTMLELEMENT,
+                editorId: uuid(),
+                tag: 'div',
+                stylesByBreakpoint: {
+                    all: {
+                        height: 50,
+                        backgroundColor: 'red',
+                    },
+                },
+            } as StyledBlock;
+        default:
+            return {
+                type: ElementType.TEXT,
+                editorId: uuid(),
+                value: '',
+            } as StyledText;
     }
 };

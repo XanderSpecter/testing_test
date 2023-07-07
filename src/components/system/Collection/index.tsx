@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { useElements } from '@/hooks/api/useElements';
 
@@ -12,6 +12,7 @@ import { COLS, ELEMENT_STYLES } from './constants';
 import { getCollectionParams } from '@/utils/collections';
 import Form from './components/Form';
 import { isFieldHiddenInTable } from './helpers';
+import { HeaderContentContext } from '../AdminLayout';
 
 interface CollectionProps extends CollectionParams {
     query: BaseObject;
@@ -20,6 +21,8 @@ interface CollectionProps extends CollectionParams {
 const { Title } = Typography;
 
 export default function Collection({ collectionElementName, query }: CollectionProps) {
+    const setHeaderContent = useContext(HeaderContentContext);
+
     const { elementsList, isLoading, createElement, updateElement, removeElement, refetchElementsList } = useElements({
         collectionElementName,
         query,
@@ -108,6 +111,13 @@ export default function Collection({ collectionElementName, query }: CollectionP
             />
         ));
     };
+
+    useEffect(() => {
+        if (setHeaderContent) {
+            setHeaderContent(null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setHeaderContent]);
 
     if (!quantity) {
         return null;

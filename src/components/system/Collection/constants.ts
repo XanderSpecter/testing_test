@@ -6,6 +6,7 @@ export const COLS = {
 };
 
 const row: StylesByBreakpoint = { all: { marginTop: '16px' } };
+const supportRow: StylesByBreakpoint = { all: { marginTop: '8px' } };
 const tableRow: StylesByBreakpoint = {
     all: { paddingTop: '8px', paddingBottom: '8px', borderBottom: '1px solid grey' },
 };
@@ -14,6 +15,7 @@ const column: StylesByBreakpoint = { all: { alignItems: 'center' } };
 
 export const ELEMENT_STYLES = {
     row,
+    supportRow,
     tableRow,
     buttonColumn,
     column,
