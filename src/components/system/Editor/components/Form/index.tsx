@@ -3,15 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { Drawer, Button, Radio, Typography, RadioChangeEvent } from 'antd';
 import { Column, Container, Row } from '@/components/base/Grid';
-import { ElementType, PageBlock } from '@/types/HTMLElements';
+import { ElementType, PageBlock, StyledBlock, TextBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../Collection/constants';
 import { PAGE_BLOCK_TYPES } from '@/constants/pageBlocks';
 import { TYPE_CHANGE_WARNING } from './constants';
 import { createEmptyPageBlock } from '../../helpers';
+import TextForm from './components/TextFrom';
+import BlockForm from './components/BlockForm';
 
 interface FormProps {
     opened: boolean;
-    block?: PageBlock | null;
+    block: PageBlock | null;
     onSubmit: (block: PageBlock) => void;
     onCancel: () => void;
 }
@@ -51,6 +53,18 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
         setIsTypeWarningShown(false);
     };
 
+    const onTextBlockFieldChange = (fieldName: keyof TextBlock, newValue: string) => {
+        const updated = { ...(editedBlock as TextBlock), [fieldName]: newValue };
+
+        setEditedBlock(updated);
+    };
+
+    const onHTMLBlockFieldChange = (fieldName: keyof StyledBlock, newValue: string) => {
+        const updated = { ...(editedBlock as StyledBlock), [fieldName]: newValue };
+
+        setEditedBlock(updated);
+    };
+
     const renderTypeChangeWarning = () => {
         if (!isTypeWarningShown) {
             return null;
@@ -77,7 +91,7 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
                         <Typography>Тип элемента</Typography>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Radio.Group
                             options={PAGE_BLOCK_TYPES}
@@ -93,6 +107,19 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
         );
     };
 
+    const renderFormFields = () => {
+        if (!editedBlock) {
+            return null;
+        }
+
+        switch (editedBlock.type) {
+            case ElementType.TEXT:
+                return <TextForm block={editedBlock} onFieldChange={onTextBlockFieldChange} />;
+            default:
+                return <BlockForm block={editedBlock} onFieldChange={onHTMLBlockFieldChange} />;
+        }
+    };
+
     return (
         <Drawer
             open={opened}
@@ -104,6 +131,7 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
             <form>
                 <Container>
                     {renderTypeSelector()}
+                    {renderFormFields()}
                     <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
                         <Column>
                             <Button type="primary" onClick={() => onSubmit(editedBlock || block)}>

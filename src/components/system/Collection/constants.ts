@@ -12,6 +12,7 @@ const tableRow: StylesByBreakpoint = {
 };
 const buttonColumn: StylesByBreakpoint = { all: { justifyContent: 'space-evenly', alignItems: 'center' } };
 const column: StylesByBreakpoint = { all: { alignItems: 'center' } };
+const input = { width: '100%' };
 
 export const ELEMENT_STYLES = {
     row,
@@ -19,4 +20,5 @@ export const ELEMENT_STYLES = {
     tableRow,
     buttonColumn,
     column,
+    input,
 };

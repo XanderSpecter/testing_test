@@ -15,3 +15,33 @@ export const PAGE_BLOCK_TYPES = [
         disabled: true,
     },
 ];
+
+export const AVAILABLE_TAGS: (keyof HTMLElementTagNameMap)[] = [
+    'a',
+    'b',
+    'button',
+    'div',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'img',
+    'li',
+    'nav',
+    'p',
+    'pre',
+    'section',
+    'span',
+    'strong',
+    'table',
+    'tbody',
+    'td',
+    'th',
+    'thead',
+    'tr',
+    'ul',
+];
+
+export const AVAILABLE_TAGS_ITEMS = AVAILABLE_TAGS.map((t) => ({ label: t, value: t }));

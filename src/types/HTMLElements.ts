@@ -32,20 +32,22 @@ export enum BlockPosition {
 
 export type PositionVariant = Extract<BlockPosition, BlockPosition.STATIC | BlockPosition.ABSOLUTE>;
 
-interface BaseBlockParams {
+type HTMLBlockProps<T extends keyof HTMLElementTagNameMap> = HTMLElementTagNameMap[T];
+
+interface HTMLBlock<T extends keyof HTMLElementTagNameMap = 'div'> {
     type: ElementType.HTMLELEMENT;
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
+    content?: string;
+    props?: HTMLBlockProps<T>;
 }
 
-export type StyledBlock = WithBreakpointStyles<BaseBlockParams>;
+export type StyledBlock<T extends keyof HTMLElementTagNameMap = 'div'> = WithBreakpointStyles<HTMLBlock<T>>;
 
-interface BaseTextBlockParams {
+export interface TextBlock {
     type: ElementType.TEXT;
     editorId: string;
     value: string;
 }
 
-export type StyledText = WithBreakpointStyles<BaseTextBlockParams>;
-
-export type PageBlock = StyledBlock | StyledText;
+export type PageBlock = StyledBlock | TextBlock;

@@ -22,8 +22,6 @@ interface FormFieldProps<T extends FormEditableFieldType> extends FieldParams {
     onChange: (newValue: FieldValue<T>) => void;
 }
 
-const INPUT_STYLES = { width: '100%' };
-
 export default function FormField<T extends FormEditableFieldType>({
     type,
     id,
@@ -90,7 +88,7 @@ export default function FormField<T extends FormEditableFieldType>({
             case PossibleFieldType.NUMBER:
                 return (
                     <InputNumber
-                        style={INPUT_STYLES}
+                        style={ELEMENT_STYLES.input}
                         id={id}
                         addonBefore={renderPrefix()}
                         addonAfter={renderPostfix()}

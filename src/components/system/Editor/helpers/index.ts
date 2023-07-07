@@ -1,4 +1,4 @@
-import { ElementType, StyledBlock, StyledText } from '@/types/HTMLElements';
+import { ElementType, StyledBlock, TextBlock } from '@/types/HTMLElements';
 import { v4 as uuid } from 'uuid';
 import { CollectionElement } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
@@ -87,6 +87,6 @@ export const createEmptyPageBlock = (type: ElementType) => {
                 type: ElementType.TEXT,
                 editorId: uuid(),
                 value: '',
-            } as StyledText;
+            } as TextBlock;
     }
 };

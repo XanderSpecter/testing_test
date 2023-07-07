@@ -65,7 +65,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     }, [isOperationRunning]);
 
     const onDrop = (style: React.CSSProperties, screenShortcut: string) => {
-        if (!selectedBlock || !editedElement || !editedField) {
+        if (!selectedBlock || selectedBlock.type !== ElementType.HTMLELEMENT || !editedElement || !editedField) {
             return;
         }
 
@@ -95,6 +95,36 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setEditedElement(updatedElement);
 
         saveLocalStorageCache(updatedElement._id, updatedElement);
+    };
+
+    const onBlockFormSubmit = (block: PageBlock) => {
+        if (!block || !editedField || !editedElement) {
+            return;
+        }
+
+        let isUpdate = false;
+
+        const updatedField = editedField.map((b) => {
+            if (b.editorId === block.editorId) {
+                isUpdate = true;
+
+                return block;
+            }
+
+            return b;
+        });
+
+        if (!isUpdate) {
+            updatedField.push(block);
+        }
+
+        const updatedElement = { ...editedElement, [field]: updatedField };
+
+        setEditedField(updatedField);
+        setEditedElement(updatedElement);
+
+        saveLocalStorageCache(updatedElement._id, updatedElement);
+        setIsFormOpened(false);
     };
 
     const addBlock = () => {
@@ -275,16 +305,22 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 if (e.editorId === selectedBlock?.editorId) {
                     return (
                         <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
-                            <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId} />
+                            <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId}>
+                                {e.content}
+                            </BaseBlock>
                         </DragNDrop>
                     );
                 }
 
-                return <BaseBlock key={e.editorId} {...e} />;
+                return (
+                    <BaseBlock key={e.editorId} {...e}>
+                        {e.content}
+                    </BaseBlock>
+                );
             }
 
             return (
-                <BaseBlock key={e.editorId} {...e} tag="span" type={ElementType.HTMLELEMENT}>
+                <BaseBlock key={e.editorId} {...e} stylesByBreakpoint={null} tag="span" type={ElementType.HTMLELEMENT}>
                     {e.value}
                 </BaseBlock>
             );
@@ -304,7 +340,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             <Form
                 block={formEditedBlock}
                 opened={isFormOpened}
-                onSubmit={(b) => console.log(b)}
+                onSubmit={onBlockFormSubmit}
                 onCancel={() => setIsFormOpened(false)}
             />
             <ContextMenu {...contextParams} options={contextOptions} />

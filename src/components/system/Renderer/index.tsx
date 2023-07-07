@@ -11,7 +11,14 @@ interface RendererProps {
 export default function Renderer({ blocks }: RendererProps) {
     return blocks.map((b) => {
         if (b.type === ElementType.HTMLELEMENT) {
-            return <BaseBlock key={b.editorId} {...b} />;
+            return (
+                <BaseBlock key={b.editorId} {...b}>
+                    {b.content}
+                </BaseBlock>
+            );
+        }
+        if (b.type === ElementType.TEXT) {
+            return b.value;
         }
     });
 }
