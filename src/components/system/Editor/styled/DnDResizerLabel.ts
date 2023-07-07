@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { DnDResizerPosition } from './DnDResizer';
+import { RESIZER_SIZE } from '../constants';
 
 export interface DnDResizerLabelProps {
     position: DnDResizerPosition;
@@ -18,26 +19,112 @@ const calcStyles = ({ position, distance }: DnDResizerLabelProps) => {
                 top: 50%;
                 transform: translate(-50%, -50%);
                 border-radius: 4px;
-                left: calc(100% + ${distance / 2}px);
+
+                &::before,
+                &::after {
+                    content: '';
+
+                    position: absolute;
+
+                    background-color: #1677ff;
+
+                    height: ${RESIZER_SIZE}px;
+                    width: ${distance / 2}px;
+
+                    z-index: -1;
+
+                    top: calc(50% - ${RESIZER_SIZE / 2}px);
+                }
+
+                &::before {
+                    right: 50%;
+                }
+
+                &::after {
+                    left: 50%;
+                }
             `;
         case DnDResizerPosition.LEFT:
             return css`
                 top: 50%;
                 transform: translate(50%, -50%);
                 border-radius: 4px;
-                right: calc(100% + ${distance / 2}px);
+
+                &::before,
+                &::after {
+                    content: '';
+
+                    position: absolute;
+
+                    background-color: #1677ff;
+
+                    height: ${RESIZER_SIZE}px;
+                    width: ${distance / 2}px;
+
+                    z-index: -1;
+
+                    top: calc(50% - ${RESIZER_SIZE / 2}px);
+                }
+
+                &::before {
+                    left: 50%;
+                }
+
+                &::after {
+                    right: 50%;
+                }
             `;
         default:
             return css`
                 left: 50%;
                 transform: translate(-50%, 50%);
                 border-radius: 4px;
-                bottom: calc(100% + ${distance / 2}px);
+
+                &::before,
+                &::after {
+                    content: '';
+
+                    position: absolute;
+
+                    background-color: #1677ff;
+
+                    width: ${RESIZER_SIZE}px;
+                    height: ${distance / 2}px;
+
+                    z-index: -1;
+
+                    left: calc(50% - ${RESIZER_SIZE / 2}px);
+                }
+
+                &::before {
+                    top: 50%;
+                }
+
+                &::after {
+                    bottom: 50%;
+                }
             `;
     }
 };
 
-export const DnDResizerLabel = styled.div<DnDResizerLabelProps>`
+const getAttr = ({ position, distance }: DnDResizerLabelProps) => {
+    if (!position || !distance) {
+        return {};
+    }
+
+    switch (position) {
+        case DnDResizerPosition.RIGHT:
+            return { left: `calc(100% + ${distance / 2}px` };
+        case DnDResizerPosition.LEFT:
+            return { right: `calc(100% + ${distance / 2}px` };
+        default:
+            return { bottom: `calc(100% + ${distance / 2}px` };
+    }
+};
+
+export const DnDResizerLabel = styled.div.attrs<DnDResizerLabelProps>((props) => ({
+    style: getAttr(props),
+}))`
     position: absolute;
 
     padding-left: 2px;

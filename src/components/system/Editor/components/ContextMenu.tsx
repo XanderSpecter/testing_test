@@ -40,7 +40,7 @@ const ContextMenu = ({ editorId, options, top, left }: ContextMenuProps) => {
     };
 
     return (
-        <ContextMenuWrapper visible={!!editorId} style={{ top, left }}>
+        <ContextMenuWrapper visible={editorId ? true : undefined} style={{ top, left }}>
             {renderOptions()}
         </ContextMenuWrapper>
     );

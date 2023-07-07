@@ -10,6 +10,7 @@ export const Scrollable = styled.div`
     right: ${RESIZER_SIZE}px;
 
     overflow-y: auto;
+    overflow-x: hidden;
 
     &::-webkit-scrollbar {
         width: ${SCROLLBAR_SIZE}px;

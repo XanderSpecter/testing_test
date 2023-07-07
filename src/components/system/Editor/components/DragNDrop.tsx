@@ -3,7 +3,7 @@
 import React, { RefObject, useMemo } from 'react';
 import { Typography } from 'antd';
 
-import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DragNDropWrapper } from '../styled';
+import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DnDResizerLabelRay, DragNDropWrapper } from '../styled';
 import { DnDResizerPosition } from '../styled/DnDResizer';
 import useDragNDrop, { DragNDropProps } from '../hooks/useDragNDrop';
 import { DnDResizerLabelProps } from '../styled/DnDResizerLabel';
@@ -38,7 +38,9 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
 
         return (
             <DnDResizerLabel position={position} distanceLabel={distanceLabel} distance={distance}>
+                <DnDResizerLabelRay position={position} distance={distance} role="before" />
                 <Text>{distanceLabel}</Text>
+                <DnDResizerLabelRay position={position} distance={distance} role="after" />
             </DnDResizerLabel>
         );
     };
@@ -79,6 +81,17 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
                     Ширина:{' '}
                     {typeof calculatedStyle.width === 'number' ? `${calculatedStyle.width}px` : calculatedStyle.width}
                 </Text>
+                {calculatedStyle.height && (
+                    <>
+                        <br />
+                        <Text>
+                            Высота:{' '}
+                            {typeof calculatedStyle.height === 'number'
+                                ? `${calculatedStyle.height}px`
+                                : calculatedStyle.height}
+                        </Text>
+                    </>
+                )}
             </DnDInfoLabel>
             {children}
         </DragNDropWrapper>

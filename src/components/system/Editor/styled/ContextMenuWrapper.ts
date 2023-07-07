@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface ContextMenuWrapperProps {
-    visible: boolean;
+    visible?: boolean;
 }
 
 export const ContextMenuWrapper = styled.div.attrs<ContextMenuWrapperProps>((props) => ({

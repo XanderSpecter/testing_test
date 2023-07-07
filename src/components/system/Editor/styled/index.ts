@@ -11,3 +11,4 @@ export { NewBlockButton } from './NewBlockButton';
 export { ContextMenuWrapper } from './ContextMenuWrapper';
 export { DnDInfoLabel } from './DnDInfoLabel';
 export { DnDResizerLabel } from './DnDResizerLabel';
+export { DnDResizerLabelRay } from './DnDResizerLabelRay';
