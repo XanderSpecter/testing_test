@@ -48,4 +48,4 @@ interface BaseTextBlockParams {
 
 export type StyledText = WithBreakpointStyles<BaseTextBlockParams>;
 
-export type EditorBlock = StyledBlock | StyledText;
+export type PageBlock = StyledBlock | StyledText;

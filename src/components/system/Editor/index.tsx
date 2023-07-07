@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { EditorBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
+import { PageBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
@@ -35,8 +35,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     });
 
     const [editedElement, setEditedElement] = useState<CollectionElement | null>();
-    const [editedField, setEditedField] = useState<EditorBlock[] | null>();
-    const [selectedBlock, setSelectedBlock] = useState<EditorBlock | null>(null);
+    const [editedField, setEditedField] = useState<PageBlock[] | null>();
+    const [selectedBlock, setSelectedBlock] = useState<PageBlock | null>(null);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
     const [contextParams, setContextParams] = useState<ContextMenuProps>({ top: 0, left: 0 });
 
@@ -99,7 +99,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             return;
         }
 
-        const newBlock: EditorBlock = {
+        const newBlock: PageBlock = {
             type: ElementType.HTMLELEMENT,
             editorId: uuid(),
             tag: 'div',
@@ -114,7 +114,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setEditedField([...editedField, newBlock]);
     };
 
-    const copyBlock = (editorId: EditorBlock['editorId']) => {
+    const copyBlock = (editorId: PageBlock['editorId']) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
@@ -144,7 +144,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
     };
 
-    const deleteBlock = (editorId: EditorBlock['editorId']) => {
+    const deleteBlock = (editorId: PageBlock['editorId']) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
