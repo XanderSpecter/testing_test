@@ -11,7 +11,7 @@ import { createEmptyPageBlock } from '../../helpers';
 
 interface FormProps {
     opened: boolean;
-    block: PageBlock | null;
+    block?: PageBlock | null;
     onSubmit: (block: PageBlock) => void;
     onCancel: () => void;
 }
@@ -23,7 +23,13 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
     const [isTypeWarningShown, setIsTypeWarningShown] = useState(false);
 
     useEffect(() => {
-        setEditedBlock(block);
+        if (block) {
+            setEditedBlock(block);
+        } else {
+            const newBlock = createEmptyPageBlock(ElementType.HTMLELEMENT);
+
+            setEditedBlock(newBlock);
+        }
     }, [block]);
 
     if (!editedBlock) {
@@ -88,7 +94,13 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
     };
 
     return (
-        <Drawer open={opened} onClose={onCancel} width={700} destroyOnClose title="">
+        <Drawer
+            open={opened}
+            onClose={onCancel}
+            width={700}
+            destroyOnClose
+            title={`${block ? 'Редактирование' : 'Добавление'} элемента`}
+        >
             <form>
                 <Container>
                     {renderTypeSelector()}

@@ -17,7 +17,7 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
 import { CANVAS_ID, CANVAS_RESIZER_ID } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
-import { createEmptyPageBlock, getLocalStorageCache, saveLocalStorageCache } from './helpers';
+import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
 
 interface EditorProps extends CollectionParams {
@@ -102,9 +102,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             return;
         }
 
-        const newBlock = createEmptyPageBlock(ElementType.HTMLELEMENT);
-
-        setFormEditedBlock(newBlock);
+        setFormEditedBlock(null);
         setIsFormOpened(true);
     };
 

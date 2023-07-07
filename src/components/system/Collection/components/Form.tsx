@@ -72,7 +72,11 @@ export default function Form({ fieldsMapping, opened, element, onSubmit, onCance
     }
 
     return (
-        <Drawer open={opened} onClose={onCancel} title="">
+        <Drawer
+            open={opened}
+            onClose={onCancel}
+            title={`${element ? 'Редактирование' : 'Добавление'} элемента коллекции`}
+        >
             <form>
                 <Container>
                     {renderForm()}
