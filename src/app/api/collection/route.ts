@@ -78,7 +78,7 @@ export const POST = createHandler(async (params: CollectionPostRequestParams) =>
             _id: new ObjectId(_id),
         },
         {
-            $set: { ...rest, lastUpdate: new Date().getUTCMilliseconds() },
+            $set: { ...rest, lastUpdate: new Date().getTime() },
         }
     );
 
@@ -111,7 +111,7 @@ export const PUT = createHandler(async (params: CollectionPostRequestParams) => 
         throw new Error(errorText);
     }
 
-    await collection.insertOne({ ...element, lastUpdate: new Date().getUTCMilliseconds() } || {});
+    await collection.insertOne({ ...element, lastUpdate: new Date().getTime() } || {});
 
     return;
 }, putCollectionSchema);

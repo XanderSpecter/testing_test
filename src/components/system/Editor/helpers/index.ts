@@ -37,7 +37,7 @@ export const saveLocalStorageCache = (id: ObjectId | string, data: CollectionEle
         return;
     }
 
-    const dataToSet: CollectionElement = { ...data, lastUpdate: new Date().getUTCMilliseconds() };
+    const dataToSet: CollectionElement = { ...data, lastUpdate: new Date().getTime() };
 
     localStorage.setItem(String(id), JSON.stringify(dataToSet));
 };
