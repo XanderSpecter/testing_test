@@ -14,6 +14,7 @@ const DEFAULT_ELEMENT_STYLE = {
     marginRight: 0,
     top: 0,
     left: 0,
+    right: 0,
 };
 
 interface UseDragNDropParams {
@@ -30,6 +31,7 @@ interface CoordinateParams {
 interface ChangableStyles {
     top: number;
     left: number;
+    right: number;
     marginTop: number;
     marginLeft: string | number;
     marginRight: string | number;
@@ -75,7 +77,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             return null;
         }
 
-        const { width, height, top, left, marginLeft, marginTop } = startStyles.current;
+        const { width, height, top, left, right, marginLeft, marginTop } = startStyles.current;
         const { x, y } = offsets;
 
         const { width: screenWidth } = screenParams;
@@ -96,6 +98,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     marginRight: calculatedMarginRight,
                     top,
                     left,
+                    right,
                     width: calculatedWidth,
                     height: height + y,
                 };
@@ -105,6 +108,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     marginLeft: calculatedMarginLeft,
                     marginRight: calculatedMarginRight,
                     left,
+                    right,
                     top: top + y,
                     width: calculatedWidth,
                     height: height - y,
@@ -114,6 +118,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     marginTop,
                     marginLeft: calculatedMarginLeft,
                     marginRight: calculatedMarginRight - x,
+                    right: right - x,
                     top,
                     left,
                     width: calculatedWidth + x >= fullScreenWidth ? '100%' : calculatedWidth + x,
@@ -125,6 +130,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     marginLeft: calculatedMarginLeft + x,
                     marginRight: calculatedMarginRight,
                     top,
+                    right,
                     left: left + x,
                     width: calculatedWidth - x >= fullScreenWidth ? '100%' : calculatedWidth - x,
                     height,
@@ -149,11 +155,12 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     const calculatedSizes = calcResize(offsets);
 
                     if (calculatedSizes) {
-                        const { width, height, top, left, marginLeft, marginRight, marginTop } = calculatedSizes;
+                        const { width, height, top, left, right, marginLeft, marginRight, marginTop } = calculatedSizes;
 
                         const positionStyles: PositionStyles = {
                             top,
                             left,
+                            right,
                             marginTop: 0,
                             marginLeft: 0,
                             marginRight: 0,
@@ -166,6 +173,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                             positionStyles.top = 0;
                             positionStyles.left = 0;
+                            positionStyles.right = 0;
                             positionStyles.marginTop = calcMarginTop;
                             positionStyles.marginLeft = calcMarginLeft;
                             positionStyles.marginRight = calcMarginRight;
@@ -196,10 +204,12 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                 const calculatedTop = top + y;
                 const calculatedLeft = left + x;
+                const calculatedRight = screenWidth - (calculatedLeft + calculatedWidth);
 
                 const positionStyles: PositionStyles = {
                     top: calculatedTop < 0 ? 0 : calculatedTop,
                     left: calculatedLeft < 0 ? 0 : calculatedLeft,
+                    right: calculatedRight < 0 ? 0 : calculatedRight,
                     marginTop: 0,
                     marginLeft: 0,
                     marginRight: 0,
@@ -252,6 +262,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
         if (dndRef.current) {
             const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
+            const screenWidth = screenParams.width;
 
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
             const { position } = dndRef.current.style;
@@ -259,6 +270,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             const positionStyles: PositionStyles = {
                 top: top - HEADER_HEIGHT,
                 left,
+                right: screenWidth - (left + width),
                 marginTop: 0,
                 marginLeft: 0,
                 marginRight: 0,
