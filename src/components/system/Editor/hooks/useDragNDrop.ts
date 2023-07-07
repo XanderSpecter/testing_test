@@ -230,6 +230,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                     positionStyles.top = 0;
                     positionStyles.left = 0;
+                    positionStyles.right = 0;
                     positionStyles.marginTop = renderedMarginTop;
                     positionStyles.marginLeft = isMarginNotAuto ? renderedMarginLeft : 'auto';
                     positionStyles.marginRight = isMarginNotAuto ? renderedMarginRight : 'auto';
@@ -283,6 +284,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
                 positionStyles.top = 0;
                 positionStyles.left = 0;
+                positionStyles.right = 0;
                 positionStyles.marginTop = typeof marginTop === 'number' ? marginTop : 0;
                 positionStyles.marginLeft = left;
                 positionStyles.marginRight = screenParams.width - (left + width);
