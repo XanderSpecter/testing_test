@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { BaseBlockParams } from '@/types/HTMLElements';
+import { BlockParams } from '@/types/HTMLElements';
 import BaseBlock from '@/components/base/BaseBlock';
 
 interface RendererProps {
-    blocks: BaseBlockParams[];
+    blocks: BlockParams[];
 }
 
 export default function Renderer({ blocks }: RendererProps) {

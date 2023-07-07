@@ -6,8 +6,8 @@ export type WithBreakpointStyles<T> = Omit<T, 'stylesByBreakpoint'> & {
     stylesByBreakpoint?: StylesByBreakpoint | null;
 };
 
-export type WithEditorSupport<T> = Omit<T, 'editor'> & {
-    editing?: boolean;
+export type WithGeneratedCSS<T = unknown> = Omit<T, 'styleswithmedia'> & {
+    styleswithmedia: string;
 };
 /**
  * Расширение компонента для поддержки редактируемых стилей в Styled
@@ -32,11 +32,20 @@ export enum BlockPosition {
 
 export type PositionVariant = Extract<BlockPosition, BlockPosition.STATIC | BlockPosition.ABSOLUTE>;
 
-interface BlockParams {
-    type: ElementType;
+interface BaseBlockParams {
+    type: ElementType.HTMLELEMENT;
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
-    stylesByBreakpoint?: StylesByBreakpoint | null;
 }
 
-export type BaseBlockParams = WithBreakpointStyles<BlockParams>;
+export type StyledBlock = WithBreakpointStyles<BaseBlockParams>;
+
+interface BaseTextBlockParams {
+    type: ElementType.TEXT;
+    editorId: string;
+    value: string;
+}
+
+export type StyledText = WithBreakpointStyles<BaseTextBlockParams>;
+
+export type EditorBlock = StyledBlock | StyledText;

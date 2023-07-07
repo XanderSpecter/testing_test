@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { BaseBlockParams, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
+import { EditorBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
@@ -35,8 +35,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     });
 
     const [editedElement, setEditedElement] = useState<CollectionElement | null>();
-    const [editedField, setEditedField] = useState<BaseBlockParams[] | null>();
-    const [selectedBlock, setSelectedBlock] = useState<BaseBlockParams | null>(null);
+    const [editedField, setEditedField] = useState<EditorBlock[] | null>();
+    const [selectedBlock, setSelectedBlock] = useState<EditorBlock | null>(null);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
     const [contextParams, setContextParams] = useState<ContextMenuProps>({ top: 0, left: 0 });
 
@@ -99,7 +99,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             return;
         }
 
-        const newBlock: BaseBlockParams = {
+        const newBlock: EditorBlock = {
             type: ElementType.HTMLELEMENT,
             editorId: uuid(),
             tag: 'div',
@@ -114,7 +114,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setEditedField([...editedField, newBlock]);
     };
 
-    const copyBlock = (editorId: BaseBlockParams['editorId']) => {
+    const copyBlock = (editorId: EditorBlock['editorId']) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
@@ -144,7 +144,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
     };
 
-    const deleteBlock = (editorId: BaseBlockParams['editorId']) => {
+    const deleteBlock = (editorId: EditorBlock['editorId']) => {
         if (!editorId || !editedElement || !editedField) {
             return;
         }
@@ -263,15 +263,23 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
 
         return editedField.map((e) => {
-            if (e.editorId === selectedBlock?.editorId) {
-                return (
-                    <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
-                        <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId} />
-                    </DragNDrop>
-                );
+            if (e.type === ElementType.HTMLELEMENT) {
+                if (e.editorId === selectedBlock?.editorId) {
+                    return (
+                        <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
+                            <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId} />
+                        </DragNDrop>
+                    );
+                }
+
+                return <BaseBlock key={e.editorId} {...e} />;
             }
 
-            return <BaseBlock key={e.editorId} {...e} />;
+            return (
+                <BaseBlock key={e.editorId} {...e} tag="span" type={ElementType.HTMLELEMENT}>
+                    {e.value}
+                </BaseBlock>
+            );
         });
     };
 

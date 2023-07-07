@@ -1,30 +1,28 @@
-'use client';
-
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { styled } from 'styled-components';
 
-import { BaseBlockParams, WithBreakpointStyles, WithEditorSupport } from '@/types/HTMLElements';
-import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
+import { StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
+import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
 
-const StyledBaseElement = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles<unknown>>>>`
-    ${({ stylesByBreakpoint, breakpoints, editing }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
+const StyledBaseElement = styled.div<WithGeneratedCSS>`
+    ${({ styleswithmedia }) => styleswithmedia};
 `;
 
-const BaseBlock = ({ stylesByBreakpoint, tag, editorId }: BaseBlockParams) => {
+const BaseBlock = ({ stylesByBreakpoint, tag, editorId, children }: React.PropsWithChildren<StyledBlock>) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 
+    const styleswithmedia = useMemo(
+        () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing),
+        [stylesByBreakpoint, breakpoints, editing]
+    );
+
     return (
-        <StyledBaseElement
-            as={tag}
-            data-editor-id={editing ? editorId : null}
-            stylesByBreakpoint={stylesByBreakpoint}
-            breakpoints={breakpoints}
-            editing={editing}
-        />
+        <StyledBaseElement as={tag} data-editor-id={editing ? editorId : null} styleswithmedia={styleswithmedia}>
+            {children}
+        </StyledBaseElement>
     );
 };
 

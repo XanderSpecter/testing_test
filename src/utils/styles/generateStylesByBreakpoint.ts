@@ -1,6 +1,5 @@
 import { StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
-import { css } from 'styled-components';
 import { CSSProperties } from 'react';
 import { camelToKebabCase } from '../textHelpers';
 
@@ -10,7 +9,7 @@ const generateStylesByBreakpoint = (
     editor?: boolean
 ) => {
     if (!stylesByBreakpoint || !breakpoints || !breakpoints.length) {
-        return css``;
+        return '';
     }
 
     const queryParent = editor ? '@container editor' : '@media';
@@ -35,17 +34,13 @@ const generateStylesByBreakpoint = (
 
             const withUnits = typeof value === 'number' ? `${value}px` : value;
 
-            breakpointStyleString += `${camelToKebabCase(key)}: ${withUnits};\n`;
+            breakpointStyleString += `${camelToKebabCase(key)}: ${withUnits};`;
         });
 
-        styleString += `${queryParent} (min-width: ${b.screen}px) {
-            ${breakpointStyleString}
-        }`;
+        styleString += `${queryParent} (min-width: ${b.screen}px) {${breakpointStyleString}}`;
     });
 
-    return css`
-        ${styleString}
-    `;
+    return styleString;
 };
 
 export default generateStylesByBreakpoint;
