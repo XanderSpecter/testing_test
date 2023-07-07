@@ -1,11 +1,13 @@
 import { ObjectId } from 'mongodb';
-import { BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
+import { BaseCollectionElementParams, BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
 import { handleRequest } from '../utils/handleRequest';
 
-export interface CreateElementParams<T extends BaseObject = BaseObject> extends CollectionParams {
+export interface CreateElementParams<T extends BaseCollectionElementParams = BaseCollectionElementParams>
+    extends CollectionParams {
     element: Partial<CollectionElement<T>>;
 }
-export interface UpdateElementParams<T extends BaseObject = BaseObject> extends CollectionParams {
+export interface UpdateElementParams<T extends BaseCollectionElementParams = BaseCollectionElementParams>
+    extends CollectionParams {
     element: CollectionElement<T>;
 }
 
@@ -17,7 +19,7 @@ export interface GetElementParams extends CollectionParams {
     query?: BaseObject;
 }
 
-export const putElement = <T extends BaseObject = BaseObject>({
+export const putElement = <T extends BaseCollectionElementParams = BaseCollectionElementParams>({
     element,
     collectionElementName,
 }: CreateElementParams<T>) =>
@@ -30,7 +32,7 @@ export const putElement = <T extends BaseObject = BaseObject>({
         },
     });
 
-export const postElement = <T extends BaseObject = BaseObject>({
+export const postElement = <T extends BaseCollectionElementParams = BaseCollectionElementParams>({
     element,
     collectionElementName,
 }: UpdateElementParams<T>) =>
@@ -53,7 +55,7 @@ export const deleteElement = ({ _id, collectionElementName }: DeleteElementParam
         },
     });
 
-export const getElements = <T extends BaseObject = BaseObject>({
+export const getElements = <T extends BaseCollectionElementParams = BaseCollectionElementParams>({
     collectionElementName,
     query = {},
 }: GetElementParams) =>

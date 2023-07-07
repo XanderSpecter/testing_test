@@ -25,7 +25,13 @@ export interface CollectionParams extends BaseObject {
     collectionElementName: string;
 }
 
-export type CollectionElement<T extends BaseObject = BaseObject> = WithId<T>;
+export interface BaseCollectionElementParams extends BaseObject {
+    _id?: ObjectId;
+    name?: string;
+    lastUpdate?: number;
+}
+
+export type CollectionElement<T extends BaseCollectionElementParams = BaseCollectionElementParams> = WithId<T>;
 
 export interface CollectionRequestParams extends CollectionParams {
     _id?: ObjectId;

@@ -12,14 +12,17 @@ import {
     DeleteElementParams,
     deleteElement,
 } from '../../api/collection';
-import { BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
+import { BaseCollectionElementParams, BaseObject, CollectionElement, CollectionParams } from '../../types/apiModels';
 import { useState } from 'react';
 
 interface UseElementsParams extends CollectionParams {
     query?: BaseObject;
 }
 
-export const useElements = <T extends BaseObject = BaseObject>({ collectionElementName, query }: UseElementsParams) => {
+export const useElements = <T extends BaseCollectionElementParams = BaseCollectionElementParams>({
+    collectionElementName,
+    query,
+}: UseElementsParams) => {
     const {
         data: elementsList,
         isLoading: isListLoading,

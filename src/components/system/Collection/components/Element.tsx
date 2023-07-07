@@ -5,14 +5,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Typography, Button } from 'antd';
 import { EditFilled, DeleteFilled } from '@ant-design/icons';
 
-import { BaseObject, CollectionElement, PossibleFieldType } from '@/types/apiModels';
+import { BaseCollectionElementParams, CollectionElement, PossibleFieldType } from '@/types/apiModels';
 import { Column, Row } from '@/components/base/Grid';
 import { ColumnProps } from '@/components/base/Grid/Column';
 import { AvailableCollection } from '@/types/collections';
 import { COLS, ELEMENT_STYLES } from '../constants';
 import { isFieldHiddenInTable } from '../helpers';
 
-interface ElementProps<T extends BaseObject> {
+interface ElementProps<T extends BaseCollectionElementParams> {
     fieldsMapping: AvailableCollection['fieldsMapping'];
     element: CollectionElement<T>;
     customMaxCols: ColumnProps['maxCols'];
@@ -20,7 +20,7 @@ interface ElementProps<T extends BaseObject> {
     onDeleteClick: () => void;
 }
 
-export default function Element<T extends BaseObject = BaseObject>({
+export default function Element<T extends BaseCollectionElementParams = BaseCollectionElementParams>({
     fieldsMapping,
     customMaxCols,
     element,

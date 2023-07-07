@@ -18,6 +18,7 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
 import { CANVAS_ID, CANVAS_RESIZER_ID } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption } from './components/ContextMenu';
+import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -91,7 +92,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setEditedField(updatedField);
         setEditedElement(updatedElement);
 
-        localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
+        saveLocalStorageCache(updatedElement._id, updatedElement);
     };
 
     const addBlock = () => {
@@ -133,7 +134,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             setEditedField(updatedField);
             setEditedElement(updatedElement);
 
-            localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
+            saveLocalStorageCache(updatedElement._id, updatedElement);
 
             setSelectedBlock(copy);
 
@@ -155,7 +156,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setEditedField(updatedField);
         setEditedElement(updatedElement);
 
-        localStorage.setItem(String(updatedElement._id), JSON.stringify(updatedElement));
+        saveLocalStorageCache(updatedElement._id, updatedElement);
 
         setContextParams({
             ...contextParams,
@@ -184,22 +185,24 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
     useEffect(() => {
         if (elementsList && elementsList.length === 1) {
-            const newEditedField = elementsList[0][field];
             const id = elementsList[0]._id;
+            const cachedElement = getLocalStorageCache(String(id));
 
-            if (!newEditedField || !Array.isArray(newEditedField) || !newEditedField.length) {
-                const cache = localStorage.getItem(String(id));
+            if (
+                cachedElement &&
+                cachedElement.lastUpdate &&
+                elementsList[0].lastUpdate &&
+                cachedElement.lastUpdate > elementsList[0].lastUpdate
+            ) {
+                const cachedField = cachedElement[field];
 
-                if (cache) {
-                    const cachedElement: CollectionElement = JSON.parse(cache);
-                    const cachedField = cachedElement[field];
+                setEditedElement(cachedElement);
+                setEditedField(Array.isArray(cachedField) ? cachedField : []);
 
-                    setEditedElement(cachedElement);
-                    setEditedField(Array.isArray(cachedField) ? cachedField : []);
-
-                    return;
-                }
+                return;
             }
+
+            const newEditedField = elementsList[0][field];
 
             setEditedElement(elementsList[0]);
             setEditedField(Array.isArray(newEditedField) ? newEditedField : []);

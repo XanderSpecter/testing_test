@@ -52,7 +52,7 @@ export default function Collection({ collectionElementName, query }: CollectionP
         setIsFormOpened(false);
 
         if (selectedElement) {
-            updateElement({ _id: selectedElement._id, ...element });
+            updateElement({ ...element, _id: selectedElement._id });
             setSelectedElement(null);
 
             return;

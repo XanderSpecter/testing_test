@@ -1,3 +1,6 @@
+import { CollectionElement } from '@/types/apiModels';
+import { ObjectId } from 'mongodb';
+
 interface RecalcWidthAndMarginsParams {
     width?: string | number;
     marginLeft?: string | number;
@@ -27,4 +30,34 @@ export const recalcWidthAndMargins = ({ width, marginLeft, screenWidth }: Recalc
         calculatedMarginLeft,
         calculatedMarginRight,
     };
+};
+
+export const saveLocalStorageCache = (id: ObjectId | string, data: CollectionElement | null) => {
+    if (!id || !data) {
+        return;
+    }
+
+    const dataToSet: CollectionElement = { ...data, lastUpdate: new Date().getUTCMilliseconds() };
+
+    localStorage.setItem(String(id), JSON.stringify(dataToSet));
+};
+
+export const getLocalStorageCache = (id: ObjectId | string) => {
+    if (!id) {
+        return null;
+    }
+
+    try {
+        const dataString = localStorage.getItem(String(id));
+
+        if (!dataString) {
+            return null;
+        }
+
+        const data: CollectionElement = JSON.parse(dataString);
+
+        return data;
+    } catch (e) {
+        return null;
+    }
 };
