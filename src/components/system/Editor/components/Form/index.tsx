@@ -19,14 +19,14 @@ interface FormProps {
 const { Text } = Typography;
 
 export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
-    const [editedBlock, setEditedBlock] = useState(block);
+    const [editedBlock, setEditedBlock] = useState<PageBlock | null>(null);
     const [isTypeWarningShown, setIsTypeWarningShown] = useState(false);
 
     useEffect(() => {
         setEditedBlock(block);
     }, [block]);
 
-    if (!block) {
+    if (!editedBlock) {
         return null;
     }
 
@@ -88,15 +88,7 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
     };
 
     return (
-        <Drawer
-            open={opened}
-            onClose={() => {
-                setEditedBlock(null);
-                onCancel();
-            }}
-            width={700}
-            title=""
-        >
+        <Drawer open={opened} onClose={onCancel} width={700} destroyOnClose title="">
             <form>
                 <Container>
                     {renderTypeSelector()}
