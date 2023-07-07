@@ -16,6 +16,8 @@ export const DnDInfoLabel = styled.div`
 
     z-index: 1;
 
+    white-space: nowrap;
+
     & * {
         color: #ffffff;
     }
