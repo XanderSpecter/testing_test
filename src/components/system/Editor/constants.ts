@@ -13,3 +13,5 @@ export const CANVAS_RESIZER_ID = 'CANVAS_RESIZER';
 export const BLOCK_POSITIONS_STATIC = [BlockPosition.STATIC, BlockPosition.RELATIVE];
 
 export const DRAG_N_DROP_DISABLED_DISPLAY = 'inline';
+
+export const EMPTY_BLOCK_MESSAGE = 'Пустой блок подкрашен, чтобы быть заметным. Добавьте дочерние элементы.';

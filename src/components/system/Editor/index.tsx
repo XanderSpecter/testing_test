@@ -1,21 +1,20 @@
 'use client';
 
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { v4 as uuid } from 'uuid';
 import { useRouter } from 'next/navigation';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { PageBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
+import { PageBlock, ElementType, StylesByBreakpoint, StyledBlock } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import DragNDrop from './components/DragNDrop';
 import { HeaderContentContext } from '../AdminLayout';
 import { Button } from 'antd';
-import { HeaderControls } from './styled';
+import { EmptyBlock, HeaderControls } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
-import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
+import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY, EMPTY_BLOCK_MESSAGE } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
 import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
@@ -39,6 +38,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     const [editedField, setEditedField] = useState<PageBlock[] | null>();
     const [selectedBlock, setSelectedBlock] = useState<PageBlock | null>(null);
     const [formEditedBlock, setFormEditedBlock] = useState<PageBlock | null>(null);
+    const [formEditedBlockParent, setFormEditedBlockParent] = useState<string | null>(null);
     const [isFormOpened, setIsFormOpened] = useState(false);
     const [currentMockedBreakpoint, setCurrentMockedBreakpoint] = useState<string | null>(null);
     const [contextParams, setContextParams] = useState<ContextMenuProps>({ top: 0, left: 0 });
@@ -135,6 +135,21 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setIsFormOpened(true);
     };
 
+    const addChildBlock = ({ editorId }: HandlerParams) => {
+        if (!editorId || !editedField || !currentMockedBreakpoint) {
+            return;
+        }
+
+        setFormEditedBlockParent(editorId);
+        setFormEditedBlock(null);
+        setIsFormOpened(true);
+
+        setContextParams({
+            ...contextParams,
+            editorId: null,
+        });
+    };
+
     const editBlock = ({ editorId }: HandlerParams) => {
         if (!editorId || !editedElement || !editedField) {
             return;
@@ -144,29 +159,6 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         if (block) {
             setFormEditedBlock(block);
-            setIsFormOpened(true);
-
-            setContextParams({
-                ...contextParams,
-                editorId: null,
-            });
-        }
-    };
-
-    const copyBlock = ({ editorId }: HandlerParams) => {
-        if (!editorId || !editedElement || !editedField) {
-            return;
-        }
-
-        const block = editedField.find((b) => b.editorId === editorId);
-
-        if (block) {
-            const copy = {
-                ...block,
-                editorId: uuid(),
-            };
-
-            setFormEditedBlock(copy);
             setIsFormOpened(true);
 
             setContextParams({
@@ -198,8 +190,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     const contextOptions: ContextOption[] = useMemo(
         () => [
             {
-                name: 'Копировать',
-                handler: copyBlock,
+                name: 'Добавить дочерний элемент',
+                handler: addChildBlock,
             },
             {
                 name: 'Редактировать',
@@ -300,6 +292,14 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         }
     };
 
+    const renderBlockContent = (block: StyledBlock) => {
+        if (block.content) {
+            return block.content;
+        }
+
+        return <EmptyBlock>{EMPTY_BLOCK_MESSAGE}</EmptyBlock>;
+    };
+
     const renderBlocks = () => {
         if (!Array.isArray(editedField)) {
             return null;
@@ -316,7 +316,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                             onDrop={onDrop}
                         >
                             <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId}>
-                                {e.content}
+                                {renderBlockContent(e)}
                             </BaseBlock>
                         </DragNDrop>
                     );
@@ -324,7 +324,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
                 return (
                     <BaseBlock key={e.editorId} {...e}>
-                        {e.content}
+                        {renderBlockContent(e)}
                     </BaseBlock>
                 );
             }
@@ -350,6 +350,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             <Form
                 block={formEditedBlock}
                 opened={isFormOpened}
+                parent={formEditedBlockParent}
                 onSubmit={onBlockFormSubmit}
                 onCancel={() => setIsFormOpened(false)}
             />

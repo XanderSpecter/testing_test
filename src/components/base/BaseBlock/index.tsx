@@ -5,12 +5,20 @@ import { StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
+import Renderer from '@/components/system/Renderer';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     ${({ styleswithmedia }) => styleswithmedia};
 `;
 
-const BaseBlock = ({ stylesByBreakpoint, tag, editorId, props, children }: React.PropsWithChildren<StyledBlock>) => {
+const BaseBlock = ({
+    stylesByBreakpoint,
+    tag,
+    editorId,
+    props,
+    childrenBlocks,
+    children,
+}: React.PropsWithChildren<StyledBlock>) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 
@@ -21,6 +29,14 @@ const BaseBlock = ({ stylesByBreakpoint, tag, editorId, props, children }: React
 
     const notEmptyProps = props ? props : {};
 
+    const renderChildrenBlocks = () => {
+        if (!childrenBlocks || !childrenBlocks.length) {
+            return null;
+        }
+
+        return <Renderer blocks={childrenBlocks} />;
+    };
+
     return (
         <StyledBaseElement
             as={tag}
@@ -29,6 +45,7 @@ const BaseBlock = ({ stylesByBreakpoint, tag, editorId, props, children }: React
             styleswithmedia={styleswithmedia}
         >
             {children}
+            {renderChildrenBlocks()}
         </StyledBaseElement>
     );
 };

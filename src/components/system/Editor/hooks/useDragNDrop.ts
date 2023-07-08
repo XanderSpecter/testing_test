@@ -7,14 +7,13 @@ import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HT
 import { recalcWidthAndMargins } from '../helpers';
 
 const DEFAULT_ELEMENT_STYLE = {
-    width: 100,
-    height: 50,
     marginTop: 0,
     marginLeft: 0,
     marginRight: 0,
     top: 0,
     left: 0,
     right: 0,
+    height: 0,
 };
 
 interface UseDragNDropParams {
@@ -54,6 +53,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     });
     const startStyles = useRef<ChangableStyles>({
         ...DEFAULT_ELEMENT_STYLE,
+        width: screenParams.width,
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
     const blockPositioning = useRef<PositionVariant>(BlockPosition.ABSOLUTE);
@@ -362,6 +362,8 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
             setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
             calcStyles.current = currentStyles;
+        } else {
+            setCalculatedStyle({ width: '100%', height: 'auto' });
         }
     }, [stylesByBreakpoint, screenParams]);
 
