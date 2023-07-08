@@ -10,7 +10,7 @@ const StyledBaseElement = styled.div<WithGeneratedCSS>`
     ${({ styleswithmedia }) => styleswithmedia};
 `;
 
-const BaseBlock = ({ stylesByBreakpoint, tag, editorId, children }: React.PropsWithChildren<StyledBlock>) => {
+const BaseBlock = ({ stylesByBreakpoint, tag, editorId, props, children }: React.PropsWithChildren<StyledBlock>) => {
     const breakpoints = useContext(BreakpointsContext);
     const editing = useContext(EditorContext);
 
@@ -19,8 +19,15 @@ const BaseBlock = ({ stylesByBreakpoint, tag, editorId, children }: React.PropsW
         [stylesByBreakpoint, breakpoints, editing]
     );
 
+    const notEmptyProps = props ? props : {};
+
     return (
-        <StyledBaseElement as={tag} data-editor-id={editing ? editorId : null} styleswithmedia={styleswithmedia}>
+        <StyledBaseElement
+            as={tag}
+            {...notEmptyProps}
+            data-editor-id={editing ? editorId : null}
+            styleswithmedia={styleswithmedia}
+        >
             {children}
         </StyledBaseElement>
     );

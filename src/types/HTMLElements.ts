@@ -32,17 +32,21 @@ export enum BlockPosition {
 
 export type PositionVariant = Extract<BlockPosition, BlockPosition.STATIC | BlockPosition.ABSOLUTE>;
 
-type HTMLBlockProps<T extends keyof HTMLElementTagNameMap> = HTMLElementTagNameMap[T];
+export interface BlockPropRecord {
+    key: string;
+    value: string | number | boolean;
+}
 
-interface HTMLBlock<T extends keyof HTMLElementTagNameMap = 'div'> {
+type HTMLBlockProps = Record<BlockPropRecord['key'], BlockPropRecord['value']>;
+interface HTMLBlock {
     type: ElementType.HTMLELEMENT;
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
     content?: string;
-    props?: HTMLBlockProps<T>;
+    props?: HTMLBlockProps;
 }
 
-export type StyledBlock<T extends keyof HTMLElementTagNameMap = 'div'> = WithBreakpointStyles<HTMLBlock<T>>;
+export type StyledBlock = WithBreakpointStyles<HTMLBlock>;
 
 export interface TextBlock {
     type: ElementType.TEXT;

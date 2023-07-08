@@ -11,7 +11,16 @@ import { recalcWidthAndMargins } from '../helpers';
 
 const { Text } = Typography;
 
-export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: React.PropsWithChildren<DragNDropProps>) {
+interface DragNDropComponentProps extends DragNDropProps {
+    tag: keyof HTMLElementTagNameMap;
+}
+
+export default function DragNDrop({
+    children,
+    stylesByBreakpoint,
+    onDrop,
+    tag,
+}: React.PropsWithChildren<DragNDropComponentProps>) {
     const { dndRef, calculatedStyle, isStatic, screenWidth, onDnDMouseDown, onMouseUp } = useDragNDrop({
         stylesByBreakpoint,
         onDrop,
@@ -39,7 +48,7 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
         return (
             <DnDResizerLabel position={position} distanceLabel={distanceLabel} distance={distance}>
                 <DnDResizerLabelRay position={position} distance={distance} role="before" />
-                <Text>{distanceLabel}</Text>
+                <Text>{typeof distanceLabel === 'number' ? Math.round(distanceLabel) : distanceLabel}</Text>
                 <DnDResizerLabelRay position={position} distance={distance} role="after" />
             </DnDResizerLabel>
         );
@@ -51,6 +60,7 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
             onMouseUp={onMouseUp}
             style={calculatedStyle}
             ref={dndRef as RefObject<HTMLDivElement>}
+            as={tag}
         >
             <DnDResizer data-pos={DnDResizerPosition.TOP} position={DnDResizerPosition.TOP}>
                 {renderDistanceLabel({
@@ -79,7 +89,9 @@ export default function DragNDrop({ children, stylesByBreakpoint, onDrop }: Reac
                 <br />
                 <Text>
                     Ширина:{' '}
-                    {typeof calculatedStyle.width === 'number' ? `${calculatedStyle.width}px` : calculatedStyle.width}
+                    {typeof calculatedStyle.width === 'number'
+                        ? `${Math.round(calculatedStyle.width)}px`
+                        : calculatedStyle.width}
                 </Text>
                 {calculatedStyle.height && (
                     <>

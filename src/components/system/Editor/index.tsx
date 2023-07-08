@@ -15,7 +15,7 @@ import { HeaderControls } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import BaseBlock from '../../base/BaseBlock';
-import { CANVAS_ID, CANVAS_RESIZER_ID } from './constants';
+import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
 import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
@@ -75,9 +75,8 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         if (!stylesByBreakpoint) {
             updatedStyles[screenShortcut] = style;
-            updatedStyles.all = style;
         } else {
-            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style, all: style };
+            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
         }
 
         const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
@@ -266,6 +265,12 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         });
 
         if ((e.target as HTMLDivElement).dataset.editorId) {
+            const { display } = getComputedStyle(e.target as HTMLDivElement);
+
+            if (display === DRAG_N_DROP_DISABLED_DISPLAY) {
+                return;
+            }
+
             const block = editedField?.find((b) => b.editorId === (e.target as HTMLDivElement).dataset.editorId);
 
             if (block) {
@@ -304,7 +309,12 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             if (e.type === ElementType.HTMLELEMENT) {
                 if (e.editorId === selectedBlock?.editorId) {
                     return (
-                        <DragNDrop stylesByBreakpoint={e.stylesByBreakpoint} key={e.editorId} onDrop={onDrop}>
+                        <DragNDrop
+                            stylesByBreakpoint={e.stylesByBreakpoint}
+                            tag={e.tag}
+                            key={e.editorId}
+                            onDrop={onDrop}
+                        >
                             <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId}>
                                 {e.content}
                             </BaseBlock>

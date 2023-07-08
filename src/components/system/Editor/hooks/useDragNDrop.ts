@@ -266,7 +266,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             const screenWidth = screenParams.width;
 
             const { top, left, width, height } = dndRef.current.getBoundingClientRect();
-            const { position } = dndRef.current.style;
+            const { position } = getComputedStyle(dndRef.current);
 
             const positionStyles: PositionStyles = {
                 top: top - HEADER_HEIGHT,
@@ -313,10 +313,28 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
     const onMouseUp = () => {
         if (calcStyles.current) {
-            setCalculatedStyle(calcStyles.current);
+            const stylesWithoutHelpers = calcStyles.current;
+
+            delete stylesWithoutHelpers.display;
+
+            if (
+                stylesWithoutHelpers.position &&
+                BLOCK_POSITIONS_STATIC.includes(stylesWithoutHelpers.position as BlockPosition)
+            ) {
+                delete stylesWithoutHelpers.position;
+                delete stylesWithoutHelpers.top;
+                delete stylesWithoutHelpers.left;
+                delete stylesWithoutHelpers.right;
+
+                if (stylesWithoutHelpers.marginRight !== 'auto') {
+                    delete stylesWithoutHelpers.marginRight;
+                }
+            }
+
+            setCalculatedStyle(stylesWithoutHelpers);
 
             if (onDrop) {
-                onDrop(calcStyles.current, screenParams.breakpoint);
+                onDrop(stylesWithoutHelpers, screenParams.breakpoint);
             }
         }
 
