@@ -141,7 +141,9 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
                 <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Text type="secondary">
-                            Добавленные стили будут применяться только к выбранному разрешению экрана.
+                            Добавленные стили будут применяться только к выбранному разрешению экрана. Если стили для
+                            более высокого разрешения не отличаются от предыдущих или от базовых, они не будут
+                            применяться, даже если указаны.
                         </Text>
                     </Column>
                 </Row>
