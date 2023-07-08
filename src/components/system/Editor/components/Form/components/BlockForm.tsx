@@ -10,7 +10,10 @@ import PropsForm from './PropsForm';
 import StylesForm from './StylesForm';
 
 interface BlockFormProps {
-    onFieldChange: (fieldName: keyof StyledBlock, newValue: string | StyledBlock['props']) => void;
+    onFieldChange: (
+        fieldName: keyof StyledBlock,
+        newValue: string | StyledBlock['props'] | StyledBlock['stylesByBreakpoint']
+    ) => void;
     block: StyledBlock;
 }
 
@@ -106,7 +109,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
                 <StylesForm
                     stylesByBreakpoint={block.stylesByBreakpoint}
                     editorId={block.editorId}
-                    onFieldChange={(_, newValue) => console.log(newValue)}
+                    onFieldChange={onFieldChange}
                 />
             ),
         },

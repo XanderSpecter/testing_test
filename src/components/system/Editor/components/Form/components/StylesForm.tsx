@@ -78,9 +78,13 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
             stylesToSave[key] = value;
         });
 
+        const existedStyles = stylesByBreakpoint?.[currentBreakpoint] || {};
+
         const updatedStyles = {
             ...stylesByBreakpoint,
-            [currentBreakpoint]: currentStyleType ? { [currentStyleType]: { ...stylesToSave } } : { ...stylesToSave },
+            [currentBreakpoint]: currentStyleType
+                ? { ...existedStyles, [currentStyleType]: { ...stylesToSave } }
+                : { ...stylesToSave },
         };
 
         onFieldChange('stylesByBreakpoint', updatedStyles);
@@ -191,31 +195,37 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
             return null;
         }
 
-        return currentStyleSet.map((s, i) => (
-            <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={COLS.keyValueInput}>
-                    <Input
-                        id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
-                        placeholder="Название стиля"
-                        value={s.key}
-                        onChange={(e) => onPropFieldChange(e, i, 'key')}
-                    />
-                </Column>
-                <Column cols={COLS.keyValueInput}>
-                    <Input
-                        id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.value}-value`}
-                        placeholder="Значение стиля"
-                        value={String(s.value)}
-                        onChange={(e) => onPropFieldChange(e, i, 'value')}
-                    />
-                </Column>
-                <Column cols={COLS.text}>
-                    <Button danger onClick={() => onStyleDelete(s.key, i)}>
-                        Удалить
-                    </Button>
-                </Column>
-            </Row>
-        ));
+        return currentStyleSet.map((s, i) => {
+            if (s.key === StyleType.HOVER || s.key === StyleType.FOCUS) {
+                return null;
+            }
+
+            return (
+                <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                    <Column cols={COLS.keyValueInput}>
+                        <Input
+                            id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
+                            placeholder="Название стиля"
+                            value={s.key}
+                            onChange={(e) => onPropFieldChange(e, i, 'key')}
+                        />
+                    </Column>
+                    <Column cols={COLS.keyValueInput}>
+                        <Input
+                            id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.value}-value`}
+                            placeholder="Значение стиля"
+                            value={String(s.value)}
+                            onChange={(e) => onPropFieldChange(e, i, 'value')}
+                        />
+                    </Column>
+                    <Column cols={COLS.text}>
+                        <Button danger onClick={() => onStyleDelete(s.key, i)}>
+                            Удалить
+                        </Button>
+                    </Column>
+                </Row>
+            );
+        });
     };
 
     return (

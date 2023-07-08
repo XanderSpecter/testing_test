@@ -11,7 +11,7 @@ interface StyleByBreakpoint extends CSSProperties {
     [StyleType.FOCUS]?: CSSProperties;
 }
 export interface BlockStyleRecord {
-    key: keyof CSSProperties;
+    key: keyof StyleByBreakpoint;
     value?: string | number;
 }
 
