@@ -1,6 +1,21 @@
 import { CSSProperties } from 'react';
 
-export type StylesByBreakpoint = Record<string, CSSProperties | undefined>;
+export enum StyleType {
+    BASE = '',
+    HOVER = 'hover',
+    FOCUS = 'focus',
+}
+
+interface StyleByBreakpoint extends CSSProperties {
+    [StyleType.HOVER]?: CSSProperties;
+    [StyleType.FOCUS]?: CSSProperties;
+}
+export interface BlockStyleRecord {
+    key: keyof CSSProperties;
+    value?: string | number;
+}
+
+export type StylesByBreakpoint = Record<string, StyleByBreakpoint | undefined>;
 
 export type WithBreakpointStyles<T> = Omit<T, 'stylesByBreakpoint'> & {
     stylesByBreakpoint?: StylesByBreakpoint | null;

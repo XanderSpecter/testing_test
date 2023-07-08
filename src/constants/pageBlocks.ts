@@ -1,4 +1,4 @@
-import { ElementType } from '@/types/HTMLElements';
+import { ElementType, StyleType } from '@/types/HTMLElements';
 
 export const PAGE_BLOCK_TYPES = [
     {
@@ -13,6 +13,21 @@ export const PAGE_BLOCK_TYPES = [
         label: 'React-компонент',
         value: ElementType.COMPONENT,
         disabled: true,
+    },
+];
+
+export const STYLE_TYPES = [
+    {
+        label: 'Базовые стили',
+        value: StyleType.BASE,
+    },
+    {
+        label: 'Стили при наведении',
+        value: StyleType.HOVER,
+    },
+    {
+        label: 'Стили при фокусе',
+        value: StyleType.FOCUS,
     },
 ];
 

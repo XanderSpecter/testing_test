@@ -14,6 +14,7 @@ const tableRow: StylesByBreakpoint = {
 const buttonColumn: StylesByBreakpoint = { all: { justifyContent: 'center', alignItems: 'center' } };
 const column: StylesByBreakpoint = { all: { alignItems: 'center' } };
 const input = { width: '100%' };
+const controlButton = { marginLeft: '16px' };
 
 export const ELEMENT_STYLES = {
     row,
@@ -22,4 +23,5 @@ export const ELEMENT_STYLES = {
     buttonColumn,
     column,
     input,
+    controlButton,
 };

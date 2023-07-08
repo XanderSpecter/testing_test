@@ -79,8 +79,19 @@ export default function Element<T extends BaseCollectionElementParams = BaseColl
         <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
             {renderFields()}
             <Column cols={COLS.button} maxCols={customMaxCols} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                <Button type="primary" onClick={onEditClick} icon={<EditFilled />} />
-                <Button type="primary" danger onClick={onDeleteClick} icon={<DeleteFilled />} />
+                <Button
+                    style={ELEMENT_STYLES.controlButton}
+                    type="primary"
+                    onClick={onEditClick}
+                    icon={<EditFilled />}
+                />
+                <Button
+                    style={ELEMENT_STYLES.controlButton}
+                    type="primary"
+                    danger
+                    onClick={onDeleteClick}
+                    icon={<DeleteFilled />}
+                />
             </Column>
         </Row>
     );

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Collapse, Input, Select, Typography } from 'antd';
+import React from 'react';
+import { Collapse, Input, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { BlockPropRecord, StyledBlock } from '@/types/HTMLElements';
-import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
+import { StyledBlock } from '@/types/HTMLElements';
+import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { AVAILABLE_TAGS_ITEMS } from '@/constants/pageBlocks';
 import PropsForm from './PropsForm';
+import StylesForm from './StylesForm';
 
 interface BlockFormProps {
-    onFieldChange: (fieldName: keyof StyledBlock, newValue: string) => void;
+    onFieldChange: (fieldName: keyof StyledBlock, newValue: string | StyledBlock['props']) => void;
     block: StyledBlock;
 }
 
@@ -50,8 +51,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
                             id={`${block.editorId}-tag`}
                             style={ELEMENT_STYLES.input}
                             showSearch
-                            placeholder="Select a person"
-                            optionFilterProp="children"
+                            optionFilterProp="tag"
                             onChange={onSelect}
                             value={block.tag}
                             filterOption={filterOption}
@@ -97,17 +97,20 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
         {
             key: 'props',
             label: 'Параметры блока',
+            children: <PropsForm props={block.props} editorId={block.editorId} onFieldChange={onFieldChange} />,
+        },
+        {
+            key: 'styles',
+            label: 'Стили блока',
             children: (
-                <PropsForm
-                    props={block.props}
+                <StylesForm
+                    stylesByBreakpoint={block.stylesByBreakpoint}
                     editorId={block.editorId}
-                    onFieldChange={(_, newProps) => console.log(newProps)}
+                    onFieldChange={(_, newValue) => console.log(newValue)}
                 />
             ),
         },
     ];
-
-    console.log('render');
 
     return (
         <>

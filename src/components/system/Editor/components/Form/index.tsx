@@ -59,7 +59,7 @@ export default function Form({ opened, block, onSubmit, onCancel }: FormProps) {
         setEditedBlock(updated);
     };
 
-    const onHTMLBlockFieldChange = (fieldName: keyof StyledBlock, newValue: string) => {
+    const onHTMLBlockFieldChange = (fieldName: keyof StyledBlock, newValue: string | StyledBlock['props']) => {
         const updated = { ...(editedBlock as StyledBlock), [fieldName]: newValue };
 
         setEditedBlock(updated);

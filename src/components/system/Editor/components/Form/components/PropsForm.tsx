@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Input, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
 import { BlockPropRecord, StyledBlock } from '@/types/HTMLElements';
 import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
 
 interface PropsFormProps {
-    onFieldChange: (fieldName: keyof StyledBlock['props'], newValue: StyledBlock['props']) => void;
+    onFieldChange: (fieldName: 'props', newValue: StyledBlock['props']) => void;
     props: StyledBlock['props'];
     editorId: StyledBlock['editorId'];
 }
@@ -18,42 +18,67 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
     const [editableProps, setEditableProps] = useState<BlockPropRecord[]>([]);
     const [isPropsChanged, setIsPropsChanged] = useState(false);
 
-    const remappedProps = useMemo(() => {
-        if (!props) {
-            return [];
-        }
-
-        return Object.keys(props).map((k) => ({ key: k, value: props[k] }));
-    }, [props]);
-
     useEffect(() => {
-        if (remappedProps) {
-            setEditableProps(remappedProps);
-            setIsPropsChanged(false);
+        setIsPropsChanged(false);
+
+        if (props) {
+            setEditableProps(Object.keys(props).map((k) => ({ key: k, value: props[k] })));
+        } else {
+            setEditableProps([]);
         }
-    }, [remappedProps]);
+    }, [props]);
 
     const onPropAdd = () => {
         setEditableProps([...editableProps, { key: '', value: '' }]);
     };
 
-    const onPropFieldChange =
-        (index: number, field: keyof BlockPropRecord) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            if (!editableProps || !editableProps.length) {
+    const onPropDelete = (key: string, index: number) => {
+        if (!editableProps) {
+            return;
+        }
+
+        const updatedProps = editableProps.filter((p, i) => p.key !== key || i !== index);
+
+        setEditableProps(updatedProps);
+        setIsPropsChanged(updatedProps.length !== Object.keys(props || {}).length);
+    };
+
+    const onPropFieldChange = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: keyof BlockPropRecord) => {
+        if (!editableProps || !editableProps.length) {
+            return;
+        }
+
+        const updatedProps = editableProps.map((p, i) => {
+            if (i === index) {
+                return { ...p, [field]: e.target.value };
+            }
+
+            return p;
+        });
+
+        setEditableProps(updatedProps);
+        setIsPropsChanged(true);
+    };
+
+    const onPropsSave = () => {
+        if (!editableProps || !onFieldChange || typeof onFieldChange !== 'function') {
+            return;
+        }
+
+        const propsToSave: StyledBlock['props'] = {};
+
+        editableProps.forEach((p) => {
+            const { key, value } = p;
+
+            if (!key || !value) {
                 return;
             }
 
-            const updatedProps = editableProps.map((p, i) => {
-                if (i === index) {
-                    return { ...p, [field]: e.target.value };
-                }
+            propsToSave[key] = value;
+        });
 
-                return p;
-            });
-
-            setEditableProps(updatedProps);
-            setIsPropsChanged(true);
-        };
+        onFieldChange('props', propsToSave);
+    };
 
     const mapPropsInputs = () => {
         if (!editableProps) {
@@ -61,13 +86,13 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
         }
 
         return editableProps.map((p, i) => (
-            <Row key={`${p.key}-${i}`} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+            <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                 <Column cols={COLS.keyValueInput}>
                     <Input
                         id={`${editorId}-props-${p.key}`}
                         placeholder="Ключ параметра"
                         value={p.key}
-                        onChange={onPropFieldChange(i, 'key')}
+                        onChange={(e) => onPropFieldChange(e, i, 'key')}
                     />
                 </Column>
                 <Column cols={COLS.keyValueInput}>
@@ -75,11 +100,13 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
                         id={`${editorId}-props-${p.value}-value`}
                         placeholder="Значение параметра"
                         value={String(p.value)}
-                        onChange={onPropFieldChange(i, 'value')}
+                        onChange={(e) => onPropFieldChange(e, i, 'value')}
                     />
                 </Column>
                 <Column cols={COLS.text}>
-                    <Button danger>Удалить</Button>
+                    <Button danger onClick={() => onPropDelete(p.key, i)}>
+                        Удалить
+                    </Button>
                 </Column>
             </Row>
         ));
@@ -101,7 +128,9 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
                     <Button onClick={onPropAdd}>Добавить</Button>
                 </Column>
                 <Column cols={COLS.text} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                    <Button disabled={!isPropsChanged}>Сохранить</Button>
+                    <Button disabled={!isPropsChanged} onClick={onPropsSave}>
+                        Сохранить
+                    </Button>
                 </Column>
             </Row>
         </>
