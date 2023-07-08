@@ -1,7 +1,58 @@
-import { StylesByBreakpoint } from '@/types/HTMLElements';
+import { StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 import { CSSProperties } from 'react';
 import { camelToKebabCase } from '../textHelpers';
+
+const getStyleString = (styles?: CSSProperties, baseStyles?: CSSProperties, previosBpStyles?: CSSProperties) => {
+    let styleString = '';
+
+    if (!styles) {
+        return styleString;
+    }
+
+    Object.keys(styles).forEach((key) => {
+        const value = styles[key as keyof CSSProperties];
+        const baseValue = baseStyles?.[key as keyof CSSProperties];
+        const previosValue = previosBpStyles?.[key as keyof CSSProperties];
+
+        if (!value || value === baseValue || value === previosValue) {
+            return;
+        }
+
+        const withUnits = typeof value === 'number' ? `${value}px` : value;
+
+        styleString += `${camelToKebabCase(key)}: ${withUnits};`;
+    });
+
+    return styleString;
+};
+
+const getFullStylesString = (
+    styles?: StyleByBreakpoint,
+    baseStyles?: StyleByBreakpoint,
+    previosBpStyles?: StyleByBreakpoint
+) => {
+    if (!styles) {
+        return '';
+    }
+
+    const { hover, focus, ...rest } = styles;
+
+    const baseStylesString = getStyleString(rest, baseStyles, previosBpStyles);
+    const hoverStylesString = getStyleString(hover, baseStyles?.hover, previosBpStyles?.hover);
+    const focusStylesString = getStyleString(focus, baseStyles?.focus, previosBpStyles?.focus);
+
+    let fullStylesString = baseStylesString;
+
+    if (hoverStylesString) {
+        fullStylesString += `&:hover{${hoverStylesString}}`;
+    }
+    if (focusStylesString) {
+        fullStylesString += `&:hover{${focusStylesString}}`;
+    }
+
+    return fullStylesString;
+};
 
 const generateStylesByBreakpoint = (
     stylesByBreakpoint?: StylesByBreakpoint | null,
@@ -13,71 +64,23 @@ const generateStylesByBreakpoint = (
     }
 
     const queryParent = editor ? '@container editor' : '@media';
+    const baseStyles = stylesByBreakpoint?.all;
 
-    let styleString = '';
+    let styleString = getFullStylesString(baseStyles);
 
-    breakpoints.forEach((b) => {
-        const styles = stylesByBreakpoint?.[b.name] || stylesByBreakpoint?.all;
+    breakpoints.forEach((b, i) => {
+        const styles = stylesByBreakpoint?.[b.name];
+        const previosBpStyles = stylesByBreakpoint?.[breakpoints[i - 1]?.name];
 
         if (!styles) {
             return '';
         }
 
-        const { hover, focus, ...rest } = styles;
+        const breakpointStyleString = getFullStylesString(styles, baseStyles, previosBpStyles);
 
-        let breakpointStyleString = '';
-        let breakpointHoverStyleString = '';
-        let breakpointFocusStyleString = '';
-
-        if (hover) {
-            Object.keys(hover).forEach((key) => {
-                const value = hover[key as keyof CSSProperties];
-
-                if (!value) {
-                    return;
-                }
-
-                const withUnits = typeof value === 'number' ? `${value}px` : value;
-
-                breakpointHoverStyleString += `${camelToKebabCase(key)}: ${withUnits};`;
-            });
+        if (breakpointStyleString) {
+            styleString += `${queryParent} (min-width: ${b.screen}px) {${breakpointStyleString}}`;
         }
-
-        if (focus) {
-            Object.keys(focus).forEach((key) => {
-                const value = focus[key as keyof CSSProperties];
-
-                if (!value) {
-                    return;
-                }
-
-                const withUnits = typeof value === 'number' ? `${value}px` : value;
-
-                breakpointFocusStyleString += `${camelToKebabCase(key)}: ${withUnits};`;
-            });
-        }
-
-        Object.keys(rest).forEach((key) => {
-            const value = styles[key as keyof CSSProperties];
-
-            if (!value) {
-                return;
-            }
-
-            const withUnits = typeof value === 'number' ? `${value}px` : value;
-
-            breakpointStyleString += `${camelToKebabCase(key)}: ${withUnits};`;
-        });
-
-        if (breakpointHoverStyleString) {
-            breakpointStyleString += `&:hover{${breakpointHoverStyleString}}`;
-        }
-
-        if (breakpointFocusStyleString) {
-            breakpointStyleString += `&:focus{${breakpointFocusStyleString}}`;
-        }
-
-        styleString += `${queryParent} (min-width: ${b.screen}px) {${breakpointStyleString}}`;
     });
 
     return styleString;

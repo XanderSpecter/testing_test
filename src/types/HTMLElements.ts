@@ -6,7 +6,7 @@ export enum StyleType {
     FOCUS = 'focus',
 }
 
-interface StyleByBreakpoint extends CSSProperties {
+export interface StyleByBreakpoint extends CSSProperties {
     [StyleType.HOVER]?: CSSProperties;
     [StyleType.FOCUS]?: CSSProperties;
 }
