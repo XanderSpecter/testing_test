@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { Property } from 'csstype';
-import { StylesByBreakpoint } from '@/types/elementStyles';
+import { StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 
 const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties): Property.Display => {

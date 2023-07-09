@@ -3,7 +3,7 @@ import { AvailableCollection, FieldParams } from '@/types/collections';
 import { getDefaultValueByType } from '@/utils/collections';
 
 export const isTypeEditableInForm = (type: PossibleFieldType) =>
-    type === 'string' || type === 'number' || type === 'boolean';
+    type === PossibleFieldType.STRING || type === PossibleFieldType.NUMBER || type === PossibleFieldType.BOOLEAN;
 
 export const isFieldHiddenInTable = (field: FieldParams) => {
     if (!field) {
@@ -12,7 +12,7 @@ export const isFieldHiddenInTable = (field: FieldParams) => {
 
     const { title, hiddenInTable, type } = field;
 
-    return Boolean(!title || hiddenInTable || type === 'hidden');
+    return Boolean(!title || hiddenInTable || type === PossibleFieldType.HIDDEN);
 };
 
 export const createEmptyElement = (fieldsMapping: AvailableCollection['fieldsMapping']) => {
@@ -29,6 +29,10 @@ export const createEmptyElement = (fieldsMapping: AvailableCollection['fieldsMap
 
         if (isTypeEditableInForm(type)) {
             emptyElement[key] = getDefaultValueByType(type);
+        }
+
+        if (type === PossibleFieldType.EDITOR) {
+            emptyElement[key] = [];
         }
     });
 

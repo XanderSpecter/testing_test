@@ -14,7 +14,7 @@ function Providers({ children }: React.PropsWithChildren) {
         <QueryClientProvider client={client}>
             <BreakpointsProvider>
                 <ScreenParamsProvider>
-                    <EditorProvider editor={false}>
+                    <EditorProvider editing={false}>
                         <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
                     </EditorProvider>
                 </ScreenParamsProvider>

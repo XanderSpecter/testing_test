@@ -1,14 +1,12 @@
-'use client';
-
-import React, { useContext } from 'react';
+import React, { PropsWithChildren, useContext, useMemo } from 'react';
 import { styled } from 'styled-components';
 
-import { WithBreakpointStyles, WithEditorSupport } from '@/types/elementStyles';
-import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
+import { WithBreakpointStyles, WithGeneratedCSS } from '@/types/HTMLElements';
+import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { EditorContext } from '@/utils/editorProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 
-const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles>>>`
+const StyledRow = styled.div<WithGeneratedCSS>`
     display: flex;
     margin-left: -4px;
     margin-right: -4px;
@@ -18,19 +16,19 @@ const StyledRow = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointSty
     flex-wrap: wrap;
     flex-direction: row;
 
-    ${({ stylesByBreakpoint, breakpoints, editing }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
+    ${({ styleswithmedia }) => styleswithmedia}
 `;
 
-const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles) => {
+const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
-    return (
-        <StyledRow stylesByBreakpoint={stylesByBreakpoint} breakpoints={breakpoints} editing={editing}>
-            {children}
-        </StyledRow>
+    const styleswithmedia = useMemo(
+        () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing),
+        [stylesByBreakpoint, breakpoints, editing]
     );
+
+    return <StyledRow styleswithmedia={styleswithmedia}>{children}</StyledRow>;
 };
 
 export default Row;

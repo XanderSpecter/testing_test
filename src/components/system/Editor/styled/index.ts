@@ -6,3 +6,8 @@ export { Scrollable } from './Scrollable';
 export { ScrollBarCompensator } from './ScrollBarCompensator';
 export { DragNDropWrapper } from './DragNDropWrapper';
 export { DnDResizer } from './DnDResizer';
+export { HeaderControls } from './HeaderControls';
+export { ContextMenuWrapper } from './ContextMenuWrapper';
+export { DnDInfoLabel } from './DnDInfoLabel';
+export { DnDResizerLabel } from './DnDResizerLabel';
+export { DnDResizerLabelRay } from './DnDResizerLabelRay';

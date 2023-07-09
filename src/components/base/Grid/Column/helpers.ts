@@ -1,6 +1,6 @@
 import { Breakpoint } from '@/utils/breakpointsProvider';
 import { ColumnProps } from '.';
-import { StylesByBreakpoint } from '@/types/elementStyles';
+import { StylesByBreakpoint } from '@/types/HTMLElements';
 import { CSSProperties } from 'react';
 import { mergeStyles } from '@/utils/styles/mergeStyles';
 import { DEFAULT_BREAKPOINTS } from '@/utils/breakpointsProvider/context';

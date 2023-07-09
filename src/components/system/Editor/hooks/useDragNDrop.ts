@@ -1,20 +1,26 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { MOUSEDOWN_LEFT_BUTTON, RESIZER_WIDTH } from '../constants';
+import { ACCURACY_TOLERANCE, BLOCK_POSITIONS_STATIC, MOUSEDOWN_LEFT_BUTTON } from '../constants';
 import { DnDResizerPosition } from '../styled/DnDResizer';
+import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HTMLElements';
+import { recalcWidthAndMargins } from '../helpers';
 
 const DEFAULT_ELEMENT_STYLE = {
-    width: 50,
-    height: 50,
-    top: 50,
-    left: 50,
+    marginTop: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 0,
 };
 
-export interface UseDragNDropParams {
-    style?: CSSProperties;
+interface UseDragNDropParams {
     onDrop?: (style: CSSProperties, screenShortcut: string) => void;
 }
+
+export type DragNDropProps = WithBreakpointStyles<UseDragNDropParams>;
 
 interface CoordinateParams {
     x: number;
@@ -24,25 +30,33 @@ interface CoordinateParams {
 interface ChangableStyles {
     top: number;
     left: number;
-    width: number;
+    right: number;
+    marginTop: number;
+    marginLeft: string | number;
+    marginRight: string | number;
+    width: string | number;
     height: number;
 }
 
-const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
+type PositionStyles = Omit<ChangableStyles, 'width' | 'height'>;
+
+const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
 
-    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>(style || DEFAULT_ELEMENT_STYLE);
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
     const dndRef = useRef<HTMLDivElement>();
-    const calcStyle = useRef<CSSProperties | null>();
+    const calcStyles = useRef<CSSProperties | null>();
     const cursorStartPosition = useRef<CoordinateParams>({
         x: 0,
         y: 0,
     });
     const startStyles = useRef<ChangableStyles>({
         ...DEFAULT_ELEMENT_STYLE,
+        width: screenParams.width,
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
+    const blockPositioning = useRef<PositionVariant>(BlockPosition.ABSOLUTE);
 
     const calcCursorOffsets = (e: MouseEvent): CoordinateParams | null => {
         if (!e || !cursorStartPosition.current) {
@@ -63,36 +77,62 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
             return null;
         }
 
-        const { width, height, top, left } = startStyles.current;
+        const { width, height, top, left, right, marginLeft, marginTop } = startStyles.current;
         const { x, y } = offsets;
+
+        const { width: screenWidth } = screenParams;
+
+        const fullScreenWidth = screenParams.width - ACCURACY_TOLERANCE;
+
+        const { calculatedWidth, calculatedMarginLeft, calculatedMarginRight } = recalcWidthAndMargins({
+            width,
+            marginLeft,
+            screenWidth,
+        });
 
         switch (resizerPos.current) {
             case DnDResizerPosition.BOTTOM:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight,
                     top,
                     left,
-                    width,
+                    right,
+                    width: calculatedWidth,
                     height: height + y,
                 };
             case DnDResizerPosition.TOP:
                 return {
+                    marginTop: marginTop + y,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight,
                     left,
+                    right,
                     top: top + y,
-                    width,
+                    width: calculatedWidth,
                     height: height - y,
                 };
             case DnDResizerPosition.RIGHT:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft,
+                    marginRight: calculatedMarginRight - x,
+                    right: right - x,
                     top,
                     left,
-                    width: width + x,
+                    width: calculatedWidth + x >= fullScreenWidth ? '100%' : calculatedWidth + x,
                     height,
                 };
             default:
                 return {
+                    marginTop,
+                    marginLeft: calculatedMarginLeft + x,
+                    marginRight: calculatedMarginRight,
                     top,
+                    right,
                     left: left + x,
-                    width: width - x,
+                    width: calculatedWidth - x >= fullScreenWidth ? '100%' : calculatedWidth - x,
                     height,
                 };
         }
@@ -104,24 +144,49 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
             e.stopPropagation();
 
             const offsets = calcCursorOffsets(e);
-            const currentStyles = calcStyle.current;
+            const currentStyles = calcStyles.current;
+
+            const isStatic = blockPositioning.current === BlockPosition.STATIC;
+
+            const { width: screenWidth } = screenParams;
 
             if (currentStyles && offsets && startStyles.current) {
                 if (resizerPos.current) {
                     const calculatedSizes = calcResize(offsets);
 
                     if (calculatedSizes) {
-                        const { width, height, top, left } = calculatedSizes;
+                        const { width, height, top, left, right, marginLeft, marginRight, marginTop } = calculatedSizes;
 
-                        calcStyle.current = {
-                            ...currentStyles,
+                        const positionStyles: PositionStyles = {
                             top,
                             left,
-                            width: width < 0 ? 0 : width,
+                            right,
+                            marginTop: 0,
+                            marginLeft: 0,
+                            marginRight: 0,
+                        };
+
+                        if (isStatic && typeof marginLeft === 'number' && typeof marginRight === 'number') {
+                            const calcMarginTop = marginTop < 0 ? 0 : marginTop;
+                            const calcMarginLeft = marginLeft < 0 ? 0 : marginLeft;
+                            const calcMarginRight = marginRight < 0 ? 0 : marginRight;
+
+                            positionStyles.top = 0;
+                            positionStyles.left = 0;
+                            positionStyles.right = 0;
+                            positionStyles.marginTop = calcMarginTop;
+                            positionStyles.marginLeft = calcMarginLeft;
+                            positionStyles.marginRight = calcMarginRight;
+                        }
+
+                        calcStyles.current = {
+                            ...currentStyles,
+                            ...positionStyles,
+                            width: parseInt(String(width)) < 0 ? 0 : width,
                             height: height < 0 ? 0 : height,
                         };
 
-                        setCalculatedStyle(calcStyle.current);
+                        setCalculatedStyle(calcStyles.current);
                     }
 
                     return;
@@ -129,15 +194,54 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
 
                 const { x, y } = offsets;
 
-                const { top, left } = startStyles.current;
+                const { top, left, marginTop, marginLeft, width } = startStyles.current;
 
-                calcStyle.current = {
-                    ...currentStyles,
-                    top: top + y,
-                    left: left + x,
+                const { calculatedWidth, calculatedMarginLeft } = recalcWidthAndMargins({
+                    width,
+                    marginLeft,
+                    screenWidth,
+                });
+
+                const calculatedTop = top + y;
+                const calculatedLeft = left + x;
+                const calculatedRight = screenWidth - (calculatedLeft + calculatedWidth);
+
+                const positionStyles: PositionStyles = {
+                    top: calculatedTop < 0 ? 0 : calculatedTop,
+                    left: calculatedLeft < 0 ? 0 : calculatedLeft,
+                    right: calculatedRight < 0 ? 0 : calculatedRight,
+                    marginTop: 0,
+                    marginLeft: 0,
+                    marginRight: 0,
                 };
 
-                setCalculatedStyle(calcStyle.current);
+                if (isStatic) {
+                    const calcMarginTop = marginTop + y;
+                    const calcMarginLeft = calculatedMarginLeft + x;
+                    const calcMarginRight = screenWidth - (calcMarginLeft + calculatedWidth);
+
+                    const renderedMarginTop = calcMarginTop < 0 ? 0 : calcMarginTop;
+                    const renderedMarginLeft = calcMarginLeft < 0 ? 0 : calcMarginLeft;
+                    const renderedMarginRight = calcMarginRight < 0 ? 0 : calcMarginRight;
+
+                    const isMarginNotAuto =
+                        calcMarginLeft < calcMarginRight - ACCURACY_TOLERANCE ||
+                        calcMarginRight < calcMarginLeft - ACCURACY_TOLERANCE;
+
+                    positionStyles.top = 0;
+                    positionStyles.left = 0;
+                    positionStyles.right = 0;
+                    positionStyles.marginTop = renderedMarginTop;
+                    positionStyles.marginLeft = isMarginNotAuto ? renderedMarginLeft : 'auto';
+                    positionStyles.marginRight = isMarginNotAuto ? renderedMarginRight : 'auto';
+                }
+
+                calcStyles.current = {
+                    ...currentStyles,
+                    ...positionStyles,
+                };
+
+                setCalculatedStyle(calcStyles.current);
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,37 +262,79 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
         }
 
         if (dndRef.current) {
-            const currentStyles = calcStyle.current || DEFAULT_ELEMENT_STYLE;
-            const { top, left, width, height } = dndRef.current.getBoundingClientRect();
+            const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
+            const screenWidth = screenParams.width;
 
-            console.log(width, height);
+            const { top, left, width, height } = dndRef.current.getBoundingClientRect();
+            const { position } = getComputedStyle(dndRef.current);
+
+            const positionStyles: PositionStyles = {
+                top: top - HEADER_HEIGHT,
+                left,
+                right: screenWidth - (left + width),
+                marginTop: 0,
+                marginLeft: 0,
+                marginRight: 0,
+            };
+
+            if (!position || BLOCK_POSITIONS_STATIC.includes(position as BlockPosition)) {
+                blockPositioning.current = BlockPosition.STATIC;
+
+                const marginTop = currentStyles.marginTop;
+
+                positionStyles.top = 0;
+                positionStyles.left = 0;
+                positionStyles.right = 0;
+                positionStyles.marginTop = typeof marginTop === 'number' ? marginTop : 0;
+                positionStyles.marginLeft = left;
+                positionStyles.marginRight = screenParams.width - (left + width);
+            }
 
             cursorStartPosition.current = {
                 x: e.pageX,
                 y: e.pageY,
             };
+
             startStyles.current = {
-                top: top - HEADER_HEIGHT,
-                left,
-                width: width - RESIZER_WIDTH * 2,
-                height: height - RESIZER_WIDTH * 2,
+                ...positionStyles,
+                width: width,
+                height: height,
             };
-            calcStyle.current = {
+
+            calcStyles.current = {
                 ...currentStyles,
             };
 
-            setCalculatedStyle(calcStyle.current);
+            setCalculatedStyle(calcStyles.current);
 
             window.addEventListener('mousemove', onMouseMove);
         }
     };
 
     const onMouseUp = () => {
-        if (calcStyle.current) {
-            setCalculatedStyle(calcStyle.current);
+        if (calcStyles.current) {
+            const stylesWithoutHelpers = calcStyles.current;
+
+            delete stylesWithoutHelpers.display;
+
+            if (
+                stylesWithoutHelpers.position &&
+                BLOCK_POSITIONS_STATIC.includes(stylesWithoutHelpers.position as BlockPosition)
+            ) {
+                delete stylesWithoutHelpers.position;
+                delete stylesWithoutHelpers.top;
+                delete stylesWithoutHelpers.left;
+                delete stylesWithoutHelpers.right;
+
+                if (stylesWithoutHelpers.marginRight !== 'auto') {
+                    delete stylesWithoutHelpers.marginRight;
+                }
+            }
+
+            setCalculatedStyle(stylesWithoutHelpers);
 
             if (onDrop) {
-                onDrop(calcStyle.current, screenParams.breakpoint);
+                onDrop(stylesWithoutHelpers, screenParams.breakpoint);
             }
         }
 
@@ -199,15 +345,34 @@ const useDragNDrop = ({ style, onDrop }: UseDragNDropParams) => {
     };
 
     useEffect(() => {
-        if (style) {
-            setCalculatedStyle(style);
-            calcStyle.current = style;
+        if (stylesByBreakpoint && screenParams?.breakpoint) {
+            const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || stylesByBreakpoint?.all;
+
+            if (currentStyles && !currentStyles.width) {
+                currentStyles.width = '100%';
+            }
+
+            if (
+                currentStyles &&
+                (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition))
+            ) {
+                blockPositioning.current = BlockPosition.STATIC;
+                currentStyles.position = 'relative';
+            }
+
+            setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
+            calcStyles.current = currentStyles;
+        } else {
+            blockPositioning.current = BlockPosition.STATIC;
+            setCalculatedStyle({ width: '100%', height: 'auto', position: 'relative' });
         }
-    }, [style]);
+    }, [stylesByBreakpoint, screenParams]);
 
     return {
         dndRef,
-        calculatedStyle: calculatedStyle || calcStyle.current || {},
+        calculatedStyle: calculatedStyle,
+        isStatic: blockPositioning.current === BlockPosition.STATIC,
+        screenWidth: screenParams.width,
         onMouseUp,
         onDnDMouseDown,
     };

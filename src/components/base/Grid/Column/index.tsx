@@ -1,15 +1,13 @@
-'use client';
-
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { styled } from 'styled-components';
 
-import { StylesByBreakpoint, WithBreakpointStyles, WithEditorSupport } from '@/types/elementStyles';
-import { BreakpointsContext, WithBreakpoints } from '@/utils/breakpointsProvider';
+import { StylesByBreakpoint, WithBreakpointStyles, WithGeneratedCSS } from '@/types/HTMLElements';
+import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { EditorContext } from '@/utils/editorProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { recalcColumnStyles } from './helpers';
 
-const StyledColumn = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpointStyles>>>`
+const StyledColumn = styled.div<WithGeneratedCSS>`
     display: block;
     width: 100%;
 
@@ -18,8 +16,7 @@ const StyledColumn = styled.div<WithEditorSupport<WithBreakpoints<WithBreakpoint
 
     box-sizing: border-box;
 
-    ${({ stylesByBreakpoint, breakpoints, editing }) =>
-        generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing)}
+    ${({ styleswithmedia }) => styleswithmedia}
 `;
 
 interface BaseColumnProps {
@@ -33,7 +30,7 @@ const Column = (props: ColumnProps) => {
     const { children } = props;
 
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
     const [columnStyles, setColumnStyles] = useState<StylesByBreakpoint>({});
 
@@ -43,11 +40,12 @@ const Column = (props: ColumnProps) => {
         setColumnStyles(styles);
     }, [props, breakpoints]);
 
-    return (
-        <StyledColumn stylesByBreakpoint={{ ...columnStyles }} breakpoints={breakpoints} editing={editing}>
-            {children}
-        </StyledColumn>
+    const styleswithmedia = useMemo(
+        () => generateStylesByBreakpoint(columnStyles, breakpoints, editing),
+        [columnStyles, breakpoints, editing]
     );
+
+    return <StyledColumn styleswithmedia={styleswithmedia}>{children}</StyledColumn>;
 };
 
 export default Column;

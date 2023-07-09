@@ -1,14 +1,10 @@
 'use client';
 
 import React from 'react';
-import { EditorContext } from '../context';
+import { EditorContext, EditorContextParams } from '../context';
 
-interface EditorProviderProps {
-    editing: boolean;
-}
-
-function EditorProvider({ children, editing }: React.PropsWithChildren<EditorProviderProps>) {
-    return <EditorContext.Provider value={editing}>{children}</EditorContext.Provider>;
+function EditorProvider({ children, editing, selectedBlock, onDrop }: React.PropsWithChildren<EditorContextParams>) {
+    return <EditorContext.Provider value={{ selectedBlock, editing, onDrop }}>{children}</EditorContext.Provider>;
 }
 
 export default EditorProvider;

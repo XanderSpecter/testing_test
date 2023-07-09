@@ -10,7 +10,7 @@ const parseRequest = async <T extends BaseObject = BaseObject>(req: NextRequest)
 
     searchParams.forEach((value: string, key: string) => (query[key] = value));
 
-    const body: BaseObject = method === 'PUT' || method === 'POST' ? await req.json() : {};
+    const body: BaseObject = method === PossibleMethod.PUT || method === PossibleMethod.POST ? await req.json() : {};
 
     const params = { ...query, ...body };
 

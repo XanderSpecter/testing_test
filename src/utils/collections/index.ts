@@ -75,7 +75,7 @@ export const getValidationSchema = (collectionElementName?: unknown, method?: Po
 
     const extraSchema = getCollectionParams(collectionElementName)?.extraSchemas?.[method] || {};
 
-    if (method === 'GET' || method === 'DELETE') {
+    if (method === PossibleMethod.GET || method === PossibleMethod.DELETE) {
         return extraSchema;
     }
 
@@ -108,11 +108,11 @@ export const getDefaultValueByType = (type?: PossibleFieldType) => {
     }
 
     switch (type) {
-        case 'string':
+        case PossibleFieldType.STRING:
             return '';
-        case 'number':
+        case PossibleFieldType.NUMBER:
             return 0;
-        case 'boolean':
+        case PossibleFieldType.BOOLEAN:
             return false;
         default:
             return null;

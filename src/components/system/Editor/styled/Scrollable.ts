@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SCROLLBAR_WIDTH } from '../constants';
+import { SCROLLBAR_SIZE, RESIZER_SIZE } from '../constants';
 
 export const Scrollable = styled.div`
     position: absolute;
@@ -7,12 +7,13 @@ export const Scrollable = styled.div`
     top: 0;
     bottom: 0;
     left: 0;
-    right: -${SCROLLBAR_WIDTH}px;
+    right: ${RESIZER_SIZE}px;
 
     overflow-y: auto;
 
     &::-webkit-scrollbar {
-        width: ${SCROLLBAR_WIDTH}px;
+        width: ${SCROLLBAR_SIZE}px;
+        height: ${SCROLLBAR_SIZE}px;
     }
 
     &::-webkit-scrollbar-track {
@@ -21,7 +22,7 @@ export const Scrollable = styled.div`
 
     &::-webkit-scrollbar-thumb {
         background-color: rgba(22, 119, 255, 70%);
-        border-radius: ${SCROLLBAR_WIDTH / 2}px;
+        border-radius: ${SCROLLBAR_SIZE / 2}px;
     }
 
     ::-webkit-resizer,

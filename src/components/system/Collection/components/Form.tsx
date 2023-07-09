@@ -61,7 +61,7 @@ export default function Form({ fieldsMapping, opened, element, onSubmit, onCance
                     type={type as FormEditableFieldType}
                     id={key}
                     onChange={(newValue) => onFieldChange(key, newValue)}
-                    value={editedElement[key] as FieldValue<Exclude<typeof type, 'object' | 'hidden'>>}
+                    value={editedElement[key] as FieldValue<Exclude<typeof type, 'EDITOR' | 'HIDDEN'>>}
                 />
             );
         });
@@ -72,7 +72,11 @@ export default function Form({ fieldsMapping, opened, element, onSubmit, onCance
     }
 
     return (
-        <Drawer open={opened} onClose={onCancel} title="">
+        <Drawer
+            open={opened}
+            onClose={onCancel}
+            title={`${element ? 'Редактирование' : 'Добавление'} элемента коллекции`}
+        >
             <form>
                 <Container>
                     {renderForm()}

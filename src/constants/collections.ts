@@ -1,3 +1,4 @@
+import { PossibleFieldType } from '@/types/apiModels';
 import { AvailableCollection } from '@/types/collections';
 
 export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
@@ -9,7 +10,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             name: {
                 title: 'Название страницы',
                 shortcut: 'Имя',
-                type: 'string',
+                type: PossibleFieldType.STRING,
                 required: true,
                 mustBeUnique: false,
                 description: 'Должно быть уникальным.',
@@ -17,7 +18,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             url: {
                 title: 'Адрес страницы относительно корня сайта',
                 shortcut: 'URL/PATH',
-                type: 'string',
+                type: PossibleFieldType.STRING,
                 required: true,
                 mustBeUnique: true,
                 description: 'Должно быть уникальным.',
@@ -26,7 +27,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             content: {
                 title: 'Контент',
                 shortcut: 'Контент',
-                type: 'object',
+                type: PossibleFieldType.EDITOR,
                 required: false,
                 mustBeUnique: false,
             },
@@ -44,7 +45,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             name: {
                 title: 'Название контрольной точки',
                 shortcut: 'Имя',
-                type: 'string',
+                type: PossibleFieldType.STRING,
                 required: true,
                 mustBeUnique: true,
                 description: 'Должно быть уникальным.',
@@ -52,7 +53,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             screen: {
                 title: 'Размер экрана для применения контрольной точки',
                 shortcut: 'Ширина экрана',
-                type: 'number',
+                type: PossibleFieldType.NUMBER,
                 required: true,
                 mustBeUnique: true,
                 description: 'Должно быть уникальным целым положительным числом.',
@@ -61,7 +62,7 @@ export const AVAILABLE_COLLECTIONS: AvailableCollection[] = [
             maxCols: {
                 title: 'Максимальное количество колонок сетки для указанной контрольной точки',
                 shortcut: 'Маск. колонок сетки',
-                type: 'number',
+                type: PossibleFieldType.NUMBER,
                 required: true,
                 mustBeUnique: false,
                 description: 'Должно быть целым положительным числом.',

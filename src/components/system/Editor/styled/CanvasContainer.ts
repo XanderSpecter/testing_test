@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SCROLLBAR_COMPENSATION } from '../constants';
+import { RESIZER_SIZE } from '../constants';
 
 export const CanvasContainer = styled.div.attrs((props) => ({
     style: { ...props.style },
@@ -9,7 +9,7 @@ export const CanvasContainer = styled.div.attrs((props) => ({
 
     position: relative;
 
-    padding-right: ${SCROLLBAR_COMPENSATION}px;
+    padding-right: ${RESIZER_SIZE}px;
 
     max-height: 100%;
 
