@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { set, get, unset } from 'lodash';
 import { useRouter } from 'next/navigation';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { PageBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
+import { PageBlock, ElementType, StylesByBreakpoint, PageContent } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
 import { HeaderContentContext } from '../AdminLayout';
@@ -14,9 +15,9 @@ import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
-import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
+import { getLocalStorageCache, recalcPath, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
-import Renderer from './components/Renderer';
+import Renderer from '../Renderer';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -34,7 +35,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     });
 
     const [editedElement, setEditedElement] = useState<CollectionElement | null>();
-    const [editedField, setEditedField] = useState<PageBlock[] | null>();
+    const [editedField, setEditedField] = useState<PageContent | null>();
     const [selectedBlock, setSelectedBlock] = useState<PageBlock | null>(null);
     const [formEditedBlock, setFormEditedBlock] = useState<PageBlock | null>(null);
     const [formEditedBlockParent, setFormEditedBlockParent] = useState<string | null>(null);
@@ -63,59 +64,55 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOperationRunning]);
 
-    const onDrop = (style: React.CSSProperties, screenShortcut: string) => {
-        if (!selectedBlock || selectedBlock.type !== ElementType.HTMLELEMENT || !editedElement || !editedField) {
-            return;
-        }
-
-        let updatedStyles: StylesByBreakpoint = {};
-
-        const { stylesByBreakpoint } = selectedBlock;
-
-        if (!stylesByBreakpoint) {
-            updatedStyles[screenShortcut] = style;
-        } else {
-            updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
-        }
-
-        const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
-        const updatedField = editedField.map((b) => {
-            if (b.editorId === updatedSelectedBlock.editorId) {
-                return updatedSelectedBlock;
+    const onDrop = useCallback(
+        (style: React.CSSProperties, screenShortcut: string) => {
+            if (!selectedBlock || selectedBlock.type !== ElementType.HTMLELEMENT || !editedElement || !editedField) {
+                return;
             }
 
-            return b;
-        });
-        const updatedElement = { ...editedElement, [field]: updatedField };
+            let updatedStyles: StylesByBreakpoint = {};
 
-        setSelectedBlock(updatedSelectedBlock);
-        setEditedField(updatedField);
-        setEditedElement(updatedElement);
+            const { stylesByBreakpoint } = selectedBlock;
 
-        saveLocalStorageCache(updatedElement._id, updatedElement);
-    };
+            if (!stylesByBreakpoint) {
+                updatedStyles[screenShortcut] = style;
+            } else {
+                updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
+            }
+
+            const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
+
+            const { path } = updatedSelectedBlock;
+
+            if (!path) {
+                return;
+            }
+
+            const updatedField = set(editedField, path, updatedSelectedBlock);
+            const updatedElement = { ...editedElement, [field]: updatedField };
+
+            setSelectedBlock(updatedSelectedBlock);
+            setEditedField(updatedField);
+            setEditedElement(updatedElement);
+
+            saveLocalStorageCache(updatedElement._id, updatedElement);
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [selectedBlock]
+    );
 
     const onBlockFormSubmit = (block: PageBlock) => {
         if (!block || !editedField || !editedElement) {
             return;
         }
 
-        let isUpdate = false;
+        const { path } = block;
 
-        const updatedField = editedField.map((b) => {
-            if (b.editorId === block.editorId) {
-                isUpdate = true;
-
-                return block;
-            }
-
-            return b;
-        });
-
-        if (!isUpdate) {
-            updatedField.push(block);
+        if (!path) {
+            return;
         }
 
+        const updatedField = set(editedField, recalcPath(path), block);
         const updatedElement = { ...editedElement, [field]: updatedField };
 
         setEditedField(updatedField);
@@ -134,28 +131,27 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setIsFormOpened(true);
     };
 
-    const addChildBlock = ({ editorId, parentId }: HandlerParams) => {
-        if (!editorId || !editedField || !currentMockedBreakpoint) {
+    const addChildBlock = ({ path }: HandlerParams) => {
+        if (!path || !editedField || !currentMockedBreakpoint) {
             return;
         }
 
-        setFormEditedBlockParent(parentId ? `${parentId}|${editorId}` : editorId);
+        setFormEditedBlockParent(path);
         setFormEditedBlock(null);
         setIsFormOpened(true);
 
         setContextParams({
             ...contextParams,
-            editorId: null,
-            parentId: null,
+            path: null,
         });
     };
 
-    const editBlock = ({ editorId }: HandlerParams) => {
-        if (!editorId || !editedElement || !editedField) {
+    const editBlock = ({ path }: HandlerParams) => {
+        if (!path || !editedElement || !editedField) {
             return;
         }
 
-        const block = editedField.find((b) => b.editorId === editorId);
+        const block = get(editedField, recalcPath(path), null);
 
         if (block) {
             setFormEditedBlock(block);
@@ -163,18 +159,24 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
             setContextParams({
                 ...contextParams,
-                editorId: null,
-                parentId: null,
+                path: null,
             });
         }
     };
 
-    const deleteBlock = ({ editorId }: HandlerParams) => {
-        if (!editorId || !editedElement || !editedField) {
+    const deleteBlock = ({ path }: HandlerParams) => {
+        if (!path || !editedElement || !editedField) {
             return;
         }
 
-        const updatedField = editedField.filter((b) => b.editorId !== editorId);
+        const updatedField = { ...editedField };
+
+        const isDeleted = unset(updatedField, recalcPath(path));
+
+        if (!isDeleted) {
+            return;
+        }
+
         const updatedElement = { ...editedElement, [field]: updatedField };
 
         setEditedField(updatedField);
@@ -184,8 +186,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         setContextParams({
             ...contextParams,
-            editorId: null,
-            parentId: null,
+            path: null,
         });
     };
 
@@ -222,7 +223,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 const cachedField = cachedElement[field];
 
                 setEditedElement(cachedElement);
-                setEditedField(Array.isArray(cachedField) ? cachedField : []);
+                setEditedField((cachedField || {}) as PageContent);
 
                 return;
             }
@@ -230,7 +231,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             const newEditedField = elementsList[0][field];
 
             setEditedElement(elementsList[0]);
-            setEditedField(Array.isArray(newEditedField) ? newEditedField : []);
+            setEditedField((newEditedField || {}) as PageContent);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [elementsList]);
@@ -253,20 +254,22 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     }, [setHeaderContent, editedElement]);
 
     const onCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         setContextParams({
             ...contextParams,
-            editorId: null,
-            parentId: null,
+            path: null,
         });
 
-        if ((e.target as HTMLDivElement).dataset.editorId) {
+        if ((e.target as HTMLDivElement).dataset.path) {
             const { display } = getComputedStyle(e.target as HTMLDivElement);
 
             if (display === DRAG_N_DROP_DISABLED_DISPLAY) {
                 return;
             }
 
-            const block = editedField?.find((b) => b.editorId === (e.target as HTMLDivElement).dataset.editorId);
+            const block = get(editedField, String((e.target as HTMLDivElement).dataset.path), null);
 
             if (block) {
                 setSelectedBlock(block);
@@ -284,12 +287,11 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         e.preventDefault();
         e.stopPropagation();
 
-        if ((e.target as HTMLDivElement)?.dataset?.editorId) {
+        if ((e.target as HTMLDivElement)?.dataset?.path) {
             const { target, pageX, pageY } = e;
 
             setContextParams({
-                editorId: (target as HTMLDivElement).dataset.editorId,
-                parentId: (target as HTMLDivElement).dataset.parentId || null,
+                path: (target as HTMLDivElement).dataset.path,
                 top: pageY,
                 left: pageX,
             });
@@ -303,13 +305,15 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 onCanvasClick={onCanvasClick}
                 onContextMenu={onContextMenu}
                 onBreakpointChange={(shortcut) => setCurrentMockedBreakpoint(shortcut)}
+                onDrop={onDrop}
+                selectedBlock={selectedBlock}
             >
-                <Renderer blocks={editedField} selectedBlock={selectedBlock} onDrop={onDrop} />
+                <Renderer content={editedField} />
             </Canvas>
             <Form
                 block={formEditedBlock}
                 opened={isFormOpened}
-                parentId={formEditedBlockParent}
+                path={formEditedBlockParent}
                 onSubmit={onBlockFormSubmit}
                 onCancel={() => setIsFormOpened(false)}
             />

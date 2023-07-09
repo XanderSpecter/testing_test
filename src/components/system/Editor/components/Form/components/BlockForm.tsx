@@ -43,7 +43,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
                 <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
-                            id={`${block.editorId}-tag`}
+                            id={`${block.path}-tag`}
                             style={ELEMENT_STYLES.input}
                             showSearch
                             optionFilterProp="tag"
@@ -62,7 +62,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
         {
             key: 'props',
             label: 'Параметры блока',
-            children: <PropsForm props={block.props} editorId={block.editorId} onFieldChange={onFieldChange} />,
+            children: <PropsForm props={block.props} blockPath={block.path} onFieldChange={onFieldChange} />,
         },
         {
             key: 'styles',
@@ -70,7 +70,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
             children: (
                 <StylesForm
                     stylesByBreakpoint={block.stylesByBreakpoint}
-                    editorId={block.editorId}
+                    blockPath={block.path}
                     onFieldChange={onFieldChange}
                 />
             ),

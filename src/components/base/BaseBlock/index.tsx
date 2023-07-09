@@ -14,13 +14,13 @@ const StyledBaseElement = styled.div<WithGeneratedCSS>`
 const BaseBlock = ({
     stylesByBreakpoint,
     tag,
-    editorId,
+    path,
     props,
-    childrenBlocks,
+    content,
     children,
 }: React.PropsWithChildren<StyledBlock>) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
     const styleswithmedia = useMemo(
         () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing),
@@ -29,23 +29,22 @@ const BaseBlock = ({
 
     const notEmptyProps = props ? props : {};
 
-    const renderChildrenBlocks = () => {
-        if (!childrenBlocks || !childrenBlocks.length) {
-            return null;
+    const renderChildren = () => {
+        if (!content) {
+            return children;
         }
 
-        return <Renderer blocks={childrenBlocks} />;
+        return <Renderer content={content} />;
     };
 
     return (
         <StyledBaseElement
             as={tag}
             {...notEmptyProps}
-            data-editor-id={editing ? editorId : null}
+            data-path={editing ? path : null}
             styleswithmedia={styleswithmedia}
         >
-            {children}
-            {renderChildrenBlocks()}
+            {renderChildren()}
         </StyledBaseElement>
     );
 };

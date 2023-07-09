@@ -12,12 +12,12 @@ import { STYLE_TYPES } from '@/constants/pageBlocks';
 interface StylesFormProps {
     onFieldChange: (fieldName: 'stylesByBreakpoint', newValue: StyledBlock['stylesByBreakpoint']) => void;
     stylesByBreakpoint: StyledBlock['stylesByBreakpoint'];
-    editorId: StyledBlock['editorId'];
+    blockPath: StyledBlock['path'];
 }
 
 const { Text } = Typography;
 
-export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange }: StylesFormProps) {
+export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChange }: StylesFormProps) {
     const breakpoints = useContext(BreakpointsContext);
 
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('all');
@@ -150,7 +150,7 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
                 <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
-                            id={`${editorId}-styles-breakpoint`}
+                            id={`${blockPath}-styles-breakpoint`}
                             style={ELEMENT_STYLES.input}
                             onChange={onBreakpointSelect}
                             value={currentBreakpoint}
@@ -180,7 +180,7 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
                 <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
-                            id={`${editorId}-styles-styletype`}
+                            id={`${blockPath}-styles-styletype`}
                             style={ELEMENT_STYLES.input}
                             onChange={onStyleTypeSelect}
                             value={currentStyleType}
@@ -206,7 +206,7 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
                 <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column cols={COLS.keyValueInput}>
                         <Input
-                            id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
+                            id={`${blockPath}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
                             placeholder="Название стиля"
                             value={s.key}
                             onChange={(e) => onPropFieldChange(e, i, 'key')}
@@ -214,7 +214,7 @@ export default function StylesForm({ editorId, stylesByBreakpoint, onFieldChange
                     </Column>
                     <Column cols={COLS.keyValueInput}>
                         <Input
-                            id={`${editorId}-styles-${currentBreakpoint}-${currentStyleType}-${s.value}-value`}
+                            id={`${blockPath}-styles-${currentBreakpoint}-${currentStyleType}-${s.value}-value`}
                             placeholder="Значение стиля"
                             value={String(s.value)}
                             onChange={(e) => onPropFieldChange(e, i, 'value')}

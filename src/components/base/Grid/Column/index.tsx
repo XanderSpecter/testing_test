@@ -30,7 +30,7 @@ const Column = (props: ColumnProps) => {
     const { children } = props;
 
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
     const [columnStyles, setColumnStyles] = useState<StylesByBreakpoint>({});
 

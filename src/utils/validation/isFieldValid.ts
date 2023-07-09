@@ -13,7 +13,7 @@ const isFieldValid = (field: unknown, type?: PossibleFieldType) => {
         case PossibleFieldType.BOOLEAN:
             return typeof field === 'boolean';
         case PossibleFieldType.EDITOR:
-            return Array.isArray(field);
+            return typeof field === 'object';
         default:
             return true;
     }

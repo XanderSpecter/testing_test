@@ -9,12 +9,12 @@ import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
 interface PropsFormProps {
     onFieldChange: (fieldName: 'props', newValue: StyledBlock['props']) => void;
     props: StyledBlock['props'];
-    editorId: StyledBlock['editorId'];
+    blockPath: StyledBlock['path'];
 }
 
 const { Text } = Typography;
 
-export default function PropsForm({ editorId, props, onFieldChange }: PropsFormProps) {
+export default function PropsForm({ blockPath, props, onFieldChange }: PropsFormProps) {
     const [editableProps, setEditableProps] = useState<BlockPropRecord[]>([]);
     const [isPropsChanged, setIsPropsChanged] = useState(false);
 
@@ -89,7 +89,7 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
             <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                 <Column cols={COLS.keyValueInput}>
                     <Input
-                        id={`${editorId}-props-${p.key}`}
+                        id={`${blockPath}-props-${p.key}`}
                         placeholder="Ключ параметра"
                         value={p.key}
                         onChange={(e) => onPropFieldChange(e, i, 'key')}
@@ -97,7 +97,7 @@ export default function PropsForm({ editorId, props, onFieldChange }: PropsFormP
                 </Column>
                 <Column cols={COLS.keyValueInput}>
                     <Input
-                        id={`${editorId}-props-${p.value}-value`}
+                        id={`${blockPath}-props-${p.value}-value`}
                         placeholder="Значение параметра"
                         value={String(p.value)}
                         onChange={(e) => onPropFieldChange(e, i, 'value')}

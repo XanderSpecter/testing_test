@@ -6,8 +6,7 @@ import { Button } from 'antd';
 import { PageBlock } from '@/types/HTMLElements';
 
 export interface HandlerParams {
-    editorId?: PageBlock['editorId'];
-    parentId?: PageBlock['parentId'];
+    path?: PageBlock['path'];
     coordinates?: ContextCoordinates;
 }
 export interface ContextOption {
@@ -16,8 +15,7 @@ export interface ContextOption {
 }
 
 export interface ContextMenuProps {
-    editorId?: string | null;
-    parentId?: string | null;
+    path?: string | null;
     top: number;
     left: number;
     options?: ContextOption[];
@@ -25,13 +23,13 @@ export interface ContextMenuProps {
 
 export type ContextCoordinates = Pick<ContextMenuProps, 'top' | 'left'>;
 
-const ContextMenu = ({ editorId, parentId, options, top, left }: ContextMenuProps) => {
+const ContextMenu = ({ path, options, top, left }: ContextMenuProps) => {
     if (!options) {
         return null;
     }
 
     const renderOptions = () => {
-        if (!options || !editorId) {
+        if (!options || !path) {
             return null;
         }
 
@@ -41,11 +39,7 @@ const ContextMenu = ({ editorId, parentId, options, top, left }: ContextMenuProp
             }
 
             return (
-                <Button
-                    key={o.name}
-                    size="small"
-                    onClick={() => o.handler({ editorId, parentId, coordinates: { top, left } })}
-                >
+                <Button key={o.name} size="small" onClick={() => o.handler({ path, coordinates: { top, left } })}>
                     {o.name}
                 </Button>
             );
@@ -53,7 +47,7 @@ const ContextMenu = ({ editorId, parentId, options, top, left }: ContextMenuProp
     };
 
     return (
-        <ContextMenuWrapper visible={editorId ? 'true' : undefined} style={{ top, left }}>
+        <ContextMenuWrapper visible={path ? 'true' : undefined} style={{ top, left }}>
             {renderOptions()}
         </ContextMenuWrapper>
     );

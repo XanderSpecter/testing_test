@@ -21,7 +21,7 @@ const StyledRow = styled.div<WithGeneratedCSS>`
 
 const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
     const styleswithmedia = useMemo(
         () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing),

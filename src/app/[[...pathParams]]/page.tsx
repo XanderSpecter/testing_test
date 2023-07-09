@@ -5,7 +5,7 @@ import { BASE_URL, DEFAULT_APP_TITLE } from '@/constants/appParams';
 import Renderer from '@/components/system/Renderer';
 import { BaseObject } from '@/types/apiModels';
 import { concatUrlFromPathParams } from '@/utils/url';
-import { PageBlock } from '@/types/HTMLElements';
+import { PageContent } from '@/types/HTMLElements';
 
 interface Path {
     pathParams?: string | string[];
@@ -47,6 +47,6 @@ export default async function Home({ params }: HomeParams) {
         notFound();
     }
 
-    return <Renderer blocks={(pages[0].content || []) as PageBlock[]} />;
+    return <Renderer content={(pages[0].content || {}) as PageContent} />;
 }
 

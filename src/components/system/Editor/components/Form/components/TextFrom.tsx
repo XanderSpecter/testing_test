@@ -12,7 +12,7 @@ interface TextFormProps {
 }
 
 export default function TextForm({ block, onFieldChange }: TextFormProps) {
-    const { value, editorId } = block;
+    const { value, path } = block;
 
     const onInputFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (onFieldChange && typeof onFieldChange === 'function') {
@@ -30,7 +30,7 @@ export default function TextForm({ block, onFieldChange }: TextFormProps) {
             <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                 <Column>
                     <Input
-                        id={editorId}
+                        id={path}
                         placeholder="Здесь могла быть ваша реклама"
                         value={value}
                         onChange={onInputFieldChange}

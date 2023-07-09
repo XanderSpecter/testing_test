@@ -25,7 +25,7 @@ const StyledContainer = styled.div<WithGeneratedCSS>`
 
 const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
     const breakpoints = useContext(BreakpointsContext);
-    const editing = useContext(EditorContext);
+    const { editing } = useContext(EditorContext);
 
     const styles = useMemo(
         () => mergeStylesByBreakpoint(DEFAULT_CONTAINER_STYLES, breakpoints, stylesByBreakpoint),

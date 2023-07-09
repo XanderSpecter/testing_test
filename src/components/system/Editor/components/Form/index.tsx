@@ -13,7 +13,7 @@ import BlockForm from './components/BlockForm';
 
 interface FormProps {
     opened: boolean;
-    parentId?: string | null;
+    path?: string | null;
     block: PageBlock | null;
     onSubmit: (block: PageBlock) => void;
     onCancel: () => void;
@@ -21,7 +21,7 @@ interface FormProps {
 
 const { Text } = Typography;
 
-export default function Form({ opened, block, parentId, onSubmit, onCancel }: FormProps) {
+export default function Form({ opened, block, path, onSubmit, onCancel }: FormProps) {
     const [editedBlock, setEditedBlock] = useState<PageBlock | null>(null);
     const [isTypeWarningShown, setIsTypeWarningShown] = useState(false);
 
@@ -29,11 +29,15 @@ export default function Form({ opened, block, parentId, onSubmit, onCancel }: Fo
         if (block) {
             setEditedBlock(block);
         } else {
-            const newBlock = createEmptyPageBlock(ElementType.HTMLELEMENT, parentId);
+            const newBlock = createEmptyPageBlock(ElementType.HTMLELEMENT, path);
 
             setEditedBlock(newBlock);
         }
-    }, [block, parentId]);
+    }, [block, path, opened]);
+
+    useEffect(() => {
+        return () => setEditedBlock(null);
+    }, []);
 
     if (!editedBlock) {
         return null;
@@ -48,7 +52,7 @@ export default function Form({ opened, block, parentId, onSubmit, onCancel }: Fo
 
         const type = e.target.value as ElementType;
 
-        const newBlock = createEmptyPageBlock(type, parentId);
+        const newBlock = createEmptyPageBlock(type, path);
 
         setEditedBlock(newBlock);
         setIsTypeWarningShown(false);
