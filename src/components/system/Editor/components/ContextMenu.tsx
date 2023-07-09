@@ -7,6 +7,7 @@ import { PageBlock } from '@/types/HTMLElements';
 
 export interface HandlerParams {
     editorId?: PageBlock['editorId'];
+    parentId?: PageBlock['parentId'];
     coordinates?: ContextCoordinates;
 }
 export interface ContextOption {
@@ -16,6 +17,7 @@ export interface ContextOption {
 
 export interface ContextMenuProps {
     editorId?: string | null;
+    parentId?: string | null;
     top: number;
     left: number;
     options?: ContextOption[];
@@ -23,7 +25,7 @@ export interface ContextMenuProps {
 
 export type ContextCoordinates = Pick<ContextMenuProps, 'top' | 'left'>;
 
-const ContextMenu = ({ editorId, options, top, left }: ContextMenuProps) => {
+const ContextMenu = ({ editorId, parentId, options, top, left }: ContextMenuProps) => {
     if (!options) {
         return null;
     }
@@ -39,7 +41,11 @@ const ContextMenu = ({ editorId, options, top, left }: ContextMenuProps) => {
             }
 
             return (
-                <Button key={o.name} size="small" onClick={() => o.handler({ editorId, coordinates: { top, left } })}>
+                <Button
+                    key={o.name}
+                    size="small"
+                    onClick={() => o.handler({ editorId, parentId, coordinates: { top, left } })}
+                >
                     {o.name}
                 </Button>
             );

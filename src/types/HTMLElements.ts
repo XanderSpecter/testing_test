@@ -55,10 +55,9 @@ export interface BlockPropRecord {
 type HTMLBlockProps = Record<BlockPropRecord['key'], BlockPropRecord['value']>;
 interface HTMLBlock {
     type: ElementType.HTMLELEMENT;
-    parent?: string;
+    parentId?: string | null;
     editorId: string;
     tag: keyof HTMLElementTagNameMap;
-    content?: string;
     props?: HTMLBlockProps;
 }
 
@@ -66,7 +65,7 @@ export type StyledBlock = WithBreakpointStyles<HTMLBlock>;
 
 export interface TextBlock {
     type: ElementType.TEXT;
-    parent?: string;
+    parentId?: string | null;
     editorId: string;
     value: string;
 }

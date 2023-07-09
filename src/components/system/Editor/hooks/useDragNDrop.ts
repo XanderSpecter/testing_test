@@ -363,7 +363,8 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
             setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
             calcStyles.current = currentStyles;
         } else {
-            setCalculatedStyle({ width: '100%', height: 'auto' });
+            blockPositioning.current = BlockPosition.STATIC;
+            setCalculatedStyle({ width: '100%', height: 'auto', position: 'relative' });
         }
     }, [stylesByBreakpoint, screenParams]);
 

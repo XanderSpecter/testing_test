@@ -4,20 +4,19 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { CollectionElement, CollectionParams } from '@/types/apiModels';
-import { PageBlock, ElementType, StylesByBreakpoint, StyledBlock } from '@/types/HTMLElements';
+import { PageBlock, ElementType, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Routes } from '@/constants/appParams';
 import Canvas from './components/Canvas';
-import DragNDrop from './components/DragNDrop';
 import { HeaderContentContext } from '../AdminLayout';
 import { Button } from 'antd';
-import { EmptyBlock, HeaderControls } from './styled';
+import { HeaderControls } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
-import BaseBlock from '../../base/BaseBlock';
-import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY, EMPTY_BLOCK_MESSAGE } from './constants';
+import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
 import { getLocalStorageCache, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
+import Renderer from './components/Renderer';
 
 interface EditorProps extends CollectionParams {
     id: string;
@@ -135,18 +134,19 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setIsFormOpened(true);
     };
 
-    const addChildBlock = ({ editorId }: HandlerParams) => {
+    const addChildBlock = ({ editorId, parentId }: HandlerParams) => {
         if (!editorId || !editedField || !currentMockedBreakpoint) {
             return;
         }
 
-        setFormEditedBlockParent(editorId);
+        setFormEditedBlockParent(parentId ? `${parentId}|${editorId}` : editorId);
         setFormEditedBlock(null);
         setIsFormOpened(true);
 
         setContextParams({
             ...contextParams,
             editorId: null,
+            parentId: null,
         });
     };
 
@@ -164,6 +164,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
             setContextParams({
                 ...contextParams,
                 editorId: null,
+                parentId: null,
             });
         }
     };
@@ -184,6 +185,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setContextParams({
             ...contextParams,
             editorId: null,
+            parentId: null,
         });
     };
 
@@ -254,6 +256,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         setContextParams({
             ...contextParams,
             editorId: null,
+            parentId: null,
         });
 
         if ((e.target as HTMLDivElement).dataset.editorId) {
@@ -286,55 +289,11 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
             setContextParams({
                 editorId: (target as HTMLDivElement).dataset.editorId,
+                parentId: (target as HTMLDivElement).dataset.parentId || null,
                 top: pageY,
                 left: pageX,
             });
         }
-    };
-
-    const renderBlockContent = (block: StyledBlock) => {
-        if (block.content) {
-            return block.content;
-        }
-
-        return <EmptyBlock>{EMPTY_BLOCK_MESSAGE}</EmptyBlock>;
-    };
-
-    const renderBlocks = () => {
-        if (!Array.isArray(editedField)) {
-            return null;
-        }
-
-        return editedField.map((e) => {
-            if (e.type === ElementType.HTMLELEMENT) {
-                if (e.editorId === selectedBlock?.editorId) {
-                    return (
-                        <DragNDrop
-                            stylesByBreakpoint={e.stylesByBreakpoint}
-                            tag={e.tag}
-                            key={e.editorId}
-                            onDrop={onDrop}
-                        >
-                            <BaseBlock type={e.type} tag={e.tag} editorId={e.editorId}>
-                                {renderBlockContent(e)}
-                            </BaseBlock>
-                        </DragNDrop>
-                    );
-                }
-
-                return (
-                    <BaseBlock key={e.editorId} {...e}>
-                        {renderBlockContent(e)}
-                    </BaseBlock>
-                );
-            }
-
-            return (
-                <BaseBlock key={e.editorId} {...e} stylesByBreakpoint={null} tag="span" type={ElementType.HTMLELEMENT}>
-                    {e.value}
-                </BaseBlock>
-            );
-        });
     };
 
     return (
@@ -345,12 +304,12 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 onContextMenu={onContextMenu}
                 onBreakpointChange={(shortcut) => setCurrentMockedBreakpoint(shortcut)}
             >
-                {renderBlocks()}
+                <Renderer blocks={editedField} selectedBlock={selectedBlock} onDrop={onDrop} />
             </Canvas>
             <Form
                 block={formEditedBlock}
                 opened={isFormOpened}
-                parent={formEditedBlockParent}
+                parentId={formEditedBlockParent}
                 onSubmit={onBlockFormSubmit}
                 onCancel={() => setIsFormOpened(false)}
             />

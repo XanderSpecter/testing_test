@@ -64,7 +64,7 @@ export const getLocalStorageCache = (id: ObjectId | string) => {
     }
 };
 
-export const createEmptyPageBlock = (type: ElementType, parent?: string | null) => {
+export const createEmptyPageBlock = (type: ElementType, parentId?: string | null) => {
     if (!type) {
         return null;
     }
@@ -75,14 +75,14 @@ export const createEmptyPageBlock = (type: ElementType, parent?: string | null) 
                 type: ElementType.HTMLELEMENT,
                 editorId: uuid(),
                 tag: 'div',
-                parent,
+                parentId,
             } as StyledBlock;
         default:
             return {
                 type: ElementType.TEXT,
                 editorId: uuid(),
                 value: '',
-                parent,
+                parentId,
             } as TextBlock;
     }
 };
