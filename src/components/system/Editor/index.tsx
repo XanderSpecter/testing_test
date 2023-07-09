@@ -88,7 +88,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 return;
             }
 
-            const updatedField = set(editedField, path, updatedSelectedBlock);
+            const updatedField = set(editedField, recalcPath(path), updatedSelectedBlock);
             const updatedElement = { ...editedElement, [field]: updatedField };
 
             setSelectedBlock(updatedSelectedBlock);
@@ -269,7 +269,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                 return;
             }
 
-            const block = get(editedField, String((e.target as HTMLDivElement).dataset.path), null);
+            const block = get(editedField, recalcPath(String((e.target as HTMLDivElement).dataset.path)), null);
 
             if (block) {
                 setSelectedBlock(block);

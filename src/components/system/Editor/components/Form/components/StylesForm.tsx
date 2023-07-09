@@ -1,10 +1,10 @@
 'use client';
 
-import React, { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { get } from 'lodash';
 import { Button, Input, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { BlockStyleRecord, StyleType, StyledBlock } from '@/types/HTMLElements';
+import { BlockStyleRecord, CSSPropertyKey, StyleType, StyledBlock } from '@/types/HTMLElements';
 import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { STYLE_TYPES } from '@/constants/pageBlocks';
@@ -52,8 +52,8 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
         if (styleSet) {
             setCurrentStyleSet(
                 Object.keys(styleSet).map((k) => ({
-                    key: k as keyof CSSProperties,
-                    value: styleSet[k as keyof CSSProperties],
+                    key: k as CSSPropertyKey,
+                    value: styleSet[k as CSSPropertyKey],
                 }))
             );
         } else {
@@ -91,7 +91,7 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
     };
 
     const onStyleAdd = () => {
-        setCurrentStyleSet([...currentStyleSet, { key: '' as keyof CSSProperties, value: '' }]);
+        setCurrentStyleSet([...currentStyleSet, { key: '' as CSSPropertyKey, value: '' }]);
     };
 
     const onStyleDelete = (key: string, index: number) => {

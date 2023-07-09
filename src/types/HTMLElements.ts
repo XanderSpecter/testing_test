@@ -17,6 +17,8 @@ export interface BlockStyleRecord {
 
 export type StylesByBreakpoint = Record<string, StyleByBreakpoint | undefined>;
 
+export type CSSPropertyKey = keyof CSSProperties;
+
 export type WithBreakpointStyles<T> = Omit<T, 'stylesByBreakpoint'> & {
     stylesByBreakpoint?: StylesByBreakpoint | null;
 };
@@ -52,11 +54,13 @@ export interface BlockPropRecord {
     value: string | number | boolean;
 }
 
+export type HTMLTag = keyof HTMLElementTagNameMap;
+
 type HTMLBlockProps = Record<BlockPropRecord['key'], BlockPropRecord['value']>;
 interface HTMLBlock {
     type: ElementType.HTMLELEMENT;
     path: string;
-    tag: keyof HTMLElementTagNameMap;
+    tag: HTMLTag;
     props?: HTMLBlockProps;
     content?: PageContent;
 }

@@ -1,4 +1,4 @@
-import { ElementType, StyleType } from '@/types/HTMLElements';
+import { ElementType, HTMLTag, StyleType } from '@/types/HTMLElements';
 
 export const PAGE_BLOCK_TYPES = [
     {
@@ -31,7 +31,7 @@ export const STYLE_TYPES = [
     },
 ];
 
-export const AVAILABLE_TAGS: (keyof HTMLElementTagNameMap)[] = [
+export const AVAILABLE_TAGS: HTMLTag[] = [
     'a',
     'b',
     'button',

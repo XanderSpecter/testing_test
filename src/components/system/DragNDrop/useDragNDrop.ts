@@ -1,10 +1,11 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { HEADER_HEIGHT } from '../../AdminLayout/constants';
-import { ACCURACY_TOLERANCE, BLOCK_POSITIONS_STATIC, MOUSEDOWN_LEFT_BUTTON } from '../constants';
-import { DnDResizerPosition } from '../styled/DnDResizer';
+import { ACCURACY_TOLERANCE, BLOCK_POSITIONS_STATIC, MOUSEDOWN_LEFT_BUTTON } from './constants';
+import { DnDResizerPosition } from './styled/DnDResizer';
 import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HTMLElements';
-import { recalcWidthAndMargins } from '../helpers';
+import { filterOnlyDnDStyles, recalcWidthAndMargins } from './helpers';
+import { HEADER_HEIGHT } from '../AdminLayout/constants';
+import { mergeStyles } from '@/utils/styles/mergeStyles';
 
 const DEFAULT_ELEMENT_STYLE = {
     marginTop: 0,
@@ -313,28 +314,18 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
     const onMouseUp = () => {
         if (calcStyles.current) {
-            const stylesWithoutHelpers = calcStyles.current;
+            const onlyDnDStyles = filterOnlyDnDStyles(calcStyles.current);
 
-            delete stylesWithoutHelpers.display;
+            let completedStyles = onlyDnDStyles;
 
-            if (
-                stylesWithoutHelpers.position &&
-                BLOCK_POSITIONS_STATIC.includes(stylesWithoutHelpers.position as BlockPosition)
-            ) {
-                delete stylesWithoutHelpers.position;
-                delete stylesWithoutHelpers.top;
-                delete stylesWithoutHelpers.left;
-                delete stylesWithoutHelpers.right;
-
-                if (stylesWithoutHelpers.marginRight !== 'auto') {
-                    delete stylesWithoutHelpers.marginRight;
-                }
+            if (stylesByBreakpoint && stylesByBreakpoint[screenParams.breakpoint]) {
+                completedStyles = mergeStyles(stylesByBreakpoint[screenParams.breakpoint] || {}, onlyDnDStyles);
             }
 
-            setCalculatedStyle(stylesWithoutHelpers);
+            setCalculatedStyle(completedStyles);
 
             if (onDrop) {
-                onDrop(stylesWithoutHelpers, screenParams.breakpoint);
+                onDrop(completedStyles, screenParams.breakpoint);
             }
         }
 
@@ -346,7 +337,10 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
     useEffect(() => {
         if (stylesByBreakpoint && screenParams?.breakpoint) {
-            const currentStyles = stylesByBreakpoint[screenParams.breakpoint] || stylesByBreakpoint?.all;
+            const currentStyles = mergeStyles(
+                stylesByBreakpoint?.all || DEFAULT_ELEMENT_STYLE,
+                stylesByBreakpoint[screenParams.breakpoint]
+            );
 
             if (currentStyles && !currentStyles.width) {
                 currentStyles.width = '100%';
@@ -360,7 +354,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                 currentStyles.position = 'relative';
             }
 
-            setCalculatedStyle(currentStyles || DEFAULT_ELEMENT_STYLE);
+            setCalculatedStyle(currentStyles);
             calcStyles.current = currentStyles;
         } else {
             blockPositioning.current = BlockPosition.STATIC;

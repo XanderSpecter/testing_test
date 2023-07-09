@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { RESIZER_SIZE } from '../constants';
+import { RESIZER_SIZE } from '../../Editor/constants';
 
 export enum DnDResizerPosition {
     TOP = 'TOP',

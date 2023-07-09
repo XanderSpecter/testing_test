@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { Property } from 'csstype';
-import { StylesByBreakpoint } from '@/types/HTMLElements';
+import { StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 
 const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties): Property.Display => {
@@ -16,12 +16,23 @@ const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties):
     return baseDisplay || 'block';
 };
 
-export const mergeStyles = (defaultStyles: CSSProperties, customStyles?: CSSProperties) => {
+export const mergeStyles = (defaultStyles: StyleByBreakpoint, customStyles?: StyleByBreakpoint) => {
     if (!customStyles) {
         return { ...defaultStyles, display: calcDisplay(defaultStyles, {}) };
     }
 
-    const merged: CSSProperties = { ...defaultStyles, ...customStyles };
+    const { hover: defaultHover, focus: defaultFocus, ...defaultRest } = defaultStyles;
+    const { hover: customHover, focus: customFocus, ...customRest } = customStyles;
+
+    const merged: StyleByBreakpoint = { ...defaultRest, ...customRest };
+
+    if (defaultHover) {
+        merged.hover = mergeStyles(defaultHover, customHover);
+    }
+
+    if (defaultFocus) {
+        merged.focus = mergeStyles(defaultFocus, customFocus);
+    }
 
     merged.display = calcDisplay(defaultStyles, customStyles);
 
@@ -39,13 +50,12 @@ export const mergeStylesByBreakpoint = (
 
     const merged: StylesByBreakpoint = {};
 
+    merged.all = mergeStyles(defaultStyles.all || {}, customStyles.all);
+
     breakpoints.map((b) => {
         const { name } = b;
 
-        merged[name] = mergeStyles(
-            defaultStyles[name] || defaultStyles.all || {},
-            customStyles[name] || customStyles.all || {}
-        );
+        merged[name] = mergeStyles(defaultStyles[name] || {}, customStyles[name] || {});
     });
 
     return merged;

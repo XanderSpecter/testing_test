@@ -3,37 +3,6 @@ import { v4 as uuid } from 'uuid';
 import { CollectionElement } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
 
-interface RecalcWidthAndMarginsParams {
-    width?: string | number;
-    marginLeft?: string | number;
-    screenWidth: number;
-}
-
-export const recalcWidthAndMargins = ({ width, marginLeft, screenWidth }: RecalcWidthAndMarginsParams) => {
-    let calculatedWidth = 0;
-
-    if (typeof width === 'number') {
-        calculatedWidth = width;
-    }
-
-    if (typeof width === 'string' && width.includes('%')) {
-        const widthPercent = parseInt(width);
-
-        calculatedWidth = Math.round(screenWidth / widthPercent);
-    }
-
-    const calculatedMarginLeft =
-        typeof marginLeft === 'number' ? marginLeft : Math.round((screenWidth - calculatedWidth) / 2);
-
-    const calculatedMarginRight = screenWidth - (calculatedMarginLeft + calculatedWidth);
-
-    return {
-        calculatedWidth,
-        calculatedMarginLeft,
-        calculatedMarginRight,
-    };
-};
-
 export const saveLocalStorageCache = (id: ObjectId | string, data: CollectionElement | null) => {
     if (!id || !data) {
         return;

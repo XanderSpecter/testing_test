@@ -3,16 +3,17 @@
 import React, { RefObject, useMemo } from 'react';
 import { Typography } from 'antd';
 
-import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DnDResizerLabelRay, DragNDropWrapper } from '../styled';
-import { DnDResizerPosition } from '../styled/DnDResizer';
-import useDragNDrop, { DragNDropProps } from '../hooks/useDragNDrop';
-import { DnDResizerLabelProps } from '../styled/DnDResizerLabel';
-import { recalcWidthAndMargins } from '../helpers';
+import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DnDResizerLabelRay, DragNDropWrapper } from './styled';
+import { DnDResizerPosition } from './styled/DnDResizer';
+import useDragNDrop, { DragNDropProps } from './useDragNDrop';
+import { DnDResizerLabelProps } from './styled/DnDResizerLabel';
+import { recalcWidthAndMargins } from './helpers';
+import { HTMLTag } from '@/types/HTMLElements';
 
 const { Text } = Typography;
 
 interface DragNDropComponentProps extends DragNDropProps {
-    tag: keyof HTMLElementTagNameMap;
+    tag: HTMLTag;
 }
 
 export default function DragNDrop({

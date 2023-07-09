@@ -3,7 +3,7 @@
 import React from 'react';
 import { Collapse, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { StyledBlock } from '@/types/HTMLElements';
+import { HTMLTag, StyledBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { AVAILABLE_TAGS_ITEMS } from '@/constants/pageBlocks';
 import PropsForm from './PropsForm';
@@ -27,8 +27,8 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
     const filterOption = (
         input: string,
         option?: {
-            label: keyof HTMLElementTagNameMap;
-            value: keyof HTMLElementTagNameMap;
+            label: HTMLTag;
+            value: HTMLTag;
         }
     ) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 

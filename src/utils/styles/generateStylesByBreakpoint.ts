@@ -1,4 +1,4 @@
-import { StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
+import { CSSPropertyKey, StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 import { CSSProperties } from 'react';
 import { camelToKebabCase } from '../textHelpers';
@@ -11,9 +11,9 @@ const getStyleString = (styles?: CSSProperties, baseStyles?: CSSProperties, prev
     }
 
     Object.keys(styles).forEach((key) => {
-        const value = styles[key as keyof CSSProperties];
-        const baseValue = baseStyles?.[key as keyof CSSProperties];
-        const previosValue = previosBpStyles?.[key as keyof CSSProperties];
+        const value = styles[key as CSSPropertyKey];
+        const baseValue = baseStyles?.[key as CSSPropertyKey];
+        const previosValue = previosBpStyles?.[key as CSSPropertyKey];
 
         if (!value || value === baseValue || value === previosValue) {
             return;

@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { DnDResizerPosition } from './DnDResizer';
-import { RESIZER_SIZE } from '../constants';
+import { RESIZER_SIZE } from '../../Editor/constants';
 
 export interface DnDResizerLabelProps {
     position: DnDResizerPosition;
