@@ -17,7 +17,7 @@ import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './co
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
 import { getLocalStorageCache, recalcPath, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
-import Renderer from '../Renderer';
+import Renderer from '../Renderer/RendererEditor';
 
 interface EditorProps extends CollectionParams {
     id: string;

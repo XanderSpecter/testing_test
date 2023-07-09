@@ -5,7 +5,7 @@ import { StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
-import Renderer from '@/components/system/Renderer';
+import Renderer from '@/components/system/Renderer/RendererEditor';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     ${({ styleswithmedia }) => styleswithmedia};

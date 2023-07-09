@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getElements } from '@/api/collection';
 import { BASE_URL, DEFAULT_APP_TITLE } from '@/constants/appParams';
-import Renderer from '@/components/system/Renderer';
+import Renderer from '@/components/system/Renderer/RendererClient';
 import { BaseObject } from '@/types/apiModels';
 import { concatUrlFromPathParams } from '@/utils/url';
 import { PageContent } from '@/types/HTMLElements';
