@@ -4,7 +4,7 @@ import { createContext } from 'react';
 
 export interface ScreenParams {
     width: number;
-    height: number;
+    height: number | 'auto';
     breakpoint: string;
     verticalScrollOffset: number;
 }

@@ -7,6 +7,8 @@ import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoin
 import Renderer from '@/components/system/Renderer/RendererClient';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
+    box-sizing: border-box;
+
     ${({ styleswithmedia }) => styleswithmedia};
 `;
 

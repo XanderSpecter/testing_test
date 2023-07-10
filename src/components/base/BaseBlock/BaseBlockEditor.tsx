@@ -15,6 +15,8 @@ import {
 } from '@/utils/screenParamsProvider';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
+    box-sizing: border-box;
+
     ${({ styleswithmedia }) => styleswithmedia};
 `;
 
@@ -31,14 +33,19 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
         if (parentRef.current) {
             const { width, height } = parentRef.current.getBoundingClientRect();
 
+            const currentStyles = stylesByBreakpoint?.[breakpoint] || stylesByBreakpoint?.all;
+            const { height: computedCSSHeight } = getComputedStyle(parentRef.current);
+
+            const isAutoHeight = computedCSSHeight === `${height}px` && !currentStyles?.height;
+
             setMockScreenParams({
                 ...DEFAULT_SCREEN_PARAMS,
                 breakpoint,
                 width,
-                height,
+                height: isAutoHeight ? 'auto' : height,
             });
         }
-    }, [parentRef, breakpoint]);
+    }, [parentRef, breakpoint, stylesByBreakpoint]);
 
     const styleswithmedia = useMemo(
         () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, true),
