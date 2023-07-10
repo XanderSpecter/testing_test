@@ -56,7 +56,6 @@ const useCanvasResize = ({ onBreakpointChange, onCanvasClick }: UseCanvasResizeP
                     onBreakpointChange(shortcut);
                 }
             }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, SCREEN_PARAMS_UPDATE_DELAY),
         [breakpoints, canvasRef]
     );
@@ -117,7 +116,6 @@ const useCanvasResize = ({ onBreakpointChange, onCanvasClick }: UseCanvasResizeP
         });
 
         window.removeEventListener('mousemove', onMouseMove);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     };
 
     useEffect(() => {

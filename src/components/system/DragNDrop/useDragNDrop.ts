@@ -192,7 +192,6 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         resizerPos.current = null;
 
         window.removeEventListener('mousemove', onMouseMove);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     };
 
     useEffect(() => {
