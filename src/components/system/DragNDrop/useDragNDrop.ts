@@ -1,29 +1,19 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { BLOCK_POSITIONS_STATIC, MOUSEDOWN_LEFT_BUTTON } from './constants';
+import { BLOCK_POSITIONS_STATIC, DEFAULT_POSITION_STYLES, MOUSEDOWN_LEFT_BUTTON } from './constants';
 import { DnDResizerPosition } from './styled/DnDResizer';
 import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HTMLElements';
 import {
-    ChangableStyles,
     Coordinates,
-    PositionStyles,
     calcCursorOffsets,
     filterOnlyDnDStyles,
+    getCurrentStyles,
+    getStartStyles,
     getStylesAfterMove,
     getStylesAfterResize,
 } from './helpers';
-import { HEADER_HEIGHT } from '../AdminLayout/constants';
 import { mergeStyles } from '@/utils/styles/mergeStyles';
-
-const DEFAULT_ELEMENT_STYLE = {
-    marginTop: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 0,
-};
+import { ChangableStyles } from './types';
 
 interface UseDragNDropParams {
     onDrop?: (style: CSSProperties, screenShortcut: string) => void;
@@ -43,8 +33,9 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         y: 0,
     });
     const startStyles = useRef<ChangableStyles>({
-        ...DEFAULT_ELEMENT_STYLE,
+        ...DEFAULT_POSITION_STYLES,
         width: screenParams.width,
+        height: 0,
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
     const blockPositioning = useRef<PositionVariant>(BlockPosition.ABSOLUTE);
@@ -122,52 +113,32 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         }
 
         if (dndRef.current) {
-            const currentStyles = calcStyles.current || DEFAULT_ELEMENT_STYLE;
+            const isStatic = blockPositioning.current === BlockPosition.STATIC;
+            const currentStyles = calcStyles.current || DEFAULT_POSITION_STYLES;
             const screenWidth = screenParams.width;
 
-            const { top, left, width, height } = dndRef.current.getBoundingClientRect();
-            const { position } = getComputedStyle(dndRef.current);
+            const { width, height } = dndRef.current.getBoundingClientRect();
 
-            const positionStyles: PositionStyles = {
-                top: top - HEADER_HEIGHT,
-                left,
-                right: screenWidth - (left + width),
-                marginTop: 0,
-                marginLeft: 0,
-                marginRight: 0,
-            };
+            const calculatedStartStyles = getStartStyles({ screenWidth, isStatic, width, height, currentStyles });
 
-            if (!position || BLOCK_POSITIONS_STATIC.includes(position as BlockPosition)) {
-                blockPositioning.current = BlockPosition.STATIC;
+            if (calculatedStartStyles) {
+                cursorStartPosition.current = {
+                    x: e.pageX,
+                    y: e.pageY,
+                };
 
-                const marginTop = currentStyles.marginTop;
+                startStyles.current = {
+                    ...calculatedStartStyles,
+                };
 
-                positionStyles.top = 0;
-                positionStyles.left = 0;
-                positionStyles.right = 0;
-                positionStyles.marginTop = typeof marginTop === 'number' ? marginTop : 0;
-                positionStyles.marginLeft = left;
-                positionStyles.marginRight = screenParams.width - (left + width);
+                calcStyles.current = {
+                    ...currentStyles,
+                };
+
+                setCalculatedStyle(calcStyles.current);
+
+                window.addEventListener('mousemove', onMouseMove);
             }
-
-            cursorStartPosition.current = {
-                x: e.pageX,
-                y: e.pageY,
-            };
-
-            startStyles.current = {
-                ...positionStyles,
-                width: width,
-                height: height,
-            };
-
-            calcStyles.current = {
-                ...currentStyles,
-            };
-
-            setCalculatedStyle(calcStyles.current);
-
-            window.addEventListener('mousemove', onMouseMove);
         }
     };
 
@@ -195,30 +166,14 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     };
 
     useEffect(() => {
-        if (stylesByBreakpoint && screenParams?.breakpoint) {
-            const currentStyles = mergeStyles(
-                stylesByBreakpoint?.all || DEFAULT_ELEMENT_STYLE,
-                stylesByBreakpoint[screenParams.breakpoint]
-            );
+        const currentStyles = getCurrentStyles({ stylesByBreakpoint, breakpoint: screenParams.breakpoint });
 
-            if (currentStyles && !currentStyles.width) {
-                currentStyles.width = '100%';
-            }
-
-            if (
-                currentStyles &&
-                (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition))
-            ) {
-                blockPositioning.current = BlockPosition.STATIC;
-                currentStyles.position = 'relative';
-            }
-
-            setCalculatedStyle(currentStyles);
-            calcStyles.current = currentStyles;
-        } else {
+        if (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition)) {
             blockPositioning.current = BlockPosition.STATIC;
-            setCalculatedStyle({ width: '100%', height: 'auto', position: 'relative' });
         }
+
+        calcStyles.current = currentStyles;
+        setCalculatedStyle(currentStyles);
     }, [stylesByBreakpoint, screenParams]);
 
     return {

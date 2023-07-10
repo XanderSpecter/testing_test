@@ -7,7 +7,7 @@ import { DnDInfoLabel, DnDResizer, DnDResizerLabel, DnDResizerLabelRay, DragNDro
 import { DnDResizerPosition } from './styled/DnDResizer';
 import useDragNDrop, { DragNDropProps } from './useDragNDrop';
 import { DnDResizerLabelProps } from './styled/DnDResizerLabel';
-import { recalcWidthAndMargins } from './helpers';
+import { recalcWidthAndOffsets } from './helpers';
 import { HTMLTag } from '@/types/HTMLElements';
 
 const { Text } = Typography;
@@ -27,11 +27,11 @@ export default function DragNDrop({
         onDrop,
     });
 
-    const { calculatedMarginLeft, calculatedMarginRight } = useMemo(
+    const { calculatedOffsetLeft, calculatedOffsetRight } = useMemo(
         () =>
-            recalcWidthAndMargins({
+            recalcWidthAndOffsets({
                 width: calculatedStyle?.width || 0,
-                marginLeft: calculatedStyle?.marginLeft || 0,
+                offsetLeft: calculatedStyle?.marginLeft || 0,
                 screenWidth,
             }),
         [calculatedStyle, screenWidth]
@@ -74,7 +74,7 @@ export default function DragNDrop({
                 {renderDistanceLabel({
                     position: DnDResizerPosition.RIGHT,
                     distanceLabel: calculatedStyle.right || calculatedStyle.marginRight,
-                    distance: parseInt(String(calculatedStyle.right)) || calculatedMarginRight,
+                    distance: parseInt(String(calculatedStyle.right)) || calculatedOffsetRight,
                 })}
             </DnDResizer>
             <DnDResizer data-pos={DnDResizerPosition.BOTTOM} position={DnDResizerPosition.BOTTOM} />
@@ -82,7 +82,7 @@ export default function DragNDrop({
                 {renderDistanceLabel({
                     position: DnDResizerPosition.LEFT,
                     distanceLabel: calculatedStyle.left || calculatedStyle.marginLeft,
-                    distance: parseInt(String(calculatedStyle.left)) || calculatedMarginLeft,
+                    distance: parseInt(String(calculatedStyle.left)) || calculatedOffsetLeft,
                 })}
             </DnDResizer>
             <DnDInfoLabel>

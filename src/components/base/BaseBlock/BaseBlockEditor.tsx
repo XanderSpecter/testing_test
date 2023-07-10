@@ -17,6 +17,10 @@ import {
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     box-sizing: border-box;
 
+    &:hover {
+        box-shadow: 0px 0px 1px 1px #1677ff;
+    }
+
     ${({ styleswithmedia }) => styleswithmedia};
 `;
 

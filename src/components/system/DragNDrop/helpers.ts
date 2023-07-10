@@ -1,16 +1,31 @@
-import { CSSPropertyKey } from '@/types/HTMLElements';
+import { CSSPropertyKey, StylesByBreakpoint } from '@/types/HTMLElements';
 import { CSSProperties } from 'react';
 import { DnDResizerPosition } from './styled/DnDResizer';
-import { ACCURACY_TOLERANCE } from './constants';
+import {
+    ABSOLUTE_POSITION_STYLES,
+    ACCURACY_TOLERANCE,
+    DEFAULT_ELEMENT_STYLES,
+    DEFAULT_POSITION_STYLES,
+    STATIC_POSITION_STYLES,
+} from './constants';
+import { ChangableStyles, PositionStyles } from './types';
+import { mergeStyles } from '@/utils/styles/mergeStyles';
 
 interface RecalcWidthAndMarginsParams {
     width: string | number;
-    marginLeft: string | number;
-    marginRight?: string | number;
+    offsetLeft: string | number;
+    offsetRight?: string | number;
+    offsetTop?: string | number;
     screenWidth: number;
 }
 
-export const recalcWidthAndMargins = ({ width, marginLeft, marginRight, screenWidth }: RecalcWidthAndMarginsParams) => {
+export const recalcWidthAndOffsets = ({
+    width,
+    offsetTop,
+    offsetLeft,
+    offsetRight,
+    screenWidth,
+}: RecalcWidthAndMarginsParams) => {
     let calculatedWidth = 0;
 
     if (typeof width === 'number') {
@@ -23,29 +38,21 @@ export const recalcWidthAndMargins = ({ width, marginLeft, marginRight, screenWi
         calculatedWidth = Math.round(screenWidth / widthPercent);
     }
 
-    const calculatedMarginLeft =
-        typeof marginLeft === 'number' ? marginLeft : Math.round((screenWidth - calculatedWidth) / 2);
+    const calculatedOffsetTop = typeof offsetTop === 'number' ? offsetTop : 0;
 
-    const calculatedMarginRight =
-        typeof marginRight === 'number' ? marginRight : screenWidth - (calculatedMarginLeft + calculatedWidth);
+    const calculatedOffsetLeft =
+        typeof offsetLeft === 'number' ? offsetLeft : Math.round((screenWidth - calculatedWidth) / 2);
+
+    const calculatedOffsetRight =
+        typeof offsetRight === 'number' ? offsetRight : screenWidth - (calculatedOffsetLeft + calculatedWidth);
 
     return {
         calculatedWidth,
-        calculatedMarginLeft,
-        calculatedMarginRight,
+        calculatedOffsetTop,
+        calculatedOffsetLeft,
+        calculatedOffsetRight,
     };
 };
-
-const STATIC_POSITION_STYLES: CSSPropertyKey[] = [
-    'width',
-    'height',
-    'marginTop',
-    'marginBottom',
-    'marginLeft',
-    'marginRight',
-];
-
-const ABSOLUTE_POSITION_STYLES: CSSPropertyKey[] = ['width', 'height', 'top', 'bottom', 'left', 'right'];
 
 export const filterOnlyDnDStyles = (styles: CSSProperties, isStatic?: boolean) => {
     const filtered: Record<string, unknown> = {};
@@ -84,18 +91,48 @@ export const calcCursorOffsets = (e: MouseEvent, cursorStartPosition: Coordinate
     };
 };
 
-export interface ChangableStyles {
-    top: number;
-    left: number;
-    right: number;
-    marginTop: number;
-    marginLeft: string | number;
-    marginRight: string | number;
-    width: string | number;
+interface GetStartStylesParams {
+    currentStyles?: CSSProperties | null;
+    width: number;
     height: number;
+    screenWidth: number;
+    isStatic: boolean;
 }
 
-export type PositionStyles = Omit<ChangableStyles, 'width' | 'height'>;
+export const getStartStyles = ({
+    currentStyles,
+    width,
+    height,
+    screenWidth,
+    isStatic,
+}: GetStartStylesParams): ChangableStyles | null => {
+    if (!currentStyles) {
+        return null;
+    }
+
+    const { top, left, right, marginTop, marginLeft, marginRight } = currentStyles;
+
+    const { calculatedOffsetTop, calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
+        screenWidth,
+        width,
+        offsetTop: isStatic ? marginTop || DEFAULT_POSITION_STYLES.marginTop : top || DEFAULT_POSITION_STYLES.top,
+        offsetLeft: isStatic ? marginLeft || DEFAULT_POSITION_STYLES.marginLeft : left || DEFAULT_POSITION_STYLES.left,
+        offsetRight: isStatic
+            ? marginRight || DEFAULT_POSITION_STYLES.marginRight
+            : right || DEFAULT_POSITION_STYLES.right,
+    });
+
+    return {
+        top: isStatic ? 0 : calculatedOffsetTop,
+        left: isStatic ? 0 : calculatedOffsetLeft,
+        right: isStatic ? 0 : calculatedOffsetRight,
+        marginTop: isStatic ? calculatedOffsetTop : 0,
+        marginLeft: isStatic ? calculatedOffsetLeft : 0,
+        marginRight: isStatic ? calculatedOffsetRight : 0,
+        width,
+        height,
+    };
+};
 
 interface CalcParams {
     offsets: Coordinates;
@@ -122,9 +159,9 @@ export const calcResize = ({
 
     const fullScreenWidth = screenWidth - ACCURACY_TOLERANCE;
 
-    const { calculatedWidth, calculatedMarginLeft, calculatedMarginRight } = recalcWidthAndMargins({
+    const { calculatedWidth, calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
         width,
-        marginLeft,
+        offsetLeft: marginLeft,
         screenWidth,
     });
 
@@ -132,8 +169,8 @@ export const calcResize = ({
         case DnDResizerPosition.BOTTOM:
             return {
                 marginTop,
-                marginLeft: calculatedMarginLeft,
-                marginRight: calculatedMarginRight,
+                marginLeft: calculatedOffsetLeft,
+                marginRight: calculatedOffsetRight,
                 top,
                 left,
                 right,
@@ -143,8 +180,8 @@ export const calcResize = ({
         case DnDResizerPosition.TOP:
             return {
                 marginTop: marginTop + y,
-                marginLeft: calculatedMarginLeft,
-                marginRight: calculatedMarginRight,
+                marginLeft: calculatedOffsetLeft,
+                marginRight: calculatedOffsetRight,
                 left,
                 right,
                 top: top + y,
@@ -154,8 +191,8 @@ export const calcResize = ({
         case DnDResizerPosition.RIGHT:
             return {
                 marginTop,
-                marginLeft: calculatedMarginLeft,
-                marginRight: calculatedMarginRight - x,
+                marginLeft: calculatedOffsetLeft,
+                marginRight: calculatedOffsetRight - x,
                 right: right - x,
                 top,
                 left,
@@ -165,8 +202,8 @@ export const calcResize = ({
         default:
             return {
                 marginTop,
-                marginLeft: calculatedMarginLeft + x,
-                marginRight: calculatedMarginRight,
+                marginLeft: calculatedOffsetLeft + x,
+                marginRight: calculatedOffsetRight,
                 top,
                 right,
                 left: left + x,
@@ -186,17 +223,17 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
     const { screenWidth } = params;
     const { width, height, top, left, right, marginLeft, marginRight, marginTop } = calculatedSizes;
 
-    const { calculatedMarginLeft, calculatedMarginRight } = recalcWidthAndMargins({
+    const { calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
         width,
-        marginLeft,
-        marginRight,
+        offsetLeft: marginLeft,
+        offsetRight: marginRight,
         screenWidth,
     });
 
     if (isStatic) {
         const calcMarginTop = marginTop < 0 ? 0 : marginTop;
-        const calcMarginLeft = calculatedMarginLeft < 0 ? 0 : calculatedMarginLeft;
-        const calcMarginRight = calculatedMarginRight < 0 ? 0 : calculatedMarginRight;
+        const calcMarginLeft = calculatedOffsetLeft < 0 ? 0 : calculatedOffsetLeft;
+        const calcMarginRight = calculatedOffsetRight < 0 ? 0 : calculatedOffsetRight;
 
         return {
             top: 0,
@@ -234,32 +271,29 @@ export const getStylesAfterMove = (
 
     const { top, left, marginTop, marginLeft, width } = startStyles;
 
-    const { calculatedWidth, calculatedMarginLeft } = recalcWidthAndMargins({
+    const { calculatedWidth, calculatedOffsetLeft: calcMarginLeft } = recalcWidthAndOffsets({
         width,
-        marginLeft,
+        offsetLeft: marginLeft,
         screenWidth,
     });
 
     if (isStatic) {
-        const calcMarginTop = marginTop + y;
-        const calcMarginLeft = calculatedMarginLeft + x;
-        const calcMarginRight = screenWidth - (calcMarginLeft + calculatedWidth);
-
-        const renderedMarginTop = calcMarginTop < 0 ? 0 : calcMarginTop;
-        const renderedMarginLeft = calcMarginLeft < 0 ? 0 : calcMarginLeft;
-        const renderedMarginRight = calcMarginRight < 0 ? 0 : calcMarginRight;
+        const offsetTop = marginTop + y > 0 ? marginTop + y : 0;
+        const offsetLeft = calcMarginLeft + x;
+        const offsetRight = screenWidth - (offsetLeft + calculatedWidth);
 
         const isMarginNotAuto =
-            calcMarginLeft < calcMarginRight - ACCURACY_TOLERANCE ||
-            calcMarginRight < calcMarginLeft - ACCURACY_TOLERANCE;
+            (offsetLeft < ACCURACY_TOLERANCE && offsetRight < ACCURACY_TOLERANCE) ||
+            offsetLeft < offsetRight - ACCURACY_TOLERANCE ||
+            offsetRight < offsetLeft - ACCURACY_TOLERANCE;
 
         return {
             top: 0,
             left: 0,
             right: 0,
-            marginTop: renderedMarginTop,
-            marginLeft: isMarginNotAuto ? renderedMarginLeft : 'auto',
-            marginRight: isMarginNotAuto ? renderedMarginRight : 'auto',
+            marginTop: offsetTop,
+            marginLeft: isMarginNotAuto ? offsetLeft : 'auto',
+            marginRight: isMarginNotAuto ? offsetRight : 'auto',
         };
     }
 
@@ -275,4 +309,20 @@ export const getStylesAfterMove = (
         marginLeft: 0,
         marginRight: 0,
     };
+};
+
+interface GetCurrentStylesParams {
+    stylesByBreakpoint?: StylesByBreakpoint | null;
+    breakpoint: string;
+}
+
+export const getCurrentStyles = ({ stylesByBreakpoint, breakpoint }: GetCurrentStylesParams) => {
+    if (!stylesByBreakpoint) {
+        return DEFAULT_ELEMENT_STYLES;
+    }
+
+    const currentBreakpointStyles = stylesByBreakpoint[breakpoint];
+    const baseStyles = stylesByBreakpoint.all || DEFAULT_ELEMENT_STYLES;
+
+    return mergeStyles(baseStyles, currentBreakpointStyles);
 };
