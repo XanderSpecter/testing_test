@@ -1,6 +1,11 @@
 import { ScreenParamsContext } from '@/utils/screenParamsProvider';
 import { CSSProperties, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { BLOCK_POSITIONS_STATIC, DEFAULT_POSITION_STYLES, MOUSEDOWN_LEFT_BUTTON } from './constants';
+import {
+    BLOCK_POSITIONS_STATIC,
+    DEFAULT_POSITION_STYLES,
+    INLINE_BLOCK_DISPLAYS,
+    MOUSEDOWN_LEFT_BUTTON,
+} from './constants';
 import { DnDResizerPosition } from './styled/DnDResizer';
 import { BlockPosition, PositionVariant, WithBreakpointStyles } from '@/types/HTMLElements';
 import {
@@ -11,9 +16,11 @@ import {
     getStartStyles,
     getStylesAfterMove,
     getStylesAfterResize,
+    recalcWidthAndOffsets,
 } from './helpers';
 import { mergeStyles } from '@/utils/styles/mergeStyles';
 import { ChangableStyles } from './types';
+import { BreakpointsContext } from '@/utils/breakpointsProvider';
 
 interface UseDragNDropParams {
     onDrop?: (style: CSSProperties, screenShortcut: string) => void;
@@ -23,6 +30,7 @@ export type DragNDropProps = WithBreakpointStyles<UseDragNDropParams>;
 
 const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
+    const breakpoints = useContext(BreakpointsContext);
 
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
@@ -39,6 +47,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     });
     const resizerPos = useRef<DnDResizerPosition | null>(null);
     const blockPositioning = useRef<PositionVariant>(BlockPosition.ABSOLUTE);
+    const isMarginAutoDisabled = useRef(false);
 
     const onMouseMove = useCallback(
         (e: MouseEvent) => {
@@ -65,9 +74,12 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     );
 
                     if (stylesAfterResize) {
+                        const { isHeightChanged } = stylesAfterResize;
+
                         calcStyles.current = {
                             ...currentStyles,
                             ...stylesAfterResize,
+                            height: isHeightChanged ? stylesAfterResize.height : currentStyles.height,
                         };
 
                         setCalculatedStyle(calcStyles.current);
@@ -81,6 +93,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                         offsets,
                         screenWidth,
                         startStyles: startStyles.current,
+                        isMarginAutoDisabled: isMarginAutoDisabled.current,
                     },
                     isStatic
                 );
@@ -166,15 +179,31 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     };
 
     useEffect(() => {
-        const currentStyles = getCurrentStyles({ stylesByBreakpoint, breakpoint: screenParams.breakpoint });
+        const currentStyles = getCurrentStyles({ stylesByBreakpoint, breakpoints, shortcut: screenParams.breakpoint });
 
         if (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition)) {
             blockPositioning.current = BlockPosition.STATIC;
         }
 
+        if (INLINE_BLOCK_DISPLAYS.includes(currentStyles.display)) {
+            isMarginAutoDisabled.current = true;
+
+            const { width, marginLeft, marginRight } = currentStyles;
+
+            const { calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
+                width: width || screenParams.width,
+                offsetLeft: marginLeft || 0,
+                offsetRight: marginRight,
+                screenWidth: screenParams.width,
+            });
+
+            currentStyles.marginLeft = calculatedOffsetLeft;
+            currentStyles.marginRight = calculatedOffsetRight;
+        }
+
         calcStyles.current = currentStyles;
         setCalculatedStyle(currentStyles);
-    }, [stylesByBreakpoint, screenParams]);
+    }, [stylesByBreakpoint, screenParams, breakpoints]);
 
     return {
         dndRef,

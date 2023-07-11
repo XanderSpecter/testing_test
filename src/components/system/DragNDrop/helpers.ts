@@ -10,6 +10,8 @@ import {
 } from './constants';
 import { ChangableStyles, PositionStyles } from './types';
 import { mergeStyles } from '@/utils/styles/mergeStyles';
+import { Breakpoint } from '@/utils/breakpointsProvider';
+import getClosestBreakpointStyles from '@/utils/styles/getClosestBreakpointStyles';
 
 interface RecalcWidthAndMarginsParams {
     width: string | number;
@@ -138,6 +140,7 @@ interface CalcParams {
     offsets: Coordinates;
     startStyles: ChangableStyles;
     screenWidth: number;
+    isMarginAutoDisabled?: boolean;
 }
 
 interface CalcResizeParams extends CalcParams {
@@ -176,6 +179,7 @@ export const calcResize = ({
                 right,
                 width: calculatedWidth,
                 height: height + y,
+                isHeightChanged: true,
             };
         case DnDResizerPosition.TOP:
             return {
@@ -187,6 +191,7 @@ export const calcResize = ({
                 top: top + y,
                 width: calculatedWidth,
                 height: height - y,
+                isHeightChanged: true,
             };
         case DnDResizerPosition.RIGHT:
             return {
@@ -221,7 +226,7 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
     }
 
     const { screenWidth } = params;
-    const { width, height, top, left, right, marginLeft, marginRight, marginTop } = calculatedSizes;
+    const { width, height, top, left, right, marginLeft, marginRight, marginTop, isHeightChanged } = calculatedSizes;
 
     const { calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
         width,
@@ -244,6 +249,7 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
             marginRight: calcMarginRight,
             width: parseInt(String(width)) < 0 ? 0 : width,
             height: height < 0 ? 0 : height,
+            isHeightChanged,
         };
     }
 
@@ -260,7 +266,7 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
 };
 
 export const getStylesAfterMove = (
-    { offsets, startStyles, screenWidth }: CalcParams,
+    { offsets, startStyles, screenWidth, isMarginAutoDisabled }: CalcParams,
     isStatic: boolean
 ): PositionStyles | null => {
     if (!offsets || !startStyles) {
@@ -292,8 +298,8 @@ export const getStylesAfterMove = (
             left: 0,
             right: 0,
             marginTop: offsetTop,
-            marginLeft: isMarginNotAuto ? offsetLeft : 'auto',
-            marginRight: isMarginNotAuto ? offsetRight : 'auto',
+            marginLeft: isMarginNotAuto || isMarginAutoDisabled ? offsetLeft : 'auto',
+            marginRight: isMarginNotAuto || isMarginAutoDisabled ? offsetRight : 'auto',
         };
     }
 
@@ -313,16 +319,17 @@ export const getStylesAfterMove = (
 
 interface GetCurrentStylesParams {
     stylesByBreakpoint?: StylesByBreakpoint | null;
-    breakpoint: string;
+    breakpoints: Breakpoint[];
+    shortcut: string;
 }
 
-export const getCurrentStyles = ({ stylesByBreakpoint, breakpoint }: GetCurrentStylesParams) => {
+export const getCurrentStyles = ({ stylesByBreakpoint, breakpoints, shortcut }: GetCurrentStylesParams) => {
     if (!stylesByBreakpoint) {
         return DEFAULT_ELEMENT_STYLES;
     }
 
-    const currentBreakpointStyles = stylesByBreakpoint[breakpoint];
-    const baseStyles = stylesByBreakpoint.all || DEFAULT_ELEMENT_STYLES;
+    const currentBreakpointStyles = getClosestBreakpointStyles({ stylesByBreakpoint, breakpoints, shortcut });
+    const baseStyles = mergeStyles(DEFAULT_ELEMENT_STYLES, stylesByBreakpoint.all);
 
     return mergeStyles(baseStyles, currentBreakpointStyles);
 };

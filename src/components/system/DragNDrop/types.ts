@@ -7,6 +7,7 @@ export interface ChangableStyles {
     marginRight: string | number;
     width: string | number;
     height: number;
+    isHeightChanged?: boolean;
 }
 
 export type PositionStyles = Omit<ChangableStyles, 'width' | 'height'>;

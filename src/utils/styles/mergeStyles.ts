@@ -16,7 +16,7 @@ const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties):
     return baseDisplay || 'block';
 };
 
-export const mergeStyles = (defaultStyles: StyleByBreakpoint, customStyles?: StyleByBreakpoint) => {
+export const mergeStyles = (defaultStyles: StyleByBreakpoint, customStyles?: StyleByBreakpoint | null) => {
     if (!customStyles) {
         return { ...defaultStyles, display: calcDisplay(defaultStyles, {}) };
     }

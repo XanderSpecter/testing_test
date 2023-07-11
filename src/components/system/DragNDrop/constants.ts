@@ -25,7 +25,15 @@ export const STATIC_POSITION_STYLES: CSSPropertyKey[] = [
     'marginTop',
     'marginBottom',
     'marginLeft',
-    'marginRight',
+    'display',
 ];
 
-export const ABSOLUTE_POSITION_STYLES: CSSPropertyKey[] = ['width', 'height', 'top', 'bottom', 'left', 'right'];
+export const ABSOLUTE_POSITION_STYLES: CSSPropertyKey[] = ['width', 'height', 'top', 'bottom', 'left', 'display'];
+
+export const INLINE_BLOCK_DISPLAYS: CSSProperties['display'][] = [
+    'inline-block',
+    'inline-flex',
+    'inline-grid',
+    'inline-list-item',
+    'inline-list-item',
+];
