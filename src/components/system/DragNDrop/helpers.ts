@@ -329,6 +329,7 @@ export const getCurrentStyles = ({ stylesByBreakpoint, breakpoints, shortcut }: 
     }
 
     const currentBreakpointStyles = getClosestBreakpointStyles({ stylesByBreakpoint, breakpoints, shortcut });
+
     const baseStyles = mergeStyles(DEFAULT_ELEMENT_STYLES, stylesByBreakpoint.all);
 
     return mergeStyles(baseStyles, currentBreakpointStyles);

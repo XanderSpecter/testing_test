@@ -33,7 +33,7 @@ const getClosestBreakpointStyles = ({
     lesserBreakpoints.forEach((b) => {
         const { name } = b;
 
-        if (stylesByBreakpoint[name]) {
+        if (stylesByBreakpoint[name] && Object.keys(stylesByBreakpoint[name] || {}).length) {
             styles = stylesByBreakpoint[name] || {};
         }
     });

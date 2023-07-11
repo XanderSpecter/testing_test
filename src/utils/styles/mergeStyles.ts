@@ -3,7 +3,7 @@ import { Property } from 'csstype';
 import { StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 
-const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties): Property.Display => {
+export const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties): Property.Display => {
     const baseDisplay = defaultStyles.display || customStyles.display;
 
     const needJustifyContent = defaultStyles.justifyContent || customStyles.justifyContent;
@@ -18,7 +18,7 @@ const calcDisplay = (defaultStyles: CSSProperties, customStyles: CSSProperties):
 
 export const mergeStyles = (defaultStyles: StyleByBreakpoint, customStyles?: StyleByBreakpoint | null) => {
     if (!customStyles) {
-        return { ...defaultStyles, display: calcDisplay(defaultStyles, {}) };
+        return { ...defaultStyles };
     }
 
     const { hover: defaultHover, focus: defaultFocus, ...defaultRest } = defaultStyles;
@@ -33,8 +33,6 @@ export const mergeStyles = (defaultStyles: StyleByBreakpoint, customStyles?: Sty
     if (defaultFocus) {
         merged.focus = mergeStyles(defaultFocus, customFocus);
     }
-
-    merged.display = calcDisplay(defaultStyles, customStyles);
 
     return merged;
 };

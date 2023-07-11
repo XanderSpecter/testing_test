@@ -2,7 +2,7 @@ import { Breakpoint } from '@/utils/breakpointsProvider';
 import { ColumnProps } from '.';
 import { StylesByBreakpoint } from '@/types/HTMLElements';
 import { CSSProperties } from 'react';
-import { mergeStyles } from '@/utils/styles/mergeStyles';
+import { calcDisplay, mergeStyles } from '@/utils/styles/mergeStyles';
 import { DEFAULT_BREAKPOINTS } from '@/utils/breakpointsProvider/context';
 
 const getMaxColsWithLimits = (maxCols: number, breakpoint: string) => {
@@ -47,6 +47,8 @@ export const recalcColumnStyles = (
         const baseStyles: CSSProperties = { maxWidth: getColumnMaxWidth(currentCols, correctedMaxCols) };
 
         const breakpointStyles = mergeStyles(baseStyles, customStyles);
+        breakpointStyles.display = calcDisplay(baseStyles, customStyles || {});
+
         styles[name] = breakpointStyles;
     });
 
