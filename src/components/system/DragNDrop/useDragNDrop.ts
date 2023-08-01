@@ -32,7 +32,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
     const breakpoints = useContext(BreakpointsContext);
 
-    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
+    const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>({});
 
     const dndRef = useRef<HTMLDivElement>();
     const calcStyles = useRef<CSSProperties | null>();
@@ -98,6 +98,10 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                     isStatic
                 );
 
+                if (!positionStyles?.marginRight) {
+                    delete currentStyles.marginRight;
+                }
+
                 if (positionStyles) {
                     calcStyles.current = {
                         ...currentStyles,
@@ -112,7 +116,38 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         [screenParams]
     );
 
-    const onDnDMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const onMouseUp = useCallback((e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (calcStyles.current) {
+            const isStatic = blockPositioning.current === BlockPosition.STATIC;
+            const onlyDnDStyles = filterOnlyDnDStyles(calcStyles.current, isStatic);
+
+            let completedStyles = onlyDnDStyles;
+
+            if (stylesByBreakpoint && stylesByBreakpoint[screenParams.breakpoint]) {
+                completedStyles = mergeStyles(stylesByBreakpoint[screenParams.breakpoint] || {}, onlyDnDStyles);
+            }
+
+            setCalculatedStyle(completedStyles);
+
+            if (onDrop) {
+                onDrop(completedStyles, screenParams.breakpoint);
+            }
+        }
+
+        resizerPos.current = null;
+
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const onDnDMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (e.button !== MOUSEDOWN_LEFT_BUTTON) {
             return;
         }
@@ -151,32 +186,11 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
                 setCalculatedStyle(calcStyles.current);
 
                 window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
             }
         }
-    };
-
-    const onMouseUp = () => {
-        if (calcStyles.current) {
-            const isStatic = blockPositioning.current === BlockPosition.STATIC;
-            const onlyDnDStyles = filterOnlyDnDStyles(calcStyles.current, isStatic);
-
-            let completedStyles = onlyDnDStyles;
-
-            if (stylesByBreakpoint && stylesByBreakpoint[screenParams.breakpoint]) {
-                completedStyles = mergeStyles(stylesByBreakpoint[screenParams.breakpoint] || {}, onlyDnDStyles);
-            }
-
-            setCalculatedStyle(completedStyles);
-
-            if (onDrop) {
-                onDrop(completedStyles, screenParams.breakpoint);
-            }
-        }
-
-        resizerPos.current = null;
-
-        window.removeEventListener('mousemove', onMouseMove);
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         const currentStyles = getCurrentStyles({ stylesByBreakpoint, breakpoints, shortcut: screenParams.breakpoint });
@@ -210,7 +224,6 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
         calculatedStyle: calculatedStyle,
         isStatic: blockPositioning.current === BlockPosition.STATIC,
         screenWidth: screenParams.width,
-        onMouseUp,
         onDnDMouseDown,
     };
 };

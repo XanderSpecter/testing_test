@@ -9,7 +9,7 @@ import { BaseCollectionElementParams, CollectionElement, PossibleFieldType } fro
 import { Column, Row } from '@/components/base/Grid';
 import { ColumnProps } from '@/components/base/Grid/Column';
 import { AvailableCollection } from '@/types/collections';
-import { COLS, ELEMENT_STYLES } from '../constants';
+import { ELEMENT_STYLES } from '../constants';
 import { isFieldHiddenInTable } from '../helpers';
 
 interface ElementProps<T extends BaseCollectionElementParams> {
@@ -65,7 +65,7 @@ export default function Element<T extends BaseCollectionElementParams = BaseColl
             return (
                 <Column
                     key={`${element._id}-${key}`}
-                    cols={COLS.text}
+                    cols={2}
                     maxCols={customMaxCols}
                     stylesByBreakpoint={ELEMENT_STYLES.column}
                 >
@@ -78,7 +78,7 @@ export default function Element<T extends BaseCollectionElementParams = BaseColl
     return (
         <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
             {renderFields()}
-            <Column cols={COLS.button} maxCols={customMaxCols} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+            <Column cols={1} maxCols={customMaxCols} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                 <Button
                     style={ELEMENT_STYLES.controlButton}
                     type="primary"

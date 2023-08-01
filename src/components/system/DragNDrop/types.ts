@@ -3,8 +3,8 @@ export interface ChangableStyles {
     left: number;
     right: number;
     marginTop: number;
-    marginLeft: string | number;
-    marginRight: string | number;
+    marginLeft?: number | 'auto';
+    marginRight?: number | 'auto';
     width: string | number;
     height: number;
     isHeightChanged?: boolean;

@@ -69,6 +69,10 @@ export const filterOnlyDnDStyles = (styles: CSSProperties, isStatic?: boolean) =
         if (styleChecker.includes(k as CSSPropertyKey)) {
             filtered[k] = styles[k as CSSPropertyKey];
         }
+
+        if (isStatic && k === 'marginRight' && styles[k as CSSPropertyKey] === 'auto') {
+            filtered[k] = styles[k as CSSPropertyKey];
+        }
     });
 
     return filtered as CSSProperties;
@@ -164,7 +168,7 @@ export const calcResize = ({
 
     const { calculatedWidth, calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
         width,
-        offsetLeft: marginLeft,
+        offsetLeft: marginLeft || 0,
         screenWidth,
     });
 
@@ -228,9 +232,9 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
     const { screenWidth } = params;
     const { width, height, top, left, right, marginLeft, marginRight, marginTop, isHeightChanged } = calculatedSizes;
 
-    const { calculatedOffsetLeft, calculatedOffsetRight } = recalcWidthAndOffsets({
+    const { calculatedOffsetLeft } = recalcWidthAndOffsets({
         width,
-        offsetLeft: marginLeft,
+        offsetLeft: marginLeft || 0,
         offsetRight: marginRight,
         screenWidth,
     });
@@ -238,7 +242,6 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
     if (isStatic) {
         const calcMarginTop = marginTop < 0 ? 0 : marginTop;
         const calcMarginLeft = calculatedOffsetLeft < 0 ? 0 : calculatedOffsetLeft;
-        const calcMarginRight = calculatedOffsetRight < 0 ? 0 : calculatedOffsetRight;
 
         return {
             top: 0,
@@ -246,7 +249,6 @@ export const getStylesAfterResize = (params: CalcResizeParams, isStatic: boolean
             right: 0,
             marginTop: calcMarginTop,
             marginLeft: calcMarginLeft,
-            marginRight: calcMarginRight,
             width: parseInt(String(width)) < 0 ? 0 : width,
             height: height < 0 ? 0 : height,
             isHeightChanged,
@@ -279,7 +281,7 @@ export const getStylesAfterMove = (
 
     const { calculatedWidth, calculatedOffsetLeft: calcMarginLeft } = recalcWidthAndOffsets({
         width,
-        offsetLeft: marginLeft,
+        offsetLeft: marginLeft || 0,
         screenWidth,
     });
 
@@ -293,14 +295,21 @@ export const getStylesAfterMove = (
             offsetLeft < offsetRight - ACCURACY_TOLERANCE ||
             offsetRight < offsetLeft - ACCURACY_TOLERANCE;
 
-        return {
+        const result: PositionStyles = {
             top: 0,
             left: 0,
             right: 0,
             marginTop: offsetTop,
-            marginLeft: isMarginNotAuto || isMarginAutoDisabled ? offsetLeft : 'auto',
-            marginRight: isMarginNotAuto || isMarginAutoDisabled ? offsetRight : 'auto',
         };
+
+        if (isMarginNotAuto || isMarginAutoDisabled) {
+            result.marginLeft = offsetLeft;
+        } else {
+            result.marginLeft = 'auto';
+            result.marginRight = 'auto';
+        }
+
+        return result;
     }
 
     const calculatedTop = top + y;
@@ -328,7 +337,11 @@ export const getCurrentStyles = ({ stylesByBreakpoint, breakpoints, shortcut }: 
         return DEFAULT_ELEMENT_STYLES;
     }
 
-    const currentBreakpointStyles = getClosestBreakpointStyles({ stylesByBreakpoint, breakpoints, shortcut });
+    const currentBreakpointStyles = getClosestBreakpointStyles({
+        stylesByBreakpoint,
+        breakpoints,
+        shortcut,
+    });
 
     const baseStyles = mergeStyles(DEFAULT_ELEMENT_STYLES, stylesByBreakpoint.all);
 

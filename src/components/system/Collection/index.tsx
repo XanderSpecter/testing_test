@@ -8,7 +8,7 @@ import { Button, Typography } from 'antd';
 import { BaseObject, CollectionParams, CollectionElement } from '@/types/apiModels';
 import { Column, Container, Row } from '@/components/base/Grid';
 import Element from './components/Element';
-import { COLS, ELEMENT_STYLES } from './constants';
+import { ELEMENT_STYLES } from './constants';
 import { getCollectionParams } from '@/utils/collections';
 import Form from './components/Form';
 import { isFieldHiddenInTable } from './helpers';
@@ -79,7 +79,7 @@ export default function Collection({ collectionElementName, query }: CollectionP
             const { title } = field;
 
             return (
-                <Column key={`headers-${key}`} cols={COLS.text} maxCols={customMaxCols}>
+                <Column key={`headers-${key}`} cols={2} maxCols={customMaxCols}>
                     <Title level={5}>{title}</Title>
                 </Column>
             );
@@ -114,7 +114,11 @@ export default function Collection({ collectionElementName, query }: CollectionP
 
     useEffect(() => {
         if (setHeaderContent) {
-            setHeaderContent(null);
+            setHeaderContent(
+                <Button type="primary" onClick={() => setIsFormOpened(true)}>
+                    Добавить
+                </Button>
+            );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setHeaderContent]);
@@ -131,16 +135,9 @@ export default function Collection({ collectionElementName, query }: CollectionP
                     <Title>{currentCollection?.title}</Title>
                 </Column>
             </Row>
-            <Row>
-                <Column>
-                    <Button type="primary" onClick={() => setIsFormOpened(true)}>
-                        Добавить
-                    </Button>
-                </Column>
-            </Row>
             <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
                 {renderHeaders()}
-                <Column cols={COLS.button} maxCols={customMaxCols} />
+                <Column cols={1} maxCols={customMaxCols} />
             </Row>
             {renderElements()}
             <Form

@@ -20,7 +20,7 @@ const StyledColumn = styled.div<WithGeneratedCSS>`
 `;
 
 interface BaseColumnProps {
-    cols?: Record<string, number>;
+    cols?: Record<string, number> | number;
     maxCols?: Record<string, number>;
 }
 

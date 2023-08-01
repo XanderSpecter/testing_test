@@ -13,6 +13,7 @@ import { Button } from 'antd';
 import { HeaderControls } from './styled';
 import { useElements } from '@/hooks/api/useElements';
 import FullScreenLoader from '@/components/base/FullScreenLoader';
+import { deleteFromLocalStorage } from '@/utils/localStorage';
 import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
 import { getLocalStorageCache, recalcPath, saveLocalStorageCache } from './helpers';
@@ -52,7 +53,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     };
 
     const clearAndExit = () => {
-        localStorage.removeItem(id);
+        deleteFromLocalStorage(id);
 
         router.push(`${Routes.ADMIN}/${collectionElementName}`);
     };

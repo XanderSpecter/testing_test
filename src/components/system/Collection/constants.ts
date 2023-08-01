@@ -1,11 +1,5 @@
 import { StylesByBreakpoint } from '@/types/HTMLElements';
 
-export const COLS = {
-    text: { all: 2 },
-    button: { all: 1 },
-    keyValueInput: { all: 5 },
-};
-
 const row: StylesByBreakpoint = { all: { marginTop: '16px' } };
 const supportRow: StylesByBreakpoint = { all: { marginTop: '8px' } };
 const tableRow: StylesByBreakpoint = {
@@ -15,6 +9,7 @@ const buttonColumn: StylesByBreakpoint = { all: { justifyContent: 'center', alig
 const column: StylesByBreakpoint = { all: { alignItems: 'center' } };
 const input = { width: '100%' };
 const controlButton = { marginLeft: '16px' };
+const formButton = { width: '100%' };
 
 export const ELEMENT_STYLES = {
     row,
@@ -24,4 +19,5 @@ export const ELEMENT_STYLES = {
     column,
     input,
     controlButton,
+    formButton,
 };

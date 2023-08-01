@@ -1,1 +1,1 @@
-export const EMPTY_BLOCK_MESSAGE = 'Пустой блок подкрашен, чтобы быть заметным. Добавьте дочерние элементы.';
+export const EMPTY_BLOCK_MESSAGE = 'Пустой блок';

@@ -42,7 +42,7 @@ export const recalcColumnStyles = (
 
         const correctedMaxCols = getMaxColsWithLimits(customMaxCols?.[name] || customMaxCols?.all || maxCols, name);
         const customStyles = stylesByBreakpoint?.[name] || stylesByBreakpoint?.all;
-        const currentCols = cols?.[name] || cols?.all || correctedMaxCols;
+        const currentCols = typeof cols === 'number' ? cols : cols?.[name] || cols?.all || correctedMaxCols;
 
         const baseStyles: CSSProperties = { maxWidth: getColumnMaxWidth(currentCols, correctedMaxCols) };
 

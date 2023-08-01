@@ -25,8 +25,8 @@ export default function Header({ children }: React.PropsWithChildren) {
 
     return (
         <HeaderWrapper>
-            <HeaderLinksWrapper>{renderLinks()}</HeaderLinksWrapper>
-            <HeaderLinksWrapper>{children}</HeaderLinksWrapper>
+            <HeaderLinksWrapper alignContent="flex-start">{renderLinks()}</HeaderLinksWrapper>
+            <HeaderLinksWrapper alignContent="flex-end">{children}</HeaderLinksWrapper>
         </HeaderWrapper>
     );
 }

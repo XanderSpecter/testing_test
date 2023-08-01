@@ -2,6 +2,7 @@ import { ElementType, StyledBlock, TextBlock } from '@/types/HTMLElements';
 import { v4 as uuid } from 'uuid';
 import { CollectionElement } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
+import { getObjectFromLocalStorage, saveObjectToLocalStorage } from '@/utils/localStorage';
 
 export const saveLocalStorageCache = (id: ObjectId | string, data: CollectionElement | null) => {
     if (!id || !data) {
@@ -10,27 +11,11 @@ export const saveLocalStorageCache = (id: ObjectId | string, data: CollectionEle
 
     const dataToSet: CollectionElement = { ...data, lastUpdate: new Date().getTime() };
 
-    localStorage.setItem(String(id), JSON.stringify(dataToSet));
+    saveObjectToLocalStorage(String(id), dataToSet);
 };
 
 export const getLocalStorageCache = (id: ObjectId | string) => {
-    if (!id) {
-        return null;
-    }
-
-    try {
-        const dataString = localStorage.getItem(String(id));
-
-        if (!dataString) {
-            return null;
-        }
-
-        const data: CollectionElement = JSON.parse(dataString);
-
-        return data;
-    } catch (e) {
-        return null;
-    }
+    return getObjectFromLocalStorage<CollectionElement>(String(id));
 };
 
 export const createEmptyPageBlock = (type: ElementType, path?: string | null) => {

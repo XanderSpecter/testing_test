@@ -20,6 +20,7 @@ export type FormEditableFieldType = Exclude<PossibleFieldType, PossibleFieldType
 export type FieldsErrors = Record<string, string>;
 
 export type BaseObject = Record<string, unknown>;
+export type AnyArray = unknown[];
 
 export interface CollectionParams extends BaseObject {
     collectionElementName: string;

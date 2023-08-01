@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Input, Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
 import { BlockPropRecord, StyledBlock } from '@/types/HTMLElements';
-import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
+import { ELEMENT_STYLES } from '../../../../Collection/constants';
+import KeyValueField from './KeyValueField';
 
 interface PropsFormProps {
     onFieldChange: (fieldName: 'props', newValue: StyledBlock['props']) => void;
@@ -43,14 +44,14 @@ export default function PropsForm({ blockPath, props, onFieldChange }: PropsForm
         setIsPropsChanged(updatedProps.length !== Object.keys(props || {}).length);
     };
 
-    const onPropFieldChange = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: keyof BlockPropRecord) => {
+    const onPropFieldChange = (index: number, field: keyof BlockPropRecord, newValue: string) => {
         if (!editableProps || !editableProps.length) {
             return;
         }
 
         const updatedProps = editableProps.map((p, i) => {
             if (i === index) {
-                return { ...p, [field]: e.target.value };
+                return { ...p, [field]: newValue };
             }
 
             return p;
@@ -86,29 +87,14 @@ export default function PropsForm({ blockPath, props, onFieldChange }: PropsForm
         }
 
         return editableProps.map((p, i) => (
-            <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={COLS.keyValueInput}>
-                    <Input
-                        id={`${blockPath}-props-${p.key}`}
-                        placeholder="Ключ параметра"
-                        value={p.key}
-                        onChange={(e) => onPropFieldChange(e, i, 'key')}
-                    />
-                </Column>
-                <Column cols={COLS.keyValueInput}>
-                    <Input
-                        id={`${blockPath}-props-${p.value}-value`}
-                        placeholder="Значение параметра"
-                        value={String(p.value)}
-                        onChange={(e) => onPropFieldChange(e, i, 'value')}
-                    />
-                </Column>
-                <Column cols={COLS.text}>
-                    <Button danger onClick={() => onPropDelete(p.key, i)}>
-                        Удалить
-                    </Button>
-                </Column>
-            </Row>
+            <KeyValueField
+                key={i}
+                id={`${blockPath}-props-${p.key}`}
+                keyField={p.key}
+                valueField={p.value}
+                onChange={(field, newValue) => onPropFieldChange(i, field, newValue)}
+                onDelete={() => onPropDelete(p.key, i)}
+            />
         ));
     };
 
@@ -117,18 +103,20 @@ export default function PropsForm({ blockPath, props, onFieldChange }: PropsForm
             <Row>
                 <Column>
                     <Text type="secondary">
-                        Позволяет указать базовые параметры блока, такие как href для ссылок и некоторые другие
-                        параметры, необходимые интерактивным блокам.
+                        Позволяет указать базовые параметры блока, такие как id, href и target для ссылок и некоторые
+                        другие параметры, необходимые интерактивным блокам.
                     </Text>
                 </Column>
             </Row>
             {mapPropsInputs()}
             <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={COLS.text} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                    <Button onClick={onPropAdd}>Добавить</Button>
+                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                    <Button style={ELEMENT_STYLES.formButton} onClick={onPropAdd}>
+                        Добавить
+                    </Button>
                 </Column>
-                <Column cols={COLS.text} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                    <Button disabled={!isPropsChanged} onClick={onPropsSave}>
+                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                    <Button style={ELEMENT_STYLES.formButton} disabled={!isPropsChanged} onClick={onPropsSave}>
                         Сохранить
                     </Button>
                 </Column>

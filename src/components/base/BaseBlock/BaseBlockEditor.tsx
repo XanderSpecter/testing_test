@@ -13,6 +13,7 @@ import {
     ScreenParamsContext,
     ScreenParamsProvider,
 } from '@/utils/screenParamsProvider';
+import { parseNumber } from '@/utils/textHelpers';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     box-sizing: border-box;
@@ -38,15 +39,36 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
             const { width, height } = parentRef.current.getBoundingClientRect();
 
             const currentStyles = stylesByBreakpoint?.[breakpoint] || stylesByBreakpoint?.all;
-            const { height: computedCSSHeight } = getComputedStyle(parentRef.current);
+            const {
+                height: computedCSSHeight,
+                paddingLeft,
+                paddingRight,
+                paddingTop,
+                paddingBottom,
+                borderLeftWidth,
+                borderRightWidth,
+                borderTopWidth,
+                borderBottomWidth,
+            } = getComputedStyle(parentRef.current);
 
             const isAutoHeight = computedCSSHeight === `${height}px` && !currentStyles?.height;
+
+            const calculatedHorizontalPadding =
+                parseNumber(paddingLeft) +
+                parseNumber(paddingRight) +
+                parseNumber(borderLeftWidth) +
+                parseNumber(borderRightWidth);
+            const calculatedVerticalPadding =
+                parseNumber(paddingTop) +
+                parseNumber(paddingBottom) +
+                parseNumber(borderTopWidth) +
+                parseNumber(borderBottomWidth);
 
             setMockScreenParams({
                 ...DEFAULT_SCREEN_PARAMS,
                 breakpoint,
-                width,
-                height: isAutoHeight ? 'auto' : height,
+                width: width - calculatedHorizontalPadding,
+                height: isAutoHeight ? 'auto' : height - calculatedVerticalPadding,
             });
         }
     }, [parentRef, breakpoint, stylesByBreakpoint]);

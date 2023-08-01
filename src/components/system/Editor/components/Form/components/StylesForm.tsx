@@ -2,12 +2,14 @@
 
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { get } from 'lodash';
-import { Button, Input, Select, Typography } from 'antd';
+import { Button, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
 import { BlockStyleRecord, CSSPropertyKey, StyleType, StyledBlock } from '@/types/HTMLElements';
-import { COLS, ELEMENT_STYLES } from '../../../../Collection/constants';
+import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { STYLE_TYPES } from '@/constants/pageBlocks';
+import KeyValueField from './KeyValueField';
+import { getObjectFromLocalStorage, saveObjectToLocalStorage } from '@/utils/localStorage';
 
 interface StylesFormProps {
     onFieldChange: (fieldName: 'stylesByBreakpoint', newValue: StyledBlock['stylesByBreakpoint']) => void;
@@ -105,24 +107,39 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
         setIsStylesChanged(updatedProps.length !== Object.keys(styleSet || {}).length);
     };
 
-    const onPropFieldChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        index: number,
-        field: keyof BlockStyleRecord
-    ) => {
+    const onPropFieldChange = (index: number, field: keyof BlockStyleRecord, newValue: string) => {
         if (!currentStyleSet || !currentStyleSet.length) {
             return;
         }
 
         const updatedProps = currentStyleSet.map((s, i) => {
             if (i === index) {
-                return { ...s, [field]: e.target.value };
+                return { ...s, [field]: newValue };
             }
 
             return s;
         });
 
         setCurrentStyleSet(updatedProps);
+        setIsStylesChanged(true);
+    };
+
+    const onStylesCopy = () => {
+        if (!currentStyleSet || !currentStyleSet.length) {
+            return;
+        }
+
+        saveObjectToLocalStorage('blockStyles', currentStyleSet);
+    };
+
+    const onStylesPaste = () => {
+        const savedStyleSet = getObjectFromLocalStorage<BlockStyleRecord[]>('blockStyles');
+
+        if (!savedStyleSet) {
+            return;
+        }
+
+        setCurrentStyleSet(savedStyleSet);
         setIsStylesChanged(true);
     };
 
@@ -203,31 +220,32 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
             }
 
             return (
-                <Row key={i} stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                    <Column cols={COLS.keyValueInput}>
-                        <Input
-                            id={`${blockPath}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
-                            placeholder="Название стиля"
-                            value={s.key}
-                            onChange={(e) => onPropFieldChange(e, i, 'key')}
-                        />
-                    </Column>
-                    <Column cols={COLS.keyValueInput}>
-                        <Input
-                            id={`${blockPath}-styles-${currentBreakpoint}-${currentStyleType}-${s.value}-value`}
-                            placeholder="Значение стиля"
-                            value={String(s.value)}
-                            onChange={(e) => onPropFieldChange(e, i, 'value')}
-                        />
-                    </Column>
-                    <Column cols={COLS.text}>
-                        <Button danger onClick={() => onStyleDelete(s.key, i)}>
-                            Удалить
-                        </Button>
-                    </Column>
-                </Row>
+                <KeyValueField
+                    key={i}
+                    id={`${blockPath}-styles-${currentBreakpoint}-${currentStyleType}-${s.key}`}
+                    keyField={s.key}
+                    valueField={s.value}
+                    onChange={(field, newValue) => onPropFieldChange(i, field, newValue)}
+                    onDelete={() => onStyleDelete(s.key, i)}
+                />
             );
         });
+    };
+
+    const renderCopyPasteButton = () => {
+        if (!currentStyleSet || !currentStyleSet.length) {
+            return (
+                <Button style={ELEMENT_STYLES.formButton} onClick={onStylesPaste}>
+                    Вставить стили
+                </Button>
+            );
+        }
+
+        return (
+            <Button style={ELEMENT_STYLES.formButton} onClick={onStylesCopy}>
+                Скопировать стили
+            </Button>
+        );
     };
 
     return (
@@ -246,13 +264,18 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
             {renderStyleTypeSelect()}
             {mapStyleInputs()}
             <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={COLS.text} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                    <Button onClick={onStyleAdd}>Добавить</Button>
+                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                    <Button style={ELEMENT_STYLES.formButton} onClick={onStyleAdd}>
+                        Добавить
+                    </Button>
                 </Column>
-                <Column cols={COLS.text} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
-                    <Button disabled={!isStylesChanged} onClick={onStyleSetSave}>
+                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                    <Button style={ELEMENT_STYLES.formButton} disabled={!isStylesChanged} onClick={onStyleSetSave}>
                         Сохранить
                     </Button>
+                </Column>
+                <Column cols={4} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                    {renderCopyPasteButton()}
                 </Column>
             </Row>
         </>
