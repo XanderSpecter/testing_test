@@ -13,23 +13,27 @@ const DEFAULT_CONTAINER_STYLES: StylesByBreakpoint = {
     desktop: { padding: '0', maxWidth: '1200px' },
 };
 
-const StyledContainer = styled.div<WithGeneratedCSS>`
+const StyledContainer = styled.div<WithGeneratedCSS<Omit<Partial<HTMLDivElement>, 'children'>>>`
     display: block;
     width: 100%;
     margin: auto;
 
     box-sizing: border-box;
 
-    ${({ styleswithmedia }) => styleswithmedia}
+    ${({ $styleswithmedia }) => $styleswithmedia}
 `;
 
-const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
+const Container = ({
+    children,
+    $stylesByBreakpoint,
+    ...rest
+}: WithBreakpointStyles<PropsWithChildren<Omit<Partial<HTMLDivElement>, 'children'>>>) => {
     const breakpoints = useContext(BreakpointsContext);
     const { editing } = useContext(EditorContext);
 
     const styles = useMemo(
-        () => mergeStylesByBreakpoint(DEFAULT_CONTAINER_STYLES, breakpoints, stylesByBreakpoint),
-        [stylesByBreakpoint, breakpoints]
+        () => mergeStylesByBreakpoint(DEFAULT_CONTAINER_STYLES, breakpoints, $stylesByBreakpoint),
+        [$stylesByBreakpoint, breakpoints]
     );
 
     const styleswithmedia = useMemo(
@@ -37,7 +41,11 @@ const Container = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsW
         [styles, breakpoints, editing]
     );
 
-    return <StyledContainer styleswithmedia={styleswithmedia}>{children}</StyledContainer>;
+    return (
+        <StyledContainer {...rest} $styleswithmedia={styleswithmedia}>
+            {children}
+        </StyledContainer>
+    );
 };
 
 export default Container;

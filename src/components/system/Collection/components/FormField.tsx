@@ -125,7 +125,7 @@ export default function FormField<T extends FormEditableFieldType>({
         }
 
         return (
-            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                 <Column>
                     <Typography>{title}</Typography>
                 </Column>
@@ -136,7 +136,7 @@ export default function FormField<T extends FormEditableFieldType>({
     return (
         <>
             {renderHeader()}
-            <Row stylesByBreakpoint={type === PossibleFieldType.BOOLEAN ? ELEMENT_STYLES.row : null}>
+            <Row $stylesByBreakpoint={type === PossibleFieldType.BOOLEAN ? ELEMENT_STYLES.row : null}>
                 <Column>{renderFieldByType()}</Column>
             </Row>
         </>

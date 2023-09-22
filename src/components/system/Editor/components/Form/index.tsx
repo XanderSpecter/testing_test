@@ -66,7 +66,7 @@ export default function Form({ opened, block, path, onSubmit, onCancel }: FormPr
 
     const onHTMLBlockFieldChange = (
         fieldName: keyof StyledBlock,
-        newValue: string | StyledBlock['props'] | StyledBlock['stylesByBreakpoint']
+        newValue: string | StyledBlock['props'] | StyledBlock['$stylesByBreakpoint']
     ) => {
         const updated = { ...(editedBlock as StyledBlock), [fieldName]: newValue };
 
@@ -79,7 +79,7 @@ export default function Form({ opened, block, path, onSubmit, onCancel }: FormPr
         }
 
         return (
-            <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                 <Column>
                     <Text type="danger">{TYPE_CHANGE_WARNING}</Text>
                 </Column>
@@ -94,12 +94,12 @@ export default function Form({ opened, block, path, onSubmit, onCancel }: FormPr
 
         return (
             <>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                     <Column>
                         <Typography>Тип элемента</Typography>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Radio.Group
                             options={PAGE_BLOCK_TYPES}
@@ -140,7 +140,7 @@ export default function Form({ opened, block, path, onSubmit, onCancel }: FormPr
                 <Container>
                     {renderTypeSelector()}
                     {renderFormFields()}
-                    <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                    <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                         <Column>
                             <Button type="primary" onClick={() => onSubmit(editedBlock || block)}>
                                 Сохранить

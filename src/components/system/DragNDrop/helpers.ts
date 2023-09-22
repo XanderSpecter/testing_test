@@ -327,23 +327,23 @@ export const getStylesAfterMove = (
 };
 
 interface GetCurrentStylesParams {
-    stylesByBreakpoint?: StylesByBreakpoint | null;
+    $stylesByBreakpoint?: StylesByBreakpoint | null;
     breakpoints: Breakpoint[];
     shortcut: string;
 }
 
-export const getCurrentStyles = ({ stylesByBreakpoint, breakpoints, shortcut }: GetCurrentStylesParams) => {
-    if (!stylesByBreakpoint) {
+export const getCurrentStyles = ({ $stylesByBreakpoint, breakpoints, shortcut }: GetCurrentStylesParams) => {
+    if (!$stylesByBreakpoint) {
         return DEFAULT_ELEMENT_STYLES;
     }
 
     const currentBreakpointStyles = getClosestBreakpointStyles({
-        stylesByBreakpoint,
+        $stylesByBreakpoint,
         breakpoints,
         shortcut,
     });
 
-    const baseStyles = mergeStyles(DEFAULT_ELEMENT_STYLES, stylesByBreakpoint.all);
+    const baseStyles = mergeStyles(DEFAULT_ELEMENT_STYLES, $stylesByBreakpoint.all);
 
     return mergeStyles(baseStyles, currentBreakpointStyles);
 };

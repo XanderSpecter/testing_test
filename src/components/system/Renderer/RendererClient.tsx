@@ -20,7 +20,7 @@ export default function Renderer({ content }: RendererProps) {
             return null;
         }
 
-        if (block.type === ElementType.HTMLELEMENT) {
+        if (block.type === ElementType.HTMLELEMENT || block.type === ElementType.CONTAINER) {
             return <BaseBlock key={block.path} {...block} />;
         }
         if (block.type === ElementType.TEXT) {

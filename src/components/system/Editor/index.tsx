@@ -73,15 +73,15 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
             let updatedStyles: StylesByBreakpoint = {};
 
-            const { stylesByBreakpoint } = selectedBlock;
+            const { $stylesByBreakpoint } = selectedBlock;
 
-            if (!stylesByBreakpoint) {
+            if (!$stylesByBreakpoint) {
                 updatedStyles[screenShortcut] = style;
             } else {
-                updatedStyles = { ...stylesByBreakpoint, [screenShortcut]: style };
+                updatedStyles = { ...$stylesByBreakpoint, [screenShortcut]: style };
             }
 
-            const updatedSelectedBlock = { ...selectedBlock, stylesByBreakpoint: updatedStyles };
+            const updatedSelectedBlock = { ...selectedBlock, $stylesByBreakpoint: updatedStyles };
 
             const { path } = updatedSelectedBlock;
 

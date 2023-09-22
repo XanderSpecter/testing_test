@@ -55,22 +55,22 @@ const getFullStylesString = (
 };
 
 const generateStylesByBreakpoint = (
-    stylesByBreakpoint?: StylesByBreakpoint | null,
+    $stylesByBreakpoint?: StylesByBreakpoint | null,
     breakpoints?: Breakpoint[],
     editor?: boolean
 ) => {
-    if (!stylesByBreakpoint || !breakpoints || !breakpoints.length) {
+    if (!$stylesByBreakpoint || !breakpoints || !breakpoints.length) {
         return '';
     }
 
     const queryParent = editor ? '@container editor' : '@media';
-    const baseStyles = stylesByBreakpoint?.all;
+    const baseStyles = $stylesByBreakpoint?.all;
 
     let styleString = getFullStylesString(baseStyles);
 
     breakpoints.forEach((b, i) => {
-        const styles = stylesByBreakpoint?.[b.name];
-        const previosBpStyles = stylesByBreakpoint?.[breakpoints[i - 1]?.name];
+        const styles = $stylesByBreakpoint?.[b.name];
+        const previosBpStyles = $stylesByBreakpoint?.[breakpoints[i - 1]?.name];
 
         if (!styles) {
             return '';

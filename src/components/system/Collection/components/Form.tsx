@@ -80,7 +80,7 @@ export default function Form({ fieldsMapping, opened, element, onSubmit, onCance
             <form>
                 <Container>
                     {renderForm()}
-                    <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                    <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                         <Column>
                             <Button type="primary" onClick={() => onSubmit(editedElement)}>
                                 Сохранить

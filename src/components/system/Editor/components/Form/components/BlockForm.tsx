@@ -3,7 +3,7 @@
 import React from 'react';
 import { Collapse, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { HTMLTag, StyledBlock } from '@/types/HTMLElements';
+import { ElementType, GridContainer, HTMLTag, StyledBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { AVAILABLE_TAGS_ITEMS } from '@/constants/pageBlocks';
 import PropsForm from './PropsForm';
@@ -12,9 +12,9 @@ import StylesForm from './StylesForm';
 interface BlockFormProps {
     onFieldChange: (
         fieldName: keyof StyledBlock,
-        newValue: string | StyledBlock['props'] | StyledBlock['stylesByBreakpoint']
+        newValue: string | StyledBlock['props'] | StyledBlock['$stylesByBreakpoint']
     ) => void;
-    block: StyledBlock;
+    block: StyledBlock | GridContainer;
 }
 
 export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
@@ -33,14 +33,18 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
     ) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     const renderTagSelector = () => {
+        if (block.type === ElementType.CONTAINER) {
+            return null;
+        }
+
         return (
             <>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                     <Column>
                         <Typography>HTML тег</Typography>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
                             id={`${block.path}-tag`}
@@ -62,15 +66,18 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
         {
             key: 'props',
             label: 'Параметры блока',
-            children: <PropsForm props={block.props} blockPath={block.path} onFieldChange={onFieldChange} />,
+            children: (
+                <PropsForm props={block.props} blockPath={block.path} type={block.type} onFieldChange={onFieldChange} />
+            ),
         },
         {
             key: 'styles',
             label: 'Стили блока',
             children: (
                 <StylesForm
-                    stylesByBreakpoint={block.stylesByBreakpoint}
+                    $stylesByBreakpoint={block.$stylesByBreakpoint}
                     blockPath={block.path}
+                    type={block.type}
                     onFieldChange={onFieldChange}
                 />
             ),
@@ -80,7 +87,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
     return (
         <>
             {renderTagSelector()}
-            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                 <Column>
                     <Collapse accordion items={formSections} />
                 </Column>

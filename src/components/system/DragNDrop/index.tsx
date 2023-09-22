@@ -16,12 +16,12 @@ interface DragNDropComponentProps extends DragNDropProps {
 
 export default function DragNDrop({
     children,
-    stylesByBreakpoint,
+    $stylesByBreakpoint,
     onDrop,
     tag,
 }: React.PropsWithChildren<DragNDropComponentProps>) {
     const { dndRef, calculatedStyle, isStatic, onDnDMouseDown } = useDragNDrop({
-        stylesByBreakpoint,
+        $stylesByBreakpoint,
         onDrop,
     });
 

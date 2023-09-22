@@ -28,7 +28,7 @@ const getColumnMaxWidth = (cols: number, maxCols: number) => {
 };
 
 export const recalcColumnStyles = (
-    { stylesByBreakpoint, cols, maxCols: customMaxCols }: ColumnProps,
+    { $stylesByBreakpoint, cols, maxCols: customMaxCols }: ColumnProps,
     breakpoints: Breakpoint[]
 ): StylesByBreakpoint => {
     const styles: StylesByBreakpoint = {};
@@ -41,7 +41,7 @@ export const recalcColumnStyles = (
         const { name, maxCols } = b;
 
         const correctedMaxCols = getMaxColsWithLimits(customMaxCols?.[name] || customMaxCols?.all || maxCols, name);
-        const customStyles = stylesByBreakpoint?.[name] || stylesByBreakpoint?.all;
+        const customStyles = $stylesByBreakpoint?.[name] || $stylesByBreakpoint?.all;
         const currentCols = typeof cols === 'number' ? cols : cols?.[name] || cols?.all || correctedMaxCols;
 
         const baseStyles: CSSProperties = { maxWidth: getColumnMaxWidth(currentCols, correctedMaxCols) };

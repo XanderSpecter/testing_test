@@ -16,7 +16,7 @@ const StyledColumn = styled.div<WithGeneratedCSS>`
 
     box-sizing: border-box;
 
-    ${({ styleswithmedia }) => styleswithmedia}
+    ${({ $styleswithmedia }) => $styleswithmedia}
 `;
 
 interface BaseColumnProps {
@@ -45,7 +45,7 @@ const Column = (props: ColumnProps) => {
         [columnStyles, breakpoints, editing]
     );
 
-    return <StyledColumn styleswithmedia={styleswithmedia}>{children}</StyledColumn>;
+    return <StyledColumn $styleswithmedia={styleswithmedia}>{children}</StyledColumn>;
 };
 
 export default Column;

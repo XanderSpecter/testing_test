@@ -6,7 +6,7 @@ import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { EditorContext } from '@/utils/editorProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 
-const StyledRow = styled.div<WithGeneratedCSS>`
+const StyledRow = styled.div<WithGeneratedCSS<Omit<Partial<HTMLDivElement>, 'children'>>>`
     display: flex;
     margin-left: -4px;
     margin-right: -4px;
@@ -16,19 +16,22 @@ const StyledRow = styled.div<WithGeneratedCSS>`
     flex-wrap: wrap;
     flex-direction: row;
 
-    ${({ styleswithmedia }) => styleswithmedia}
+    ${({ $styleswithmedia }) => $styleswithmedia}
 `;
 
-const Row = ({ children, stylesByBreakpoint }: WithBreakpointStyles<PropsWithChildren>) => {
+const Row = ({
+    children,
+    $stylesByBreakpoint,
+}: WithBreakpointStyles<PropsWithChildren<Omit<Partial<HTMLDivElement>, 'children'>>>) => {
     const breakpoints = useContext(BreakpointsContext);
     const { editing } = useContext(EditorContext);
 
     const styleswithmedia = useMemo(
-        () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, editing),
-        [stylesByBreakpoint, breakpoints, editing]
+        () => generateStylesByBreakpoint($stylesByBreakpoint, breakpoints, editing),
+        [$stylesByBreakpoint, breakpoints, editing]
     );
 
-    return <StyledRow styleswithmedia={styleswithmedia}>{children}</StyledRow>;
+    return <StyledRow $styleswithmedia={styleswithmedia}>{children}</StyledRow>;
 };
 
 export default Row;

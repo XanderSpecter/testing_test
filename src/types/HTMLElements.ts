@@ -19,12 +19,12 @@ export type StylesByBreakpoint = Record<string, StyleByBreakpoint | undefined>;
 
 export type CSSPropertyKey = keyof CSSProperties;
 
-export type WithBreakpointStyles<T> = Omit<T, 'stylesByBreakpoint'> & {
-    stylesByBreakpoint?: StylesByBreakpoint | null;
+export type WithBreakpointStyles<T> = Omit<T, '$stylesByBreakpoint'> & {
+    $stylesByBreakpoint?: StylesByBreakpoint | null;
 };
 
 export type WithGeneratedCSS<T = unknown> = Omit<T, 'styleswithmedia'> & {
-    styleswithmedia: string;
+    $styleswithmedia: string;
 };
 /**
  * Расширение компонента для поддержки редактируемых стилей в Styled
@@ -36,6 +36,7 @@ export interface WithCommonStyles {
 export enum ElementType {
     TEXT = 'TEXT',
     HTMLELEMENT = 'HTMLELEMENT',
+    CONTAINER = 'CONTAINER',
     COMPONENT = 'COMPONENT',
 }
 
@@ -73,6 +74,14 @@ export interface TextBlock {
     value: string;
 }
 
-export type PageBlock = StyledBlock | TextBlock;
+export interface GridContainer extends Omit<StyledBlock, 'type'> {
+    type: ElementType.CONTAINER;
+    path: string;
+    tag: 'div';
+    props?: HTMLBlockProps;
+    content?: PageContent;
+}
+
+export type PageBlock = StyledBlock | TextBlock | GridContainer;
 
 export type PageContent = Record<string, PageBlock>;

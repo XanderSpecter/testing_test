@@ -79,7 +79,12 @@ export default function Collection({ collectionElementName, query }: CollectionP
             const { title } = field;
 
             return (
-                <Column key={`headers-${key}`} cols={2} maxCols={customMaxCols}>
+                <Column
+                    key={`headers-${key}`}
+                    cols={2}
+                    maxCols={customMaxCols}
+                    $stylesByBreakpoint={ELEMENT_STYLES.column}
+                >
                     <Title level={5}>{title}</Title>
                 </Column>
             );
@@ -89,7 +94,7 @@ export default function Collection({ collectionElementName, query }: CollectionP
     const renderElements = () => {
         if (!elementsList || !elementsList.length) {
             return (
-                <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
                     <Column>
                         <Typography>Здесь ничего нет</Typography>
                     </Column>
@@ -130,12 +135,12 @@ export default function Collection({ collectionElementName, query }: CollectionP
     return (
         <Container>
             <FullScreenLoader show={isLoading} />
-            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
-                <Column>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Column $stylesByBreakpoint={ELEMENT_STYLES.column}>
                     <Title>{currentCollection?.title}</Title>
                 </Column>
             </Row>
-            <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
                 {renderHeaders()}
                 <Column cols={1} maxCols={customMaxCols} />
             </Row>

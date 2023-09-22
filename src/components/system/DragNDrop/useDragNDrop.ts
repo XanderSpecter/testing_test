@@ -28,7 +28,7 @@ interface UseDragNDropParams {
 
 export type DragNDropProps = WithBreakpointStyles<UseDragNDropParams>;
 
-const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
+const useDragNDrop = ({ $stylesByBreakpoint, onDrop }: DragNDropProps) => {
     const screenParams = useContext(ScreenParamsContext);
     const breakpoints = useContext(BreakpointsContext);
 
@@ -126,8 +126,8 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
             let completedStyles = onlyDnDStyles;
 
-            if (stylesByBreakpoint && stylesByBreakpoint[screenParams.breakpoint]) {
-                completedStyles = mergeStyles(stylesByBreakpoint[screenParams.breakpoint] || {}, onlyDnDStyles);
+            if ($stylesByBreakpoint && $stylesByBreakpoint[screenParams.breakpoint]) {
+                completedStyles = mergeStyles($stylesByBreakpoint[screenParams.breakpoint] || {}, onlyDnDStyles);
             }
 
             setCalculatedStyle(completedStyles);
@@ -193,7 +193,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
     }, []);
 
     useEffect(() => {
-        const currentStyles = getCurrentStyles({ stylesByBreakpoint, breakpoints, shortcut: screenParams.breakpoint });
+        const currentStyles = getCurrentStyles({ $stylesByBreakpoint, breakpoints, shortcut: screenParams.breakpoint });
 
         if (!currentStyles.position || BLOCK_POSITIONS_STATIC.includes(currentStyles.position as BlockPosition)) {
             blockPositioning.current = BlockPosition.STATIC;
@@ -217,7 +217,7 @@ const useDragNDrop = ({ stylesByBreakpoint, onDrop }: DragNDropProps) => {
 
         calcStyles.current = currentStyles;
         setCalculatedStyle(currentStyles);
-    }, [stylesByBreakpoint, screenParams, breakpoints]);
+    }, [$stylesByBreakpoint, screenParams, breakpoints]);
 
     return {
         dndRef,

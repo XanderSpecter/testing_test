@@ -2,17 +2,17 @@ import { StyleByBreakpoint, StylesByBreakpoint } from '@/types/HTMLElements';
 import { Breakpoint } from '../breakpointsProvider';
 
 interface GetClosestBreakpointStylesParams {
-    stylesByBreakpoint?: StylesByBreakpoint | null;
+    $stylesByBreakpoint?: StylesByBreakpoint | null;
     breakpoints: Breakpoint[];
     shortcut: string;
 }
 
 const getClosestBreakpointStyles = ({
-    stylesByBreakpoint,
+    $stylesByBreakpoint,
     breakpoints,
     shortcut,
 }: GetClosestBreakpointStylesParams) => {
-    if (!stylesByBreakpoint) {
+    if (!$stylesByBreakpoint) {
         return null;
     }
 
@@ -33,8 +33,8 @@ const getClosestBreakpointStyles = ({
     lesserBreakpoints.forEach((b) => {
         const { name } = b;
 
-        if (stylesByBreakpoint[name] && Object.keys(stylesByBreakpoint[name] || {}).length) {
-            styles = stylesByBreakpoint[name] || {};
+        if ($stylesByBreakpoint[name] && Object.keys($stylesByBreakpoint[name] || {}).length) {
+            styles = $stylesByBreakpoint[name] || {};
         }
     });
 

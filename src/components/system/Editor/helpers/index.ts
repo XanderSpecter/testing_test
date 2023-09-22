@@ -1,4 +1,4 @@
-import { ElementType, StyledBlock, TextBlock } from '@/types/HTMLElements';
+import { ElementType, GridContainer, StyledBlock, TextBlock } from '@/types/HTMLElements';
 import { v4 as uuid } from 'uuid';
 import { CollectionElement } from '@/types/apiModels';
 import { ObjectId } from 'mongodb';
@@ -24,6 +24,12 @@ export const createEmptyPageBlock = (type: ElementType, path?: string | null) =>
     }
 
     switch (type) {
+        case ElementType.CONTAINER:
+            return {
+                type: ElementType.CONTAINER,
+                path: path ? `${path}.${uuid()}` : uuid(),
+                tag: 'div',
+            } as GridContainer;
         case ElementType.HTMLELEMENT:
             return {
                 type: ElementType.HTMLELEMENT,

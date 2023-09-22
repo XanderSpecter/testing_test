@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { get } from 'lodash';
 import { Button, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { BlockStyleRecord, CSSPropertyKey, StyleType, StyledBlock } from '@/types/HTMLElements';
+import { BlockStyleRecord, CSSPropertyKey, ElementType, StyleType, StyledBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import { STYLE_TYPES } from '@/constants/pageBlocks';
@@ -12,14 +12,15 @@ import KeyValueField from './KeyValueField';
 import { getObjectFromLocalStorage, saveObjectToLocalStorage } from '@/utils/localStorage';
 
 interface StylesFormProps {
-    onFieldChange: (fieldName: 'stylesByBreakpoint', newValue: StyledBlock['stylesByBreakpoint']) => void;
-    stylesByBreakpoint: StyledBlock['stylesByBreakpoint'];
+    onFieldChange: (fieldName: '$stylesByBreakpoint', newValue: StyledBlock['$stylesByBreakpoint']) => void;
+    $stylesByBreakpoint: StyledBlock['$stylesByBreakpoint'];
     blockPath: StyledBlock['path'];
+    type: ElementType.HTMLELEMENT | ElementType.CONTAINER;
 }
 
 const { Text } = Typography;
 
-export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChange }: StylesFormProps) {
+export default function StylesForm({ blockPath, type, $stylesByBreakpoint, onFieldChange }: StylesFormProps) {
     const breakpoints = useContext(BreakpointsContext);
 
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('all');
@@ -48,7 +49,7 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
         () => `${currentBreakpoint}${currentStyleType ? `.${currentStyleType}` : ''}`,
         [currentBreakpoint, currentStyleType]
     );
-    const styleSet = useMemo(() => get(stylesByBreakpoint, path), [stylesByBreakpoint, path]);
+    const styleSet = useMemo(() => get($stylesByBreakpoint, path), [$stylesByBreakpoint, path]);
 
     useEffect(() => {
         if (styleSet) {
@@ -80,16 +81,16 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
             stylesToSave[key] = value;
         });
 
-        const existedStyles = stylesByBreakpoint?.[currentBreakpoint] || {};
+        const existedStyles = $stylesByBreakpoint?.[currentBreakpoint] || {};
 
         const updatedStyles = {
-            ...stylesByBreakpoint,
+            ...$stylesByBreakpoint,
             [currentBreakpoint]: currentStyleType
                 ? { ...existedStyles, [currentStyleType]: { ...stylesToSave } }
                 : { ...stylesToSave },
         };
 
-        onFieldChange('stylesByBreakpoint', updatedStyles);
+        onFieldChange('$stylesByBreakpoint', updatedStyles);
     };
 
     const onStyleAdd = () => {
@@ -150,12 +151,12 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
 
         return (
             <>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                     <Column>
                         <Typography>Контрольная точка размера экрана</Typography>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Text type="secondary">
                             Добавленные стили будут применяться только к выбранному разрешению экрана. Если стили для
@@ -164,7 +165,7 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
                         </Text>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
                             id={`${blockPath}-styles-breakpoint`}
@@ -182,19 +183,19 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
     const renderStyleTypeSelect = () => {
         return (
             <>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                     <Column>
                         <Typography>Тип стилей</Typography>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Text type="secondary">
                             Позволяет выбрать состояние элемента, для которого будут применены стили.
                         </Text>
                     </Column>
                 </Row>
-                <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                     <Column>
                         <Select
                             id={`${blockPath}-styles-styletype`}
@@ -248,33 +249,47 @@ export default function StylesForm({ blockPath, stylesByBreakpoint, onFieldChang
         );
     };
 
+    const renderFormMessage = () => {
+        if (type === ElementType.CONTAINER) {
+            return (
+                <Text type="secondary">
+                    Контейнер сетки имеет ряд стандартных стилей, которые не подлежат редактированию. Очень много других
+                    стилей настраиваются, однако, важно понимать, что изменение некоторых стилей может привести к
+                    печальным последствиям.
+                </Text>
+            );
+        }
+
+        return (
+            <Text type="secondary">
+                Позволяет указать стили блока для каждой из контрольных точек размера экрана, а также базовые стили,
+                которые применяются для всех разрешений. Если базовые стили подразумевают использование размеров,
+                рекомендуется указывать размеры для минимального экрана и далее перекрывать их для более высоких
+                разрешений.
+            </Text>
+        );
+    };
+
     return (
         <>
             <Row>
-                <Column>
-                    <Text type="secondary">
-                        Позволяет указать стили блока для каждой из контрольных точек размера экрана, а также базовые
-                        стили, которые применяются для всех разрешений. Если базовые стили подразумевают использование
-                        размеров, рекомендуется указывать размеры для минимального экрана и далее перекрывать их для
-                        более высоких разрешений.
-                    </Text>
-                </Column>
+                <Column>{renderFormMessage()}</Column>
             </Row>
             {renderBreakpointSelect()}
             {renderStyleTypeSelect()}
             {mapStyleInputs()}
-            <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Column cols={3} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                     <Button style={ELEMENT_STYLES.formButton} onClick={onStyleAdd}>
                         Добавить
                     </Button>
                 </Column>
-                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                <Column cols={3} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                     <Button style={ELEMENT_STYLES.formButton} disabled={!isStylesChanged} onClick={onStyleSetSave}>
                         Сохранить
                     </Button>
                 </Column>
-                <Column cols={4} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                <Column cols={4} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                     {renderCopyPasteButton()}
                 </Column>
             </Row>

@@ -67,7 +67,7 @@ export default function Element<T extends BaseCollectionElementParams = BaseColl
                     key={`${element._id}-${key}`}
                     cols={2}
                     maxCols={customMaxCols}
-                    stylesByBreakpoint={ELEMENT_STYLES.column}
+                    $stylesByBreakpoint={ELEMENT_STYLES.column}
                 >
                     <Typography>{value}</Typography>
                 </Column>
@@ -76,9 +76,9 @@ export default function Element<T extends BaseCollectionElementParams = BaseColl
     };
 
     return (
-        <Row stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
+        <Row $stylesByBreakpoint={ELEMENT_STYLES.tableRow}>
             {renderFields()}
-            <Column cols={1} maxCols={customMaxCols} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+            <Column cols={1} maxCols={customMaxCols} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                 <Button
                     style={ELEMENT_STYLES.controlButton}
                     type="primary"

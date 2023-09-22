@@ -1,7 +1,7 @@
 import React, { RefObject, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 
-import { StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
+import { ElementType, GridContainer, StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
@@ -14,6 +14,7 @@ import {
     ScreenParamsProvider,
 } from '@/utils/screenParamsProvider';
 import { parseNumber } from '@/utils/textHelpers';
+import { Container } from '../Grid';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     box-sizing: border-box;
@@ -22,10 +23,17 @@ const StyledBaseElement = styled.div<WithGeneratedCSS>`
         box-shadow: 0px 0px 1px 1px #1677ff;
     }
 
-    ${({ styleswithmedia }) => styleswithmedia};
+    ${({ $styleswithmedia }) => $styleswithmedia};
 `;
 
-const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.PropsWithChildren<StyledBlock>) => {
+const BaseBlock = ({
+    $stylesByBreakpoint,
+    tag,
+    path,
+    type,
+    content,
+    children,
+}: React.PropsWithChildren<StyledBlock | GridContainer>) => {
     const { breakpoint } = useContext(ScreenParamsContext);
     const breakpoints = useContext(BreakpointsContext);
     const { onDrop, selectedBlock } = useContext(EditorContext);
@@ -38,7 +46,7 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
         if (parentRef.current) {
             const { width, height } = parentRef.current.getBoundingClientRect();
 
-            const currentStyles = stylesByBreakpoint?.[breakpoint] || stylesByBreakpoint?.all;
+            const currentStyles = $stylesByBreakpoint?.[breakpoint] || $stylesByBreakpoint?.all;
             const {
                 height: computedCSSHeight,
                 paddingLeft,
@@ -71,15 +79,15 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
                 height: isAutoHeight ? 'auto' : height - calculatedVerticalPadding,
             });
         }
-    }, [parentRef, breakpoint, stylesByBreakpoint]);
+    }, [parentRef, breakpoint, $stylesByBreakpoint]);
 
     const styleswithmedia = useMemo(
-        () => generateStylesByBreakpoint(stylesByBreakpoint, breakpoints, true),
-        [stylesByBreakpoint, breakpoints]
+        () => generateStylesByBreakpoint($stylesByBreakpoint, breakpoints, true),
+        [$stylesByBreakpoint, breakpoints]
     );
 
     const renderChildren = () => {
-        if (!content) {
+        if (!content || !Object.keys(content).length) {
             return children;
         }
 
@@ -90,11 +98,19 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
         );
     };
 
-    if (selectedBlock?.path === path) {
+    if (type === ElementType.HTMLELEMENT && selectedBlock?.path === path) {
         return (
-            <DragNDrop stylesByBreakpoint={stylesByBreakpoint} data-path={path} tag={tag} onDrop={onDrop}>
+            <DragNDrop $stylesByBreakpoint={$stylesByBreakpoint} data-path={path} tag={tag} onDrop={onDrop}>
                 {renderChildren()}
             </DragNDrop>
+        );
+    }
+
+    if (type === ElementType.CONTAINER) {
+        return (
+            <Container data-path={path} data-grid="true" $stylesByBreakpoint={$stylesByBreakpoint}>
+                {renderChildren()}
+            </Container>
         );
     }
 
@@ -103,7 +119,7 @@ const BaseBlock = ({ stylesByBreakpoint, tag, path, content, children }: React.P
             ref={parentRef as RefObject<HTMLDivElement>}
             as={tag}
             data-path={path}
-            styleswithmedia={styleswithmedia}
+            $styleswithmedia={styleswithmedia}
         >
             {renderChildren()}
         </StyledBaseElement>

@@ -21,7 +21,7 @@ export default function KeyValueField({ id, keyField, valueField, onChange, onDe
     };
 
     return (
-        <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+        <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
             <Column cols={5}>
                 <Input
                     id={`${id}-key`}

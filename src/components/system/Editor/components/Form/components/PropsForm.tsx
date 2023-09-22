@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { BlockPropRecord, StyledBlock } from '@/types/HTMLElements';
+import { BlockPropRecord, ElementType, StyledBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import KeyValueField from './KeyValueField';
 
@@ -11,11 +11,12 @@ interface PropsFormProps {
     onFieldChange: (fieldName: 'props', newValue: StyledBlock['props']) => void;
     props: StyledBlock['props'];
     blockPath: StyledBlock['path'];
+    type: ElementType.HTMLELEMENT | ElementType.CONTAINER;
 }
 
 const { Text } = Typography;
 
-export default function PropsForm({ blockPath, props, onFieldChange }: PropsFormProps) {
+export default function PropsForm({ blockPath, props, type, onFieldChange }: PropsFormProps) {
     const [editableProps, setEditableProps] = useState<BlockPropRecord[]>([]);
     const [isPropsChanged, setIsPropsChanged] = useState(false);
 
@@ -98,24 +99,37 @@ export default function PropsForm({ blockPath, props, onFieldChange }: PropsForm
         ));
     };
 
+    const renderFormMessage = () => {
+        if (type === ElementType.CONTAINER) {
+            return (
+                <Text type="secondary">
+                    Контейнеру разрешено указывать только параметры, валидные для <b>div</b> элемента. Все невалидные
+                    параметры в лучшем случае будут игнорироваться, а в худшем - всё сломают.
+                </Text>
+            );
+        }
+
+        return (
+            <Text type="secondary">
+                Позволяет указать базовые параметры блока, такие как id, href и target для ссылок и некоторые другие
+                параметры, необходимые интерактивным блокам.
+            </Text>
+        );
+    };
+
     return (
         <>
             <Row>
-                <Column>
-                    <Text type="secondary">
-                        Позволяет указать базовые параметры блока, такие как id, href и target для ссылок и некоторые
-                        другие параметры, необходимые интерактивным блокам.
-                    </Text>
-                </Column>
+                <Column>{renderFormMessage()}</Column>
             </Row>
             {mapPropsInputs()}
-            <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
-                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+                <Column cols={3} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                     <Button style={ELEMENT_STYLES.formButton} onClick={onPropAdd}>
                         Добавить
                     </Button>
                 </Column>
-                <Column cols={3} stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
+                <Column cols={3} $stylesByBreakpoint={ELEMENT_STYLES.buttonColumn}>
                     <Button style={ELEMENT_STYLES.formButton} disabled={!isPropsChanged} onClick={onPropsSave}>
                         Сохранить
                     </Button>

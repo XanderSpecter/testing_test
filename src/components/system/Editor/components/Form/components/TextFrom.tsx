@@ -22,12 +22,12 @@ export default function TextForm({ block, onFieldChange }: TextFormProps) {
 
     return (
         <>
-            <Row stylesByBreakpoint={ELEMENT_STYLES.row}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.row}>
                 <Column>
                     <Typography>Текст</Typography>
                 </Column>
             </Row>
-            <Row stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
+            <Row $stylesByBreakpoint={ELEMENT_STYLES.supportRow}>
                 <Column>
                     <Input
                         id={path}
