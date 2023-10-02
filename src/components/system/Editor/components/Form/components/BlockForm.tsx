@@ -3,7 +3,7 @@
 import React from 'react';
 import { Collapse, Select, Typography } from 'antd';
 import { Column, Row } from '@/components/base/Grid';
-import { ElementType, GridContainer, HTMLTag, StyledBlock } from '@/types/HTMLElements';
+import { ElementType, GridElement, HTMLTag, StyledBlock } from '@/types/HTMLElements';
 import { ELEMENT_STYLES } from '../../../../Collection/constants';
 import { AVAILABLE_TAGS_ITEMS } from '@/constants/pageBlocks';
 import PropsForm from './PropsForm';
@@ -14,7 +14,7 @@ interface BlockFormProps {
         fieldName: keyof StyledBlock,
         newValue: string | StyledBlock['props'] | StyledBlock['$stylesByBreakpoint']
     ) => void;
-    block: StyledBlock | GridContainer;
+    block: StyledBlock | GridElement;
 }
 
 export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
@@ -33,7 +33,7 @@ export default function BlockForm({ block, onFieldChange }: BlockFormProps) {
     ) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
     const renderTagSelector = () => {
-        if (block.type === ElementType.CONTAINER) {
+        if (block.type === ElementType.CONTAINER || block.type === ElementType.ROW) {
             return null;
         }
 

@@ -20,9 +20,14 @@ export default function Renderer({ content }: RendererProps) {
             return null;
         }
 
-        if (block.type === ElementType.HTMLELEMENT || block.type === ElementType.CONTAINER) {
+        if (
+            block.type === ElementType.HTMLELEMENT ||
+            block.type === ElementType.CONTAINER ||
+            block.type === ElementType.ROW
+        ) {
             return <BaseBlock key={block.path} {...block} />;
         }
+
         if (block.type === ElementType.TEXT) {
             return block.value;
         }

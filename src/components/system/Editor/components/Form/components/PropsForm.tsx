@@ -11,7 +11,7 @@ interface PropsFormProps {
     onFieldChange: (fieldName: 'props', newValue: StyledBlock['props']) => void;
     props: StyledBlock['props'];
     blockPath: StyledBlock['path'];
-    type: ElementType.HTMLELEMENT | ElementType.CONTAINER;
+    type: ElementType.HTMLELEMENT | ElementType.CONTAINER | ElementType.ROW;
 }
 
 const { Text } = Typography;

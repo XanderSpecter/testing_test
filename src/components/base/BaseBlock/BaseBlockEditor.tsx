@@ -1,7 +1,7 @@
 import React, { RefObject, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 
-import { ElementType, GridContainer, StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
+import { ElementType, GridElement, StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import { EditorContext } from '@/utils/editorProvider';
@@ -14,7 +14,7 @@ import {
     ScreenParamsProvider,
 } from '@/utils/screenParamsProvider';
 import { parseNumber } from '@/utils/textHelpers';
-import { Container } from '../Grid';
+import { Container, Row } from '../Grid';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     box-sizing: border-box;
@@ -33,7 +33,7 @@ const BaseBlock = ({
     type,
     content,
     children,
-}: React.PropsWithChildren<StyledBlock | GridContainer>) => {
+}: React.PropsWithChildren<StyledBlock | GridElement>) => {
     const { breakpoint } = useContext(ScreenParamsContext);
     const breakpoints = useContext(BreakpointsContext);
     const { onDrop, selectedBlock } = useContext(EditorContext);
@@ -108,9 +108,17 @@ const BaseBlock = ({
 
     if (type === ElementType.CONTAINER) {
         return (
-            <Container data-path={path} data-grid="true" $stylesByBreakpoint={$stylesByBreakpoint}>
+            <Container data-path={path} data-grid={ElementType.CONTAINER} $stylesByBreakpoint={$stylesByBreakpoint}>
                 {renderChildren()}
             </Container>
+        );
+    }
+
+    if (type === ElementType.ROW) {
+        return (
+            <Row data-path={path} data-grid={ElementType.ROW} $stylesByBreakpoint={$stylesByBreakpoint}>
+                {renderChildren()}
+            </Row>
         );
     }
 

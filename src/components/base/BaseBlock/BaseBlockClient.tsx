@@ -1,11 +1,11 @@
 import React, { useContext, useMemo } from 'react';
 import { styled } from 'styled-components';
 
-import { ElementType, GridContainer, StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
+import { ElementType, GridElement, StyledBlock, WithGeneratedCSS } from '@/types/HTMLElements';
 import { BreakpointsContext } from '@/utils/breakpointsProvider';
 import generateStylesByBreakpoint from '@/utils/styles/generateStylesByBreakpoint';
 import Renderer from '@/components/system/Renderer/RendererClient';
-import { Container } from '../Grid';
+import { Container, Row } from '../Grid';
 
 const StyledBaseElement = styled.div<WithGeneratedCSS>`
     box-sizing: border-box;
@@ -19,7 +19,7 @@ const BaseBlock = ({
     props,
     content,
     type,
-}: React.PropsWithChildren<StyledBlock | GridContainer>) => {
+}: React.PropsWithChildren<StyledBlock | GridElement>) => {
     const breakpoints = useContext(BreakpointsContext);
 
     const styleswithmedia = useMemo(
@@ -34,6 +34,14 @@ const BaseBlock = ({
             <Container {...notEmptyProps} $stylesByBreakpoint={$stylesByBreakpoint}>
                 <Renderer content={content} />
             </Container>
+        );
+    }
+
+    if (type === ElementType.ROW) {
+        return (
+            <Row {...notEmptyProps} $stylesByBreakpoint={$stylesByBreakpoint}>
+                <Renderer content={content} />
+            </Row>
         );
     }
 

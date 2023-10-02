@@ -16,7 +16,7 @@ import FullScreenLoader from '@/components/base/FullScreenLoader';
 import { deleteFromLocalStorage } from '@/utils/localStorage';
 import { CANVAS_ID, CANVAS_RESIZER_ID, DRAG_N_DROP_DISABLED_DISPLAY } from './constants';
 import ContextMenu, { ContextMenuProps, ContextOption, HandlerParams } from './components/ContextMenu';
-import { getLocalStorageCache, recalcPath, saveLocalStorageCache } from './helpers';
+import { createEmptyPageBlock, getLocalStorageCache, recalcPath, saveLocalStorageCache } from './helpers';
 import Form from './components/Form';
 import Renderer from '../Renderer/RendererEditor';
 
@@ -30,7 +30,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
     const router = useRouter();
 
-    const { elementsList, isLoading, updateElement, isOperationRunning } = useElements({
+    const { elementsList, isLoading, updateElement } = useElements({
         collectionElementName,
         query: { _id: id },
     });
@@ -57,13 +57,6 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
 
         router.push(`${Routes.ADMIN}/${collectionElementName}`);
     };
-
-    useEffect(() => {
-        if (isOperationRunning === false) {
-            clearAndExit();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOperationRunning]);
 
     const onDrop = useCallback(
         (style: React.CSSProperties, screenShortcut: string) => {
@@ -147,6 +140,48 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         });
     };
 
+    const addGridRow = ({ path, grid }: HandlerParams) => {
+        if (grid === ElementType.CONTAINER) {
+            const newRow = createEmptyPageBlock(ElementType.ROW, path);
+
+            if (newRow) {
+                onBlockFormSubmit(newRow);
+            }
+
+            setContextParams({
+                ...contextParams,
+                path: null,
+            });
+        } else if (grid === ElementType.ROW) {
+            const containerPathParams = path?.split('.');
+
+            if (!containerPathParams) {
+                setContextParams({
+                    ...contextParams,
+                    path: null,
+                });
+
+                return;
+            }
+
+            containerPathParams?.splice(-1);
+
+            const containerPath =
+                containerPathParams?.length > 1 ? containerPathParams?.join('.') : containerPathParams[0];
+
+            const newRow = createEmptyPageBlock(ElementType.ROW, containerPath);
+
+            if (newRow) {
+                onBlockFormSubmit(newRow);
+            }
+
+            setContextParams({
+                ...contextParams,
+                path: null,
+            });
+        }
+    };
+
     const editBlock = ({ path }: HandlerParams) => {
         if (!path || !editedElement || !editedField) {
             return;
@@ -192,20 +227,41 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
     };
 
     const contextOptions: ContextOption[] = useMemo(
-        () => [
-            {
-                name: 'Добавить дочерний элемент',
-                handler: addChildBlock,
-            },
-            {
-                name: 'Редактировать',
-                handler: editBlock,
-            },
-            {
-                name: 'Удалить',
-                handler: deleteBlock,
-            },
-        ],
+        () => {
+            const options = [
+                {
+                    name: 'Редактировать',
+                    handler: editBlock,
+                },
+                {
+                    name: 'Удалить',
+                    handler: deleteBlock,
+                },
+            ];
+
+            if (contextParams.grid === ElementType.CONTAINER) {
+                options.push({
+                    name: 'Добавить строку',
+                    handler: addGridRow,
+                });
+            }
+
+            if (contextParams.grid === ElementType.ROW) {
+                options.push({
+                    name: 'Добавить строку ниже',
+                    handler: addGridRow,
+                });
+            }
+
+            if (!contextParams.grid || contextParams.grid === ElementType.ROW) {
+                options.push({
+                    name: 'Добавить дочерний элемент',
+                    handler: addChildBlock,
+                });
+            }
+
+            return options;
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [contextParams]
     );
@@ -247,7 +303,7 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
                     <Button danger onClick={() => clearAndExit()}>
                         Закрыть редактор
                     </Button>
-                    <Button onClick={() => onSave()}>Сохранить и выйти</Button>
+                    <Button onClick={() => onSave()}>Сохранить изменения</Button>
                 </HeaderControls>
             );
         }
@@ -291,10 +347,13 @@ export default function Editor({ id, field, collectionElementName }: EditorProps
         if ((e.target as HTMLDivElement)?.dataset?.path) {
             const { target, pageX, pageY } = e;
 
+            const grid = (e.target as HTMLDivElement)?.dataset?.grid as ElementType;
+
             setContextParams({
                 path: (target as HTMLDivElement).dataset.path,
                 top: pageY,
                 left: pageX,
+                grid,
             });
         }
     };

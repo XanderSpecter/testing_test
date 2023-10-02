@@ -3,10 +3,11 @@
 import React from 'react';
 import { ContextMenuWrapper } from '../styled';
 import { Button } from 'antd';
-import { PageBlock } from '@/types/HTMLElements';
+import { ElementType, PageBlock } from '@/types/HTMLElements';
 
 export interface HandlerParams {
     path?: PageBlock['path'];
+    grid?: ElementType | null;
     coordinates?: ContextCoordinates;
 }
 export interface ContextOption {
@@ -16,6 +17,7 @@ export interface ContextOption {
 
 export interface ContextMenuProps {
     path?: string | null;
+    grid?: ElementType | null;
     top: number;
     left: number;
     options?: ContextOption[];
@@ -23,7 +25,7 @@ export interface ContextMenuProps {
 
 export type ContextCoordinates = Pick<ContextMenuProps, 'top' | 'left'>;
 
-const ContextMenu = ({ path, options, top, left }: ContextMenuProps) => {
+const ContextMenu = ({ path, options, top, left, grid }: ContextMenuProps) => {
     if (!options) {
         return null;
     }
@@ -39,7 +41,7 @@ const ContextMenu = ({ path, options, top, left }: ContextMenuProps) => {
             }
 
             return (
-                <Button key={o.name} size="small" onClick={() => o.handler({ path, coordinates: { top, left } })}>
+                <Button key={o.name} size="small" onClick={() => o.handler({ path, grid, coordinates: { top, left } })}>
                     {o.name}
                 </Button>
             );

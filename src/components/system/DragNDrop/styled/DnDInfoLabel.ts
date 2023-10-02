@@ -3,8 +3,8 @@ import styled from 'styled-components';
 export const DnDInfoLabel = styled.div`
     position: absolute;
 
-    top: 100%;
-    right: 0;
+    top: calc(100% + 4px);
+    left: 0;
 
     padding: 4px;
 
@@ -12,7 +12,7 @@ export const DnDInfoLabel = styled.div`
 
     color: #ffffff;
 
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px;
 
     z-index: 1;
 

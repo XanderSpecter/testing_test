@@ -22,6 +22,7 @@ const StyledRow = styled.div<WithGeneratedCSS<Omit<Partial<HTMLDivElement>, 'chi
 const Row = ({
     children,
     $stylesByBreakpoint,
+    ...rest
 }: WithBreakpointStyles<PropsWithChildren<Omit<Partial<HTMLDivElement>, 'children'>>>) => {
     const breakpoints = useContext(BreakpointsContext);
     const { editing } = useContext(EditorContext);
@@ -31,7 +32,11 @@ const Row = ({
         [$stylesByBreakpoint, breakpoints, editing]
     );
 
-    return <StyledRow $styleswithmedia={styleswithmedia}>{children}</StyledRow>;
+    return (
+        <StyledRow {...rest} $styleswithmedia={styleswithmedia}>
+            {children}
+        </StyledRow>
+    );
 };
 
 export default Row;

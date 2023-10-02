@@ -36,8 +36,9 @@ export interface WithCommonStyles {
 export enum ElementType {
     TEXT = 'TEXT',
     HTMLELEMENT = 'HTMLELEMENT',
-    CONTAINER = 'CONTAINER',
     COMPONENT = 'COMPONENT',
+    CONTAINER = 'CONTAINER',
+    ROW = 'ROW',
 }
 
 export enum BlockPosition {
@@ -74,14 +75,14 @@ export interface TextBlock {
     value: string;
 }
 
-export interface GridContainer extends Omit<StyledBlock, 'type'> {
-    type: ElementType.CONTAINER;
+export interface GridElement extends Omit<StyledBlock, 'type'> {
+    type: ElementType.CONTAINER | ElementType.ROW;
     path: string;
     tag: 'div';
     props?: HTMLBlockProps;
     content?: PageContent;
 }
 
-export type PageBlock = StyledBlock | TextBlock | GridContainer;
+export type PageBlock = StyledBlock | TextBlock | GridElement;
 
 export type PageContent = Record<string, PageBlock>;

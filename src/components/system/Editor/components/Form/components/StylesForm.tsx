@@ -15,7 +15,7 @@ interface StylesFormProps {
     onFieldChange: (fieldName: '$stylesByBreakpoint', newValue: StyledBlock['$stylesByBreakpoint']) => void;
     $stylesByBreakpoint: StyledBlock['$stylesByBreakpoint'];
     blockPath: StyledBlock['path'];
-    type: ElementType.HTMLELEMENT | ElementType.CONTAINER;
+    type: ElementType.HTMLELEMENT | ElementType.CONTAINER | ElementType.ROW;
 }
 
 const { Text } = Typography;
