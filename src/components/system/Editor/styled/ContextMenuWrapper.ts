@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface ContextMenuWrapperProps {
-    visible?: string | boolean;
+    $visible?: boolean;
 }
 
 export const ContextMenuWrapper = styled.div.attrs<ContextMenuWrapperProps>((props) => ({
@@ -20,7 +20,7 @@ export const ContextMenuWrapper = styled.div.attrs<ContextMenuWrapperProps>((pro
 
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 50%);
 
-    visibility: ${({ visible }) => (Boolean(visible) ? 'visible' : 'hidden')};
+    visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
 
     & > * {
         margin-top: 4px;

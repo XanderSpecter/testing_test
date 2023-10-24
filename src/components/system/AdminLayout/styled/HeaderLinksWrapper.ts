@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface HeaderLinksWrapperProps {
-    alignContent: 'flex-start' | 'flex-end';
+    $alignContent: 'flex-start' | 'flex-end';
 }
 
 export const HeaderLinksWrapper = styled.div<HeaderLinksWrapperProps>`
@@ -11,5 +11,5 @@ export const HeaderLinksWrapper = styled.div<HeaderLinksWrapperProps>`
 
     display: flex;
     align-items: center;
-    justify-content: ${(props) => props.alignContent};
+    justify-content: ${(props) => props.$alignContent};
 `;

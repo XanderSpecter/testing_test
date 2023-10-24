@@ -23,9 +23,10 @@ export type WithBreakpointStyles<T> = Omit<T, '$stylesByBreakpoint'> & {
     $stylesByBreakpoint?: StylesByBreakpoint | null;
 };
 
-export type WithGeneratedCSS<T = unknown> = Omit<T, 'styleswithmedia'> & {
+export type WithGeneratedCSS<T = unknown> = Omit<T, '$styleswithmedia'> & {
     $styleswithmedia: string;
 };
+
 /**
  * Расширение компонента для поддержки редактируемых стилей в Styled
  */

@@ -49,7 +49,7 @@ const ContextMenu = ({ path, options, top, left, grid }: ContextMenuProps) => {
     };
 
     return (
-        <ContextMenuWrapper visible={path ? 'true' : undefined} style={{ top, left }}>
+        <ContextMenuWrapper $visible={Boolean(path)} style={{ top, left }}>
             {renderOptions()}
         </ContextMenuWrapper>
     );

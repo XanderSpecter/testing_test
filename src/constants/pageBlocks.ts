@@ -10,10 +10,6 @@ export const PAGE_BLOCK_TYPES = [
         value: ElementType.TEXT,
     },
     {
-        label: 'Контейнер сетки',
-        value: ElementType.CONTAINER,
-    },
-    {
         label: 'React-компонент',
         value: ElementType.COMPONENT,
         disabled: true,
