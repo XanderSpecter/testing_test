@@ -32,7 +32,7 @@ export const createEmptyElement = (fieldsMapping: AvailableCollection['fieldsMap
         }
 
         if (type === PossibleFieldType.EDITOR) {
-            emptyElement[key] = [];
+            emptyElement[key] = {};
         }
     });
 
